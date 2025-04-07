@@ -1,8 +1,20 @@
 //
-//  SocketView.swift
-//  CyberPilot
+//  SSHConnectorApp.swift
+//  SSHConnector
 //
-//  Created by Admin on 5/04/25.
+//  Created by Aleksandr Chumakov on 18.03.2025.
 //
 
-import Foundation
+import SwiftUI
+
+
+struct SocketView: UIViewControllerRepresentable {
+    @ObservedObject var stateManager: RobotManager
+
+    func makeUIViewController(context: Context) -> SocketController {
+        return SocketController(stateManager: stateManager)
+    }
+
+    func updateUIViewController(_ uiViewController: SocketController, context: Context) {
+    }
+}

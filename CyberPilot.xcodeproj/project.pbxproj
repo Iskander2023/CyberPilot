@@ -7,15 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C3F139D1E22022C67C74C32 /* Pods_CyberPilot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1762666A9678416263BA440C /* Pods_CyberPilot.framework */; };
+		8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */; };
 		84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE144A2DA144C20094A792 /* CyberPilotApp.swift */; };
 		84AE144D2DA144C20094A792 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE144C2DA144C20094A792 /* ContentView.swift */; };
 		84AE144F2DA144C50094A792 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84AE144E2DA144C50094A792 /* Assets.xcassets */; };
 		84AE14522DA144C50094A792 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84AE14512DA144C50094A792 /* Preview Assets.xcassets */; };
 		84AE14542DA144C50094A792 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14532DA144C50094A792 /* Persistence.swift */; };
 		84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14552DA144C50094A792 /* CyberPilot.xcdatamodeld */; };
+		84AE145F2DA145D20094A792 /* WebVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE145E2DA145D20094A792 /* WebVideoView.swift */; };
+		84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14612DA1463E0094A792 /* CustomLogger.swift */; };
+		84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14642DA146AC0094A792 /* CommandSender.swift */; };
+		84AE14672DA146D10094A792 /* SocketController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14662DA146D10094A792 /* SocketController.swift */; };
+		84AE14692DA147020094A792 /* SocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14682DA147020094A792 /* SocketManager.swift */; };
+		84AE146B2DA147230094A792 /* SocketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE146A2DA147230094A792 /* SocketView.swift */; };
+		84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE146D2DA147660094A792 /* BluetoothManager.swift */; };
+		84AE14702DA147840094A792 /* BluetoothView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE146F2DA147840094A792 /* BluetoothView.swift */; };
+		84AE14732DA147BA0094A792 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14722DA147BA0094A792 /* LoginView.swift */; };
+		84AE14752DA147D30094A792 /* PhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14742DA147D30094A792 /* PhoneView.swift */; };
+		84AE14772DA147F40094A792 /* RegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14762DA147F40094A792 /* RegistrationManager.swift */; };
+		84AE14792DA1480F0094A792 /* RegView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14782DA1480F0094A792 /* RegView.swift */; };
+		84AE147B2DA148590094A792 /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* RobotManager.swift */; };
+		84AE147D2DA1489E0094A792 /* StructObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147C2DA1489E0094A792 /* StructObjects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1762666A9678416263BA440C /* Pods_CyberPilot.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CyberPilot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8480B6F12DA17B9600BF884F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCaptchaView.swift; sourceTree = "<group>"; };
 		84AE14472DA144C20094A792 /* CyberPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CyberPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84AE144A2DA144C20094A792 /* CyberPilotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyberPilotApp.swift; sourceTree = "<group>"; };
 		84AE144C2DA144C20094A792 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -23,6 +42,22 @@
 		84AE14512DA144C50094A792 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		84AE14532DA144C50094A792 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		84AE14562DA144C50094A792 /* CyberPilot.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CyberPilot.xcdatamodel; sourceTree = "<group>"; };
+		84AE145E2DA145D20094A792 /* WebVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVideoView.swift; sourceTree = "<group>"; };
+		84AE14612DA1463E0094A792 /* CustomLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLogger.swift; sourceTree = "<group>"; };
+		84AE14642DA146AC0094A792 /* CommandSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandSender.swift; sourceTree = "<group>"; };
+		84AE14662DA146D10094A792 /* SocketController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketController.swift; sourceTree = "<group>"; };
+		84AE14682DA147020094A792 /* SocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketManager.swift; sourceTree = "<group>"; };
+		84AE146A2DA147230094A792 /* SocketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketView.swift; sourceTree = "<group>"; };
+		84AE146D2DA147660094A792 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		84AE146F2DA147840094A792 /* BluetoothView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothView.swift; sourceTree = "<group>"; };
+		84AE14722DA147BA0094A792 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		84AE14742DA147D30094A792 /* PhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneView.swift; sourceTree = "<group>"; };
+		84AE14762DA147F40094A792 /* RegistrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationManager.swift; sourceTree = "<group>"; };
+		84AE14782DA1480F0094A792 /* RegView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegView.swift; sourceTree = "<group>"; };
+		84AE147A2DA148590094A792 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
+		84AE147C2DA1489E0094A792 /* StructObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructObjects.swift; sourceTree = "<group>"; };
+		9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.debug.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.debug.xcconfig"; sourceTree = "<group>"; };
+		BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.release.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,17 +65,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C3F139D1E22022C67C74C32 /* Pods_CyberPilot.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0143C1C66013DADEDD886242 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8480B6F12DA17B9600BF884F /* Starscream.framework */,
+				1762666A9678416263BA440C /* Pods_CyberPilot.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		30B7408EA527F92D8D5F9A2B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */,
+				BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		84AE143E2DA144C20094A792 = {
 			isa = PBXGroup;
 			children = (
 				84AE14492DA144C20094A792 /* CyberPilot */,
 				84AE14482DA144C20094A792 /* Products */,
+				30B7408EA527F92D8D5F9A2B /* Pods */,
+				0143C1C66013DADEDD886242 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -55,8 +111,15 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				84AE14712DA1479C0094A792 /* Registration */,
+				84AE146C2DA1473C0094A792 /* Bluetooth */,
+				84AE14632DA146810094A792 /* WebSocket */,
+				84AE14602DA146050094A792 /* Logger */,
+				84AE145D2DA145A70094A792 /* Video */,
 				84AE144A2DA144C20094A792 /* CyberPilotApp.swift */,
 				84AE144C2DA144C20094A792 /* ContentView.swift */,
+				84AE147C2DA1489E0094A792 /* StructObjects.swift */,
+				84AE147A2DA148590094A792 /* RobotManager.swift */,
 				84AE144E2DA144C50094A792 /* Assets.xcassets */,
 				84AE14532DA144C50094A792 /* Persistence.swift */,
 				84AE14552DA144C50094A792 /* CyberPilot.xcdatamodeld */,
@@ -73,6 +136,54 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		84AE145D2DA145A70094A792 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				84AE145E2DA145D20094A792 /* WebVideoView.swift */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
+		84AE14602DA146050094A792 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				84AE14612DA1463E0094A792 /* CustomLogger.swift */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
+		84AE14632DA146810094A792 /* WebSocket */ = {
+			isa = PBXGroup;
+			children = (
+				84AE14642DA146AC0094A792 /* CommandSender.swift */,
+				84AE14662DA146D10094A792 /* SocketController.swift */,
+				84AE14682DA147020094A792 /* SocketManager.swift */,
+				84AE146A2DA147230094A792 /* SocketView.swift */,
+			);
+			path = WebSocket;
+			sourceTree = "<group>";
+		};
+		84AE146C2DA1473C0094A792 /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				84AE146D2DA147660094A792 /* BluetoothManager.swift */,
+				84AE146F2DA147840094A792 /* BluetoothView.swift */,
+			);
+			path = Bluetooth;
+			sourceTree = "<group>";
+		};
+		84AE14712DA1479C0094A792 /* Registration */ = {
+			isa = PBXGroup;
+			children = (
+				84AE14722DA147BA0094A792 /* LoginView.swift */,
+				84AE14742DA147D30094A792 /* PhoneView.swift */,
+				84AE14762DA147F40094A792 /* RegistrationManager.swift */,
+				84AE14782DA1480F0094A792 /* RegView.swift */,
+				8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */,
+			);
+			path = Registration;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -80,9 +191,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84AE145A2DA144C50094A792 /* Build configuration list for PBXNativeTarget "CyberPilot" */;
 			buildPhases = (
+				C26EB89076D58771606E2416 /* [CP] Check Pods Manifest.lock */,
 				84AE14432DA144C20094A792 /* Sources */,
 				84AE14442DA144C20094A792 /* Frameworks */,
 				84AE14452DA144C20094A792 /* Resources */,
+				09F5B0BF7F61A47B6C63A465 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -138,14 +251,71 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		09F5B0BF7F61A47B6C63A465 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CyberPilot/Pods-CyberPilot-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CyberPilot/Pods-CyberPilot-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CyberPilot/Pods-CyberPilot-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C26EB89076D58771606E2416 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-CyberPilot-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		84AE14432DA144C20094A792 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84AE14772DA147F40094A792 /* RegistrationManager.swift in Sources */,
+				84AE14792DA1480F0094A792 /* RegView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
+				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
+				84AE147B2DA148590094A792 /* RobotManager.swift in Sources */,
+				84AE145F2DA145D20094A792 /* WebVideoView.swift in Sources */,
+				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
+				84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */,
 				84AE14542DA144C50094A792 /* Persistence.swift in Sources */,
+				84AE147D2DA1489E0094A792 /* StructObjects.swift in Sources */,
+				8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */,
+				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
 				84AE144D2DA144C20094A792 /* ContentView.swift in Sources */,
+				84AE14702DA147840094A792 /* BluetoothView.swift in Sources */,
+				84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */,
+				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
+				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
+				84AE14692DA147020094A792 /* SocketManager.swift in Sources */,
 				84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,7 +360,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -253,7 +423,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -274,6 +444,7 @@
 		};
 		84AE145B2DA144C50094A792 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -303,6 +474,7 @@
 		};
 		84AE145C2DA144C50094A792 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

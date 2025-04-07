@@ -1,0 +1,6 @@
+framework module Pods_CyberPilot {
+  umbrella header "Pods-CyberPilot-umbrella.h"
+
+  export *
+  module * { export * }
+}

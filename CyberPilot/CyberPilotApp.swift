@@ -1,20 +1,20 @@
 //
-//  CyberPilotApp.swift
-//  CyberPilot
+//  Robot_ControllerApp.swift
+//  Robot_Controller
 //
-//  Created by Admin on 5/04/25.
+//  Created by Admin on 20/01/25.
 //
-
 import SwiftUI
 
 @main
-struct CyberPilotApp: App {
-    let persistenceController = PersistenceController.shared
+struct Robot_ControllerApp: App {
+    @StateObject private var stateManager = RobotManager()
+
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            ContentView(stateManager: stateManager)
         }
     }
 }
+
