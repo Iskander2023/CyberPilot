@@ -48,7 +48,6 @@ struct PhoneView: View {
             .padding(.bottom, 50)
             
             Button(action: {
-                // Показываем капчу, если номер валиден
                 if registrationManager.isPhoneNumberFormValid {
                     showCaptcha = true
                 }

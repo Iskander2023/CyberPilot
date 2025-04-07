@@ -12,7 +12,10 @@ struct CustomCaptchaView: View {
     @State private var captchaText = ""
     @State private var userInput = ""
     @State private var attempts = 0
+    @State private var isButtonDisabled = false
+    @State private var remainingTime = 30
     
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     
     var body: some View {
@@ -21,11 +24,8 @@ struct CustomCaptchaView: View {
                 Text("✅ Капча пройдена!")
                     .foregroundColor(.green)
             } else {
-                // Показываем капчу и поле ввода
                 Text("Введите текст ниже:")
                     .font(.headline)
-                
-                // Капча (текст + обводка для сложности)
                 Text(captchaText)
                     .font(.system(size: 24, weight: .bold, design: .monospaced))
                     .padding(10)
@@ -35,34 +35,52 @@ struct CustomCaptchaView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(Color.gray, lineWidth: 1)
                     )
-                
                 TextField("Введите капчу", text: $userInput)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.allCharacters)
                     .disableAutocorrection(true)
                 
-                Button("Проверить") {
-                    if userInput == captchaText {
-                        isVerified = true
+                Button(action: verifyCaptcha) {
+                    if isButtonDisabled {
+                        Text("Повторить через \(remainingTime) сек")
                     } else {
-                        attempts += 1
-                        generateNewCaptcha()
-                        if attempts >= 3 {
-                            // Можно добавить блокировку на время
-                        }
+                        Text("Проверить")
                     }
                 }
-                .buttonStyle(.borderedProminent)
                 
                 Button("Обновить капчу") {
                     generateNewCaptcha()
                 }
                 .buttonStyle(.bordered)
+                
+                .buttonStyle(.borderedProminent)
+                .disabled(isButtonDisabled || isVerified)
+                .onReceive(timer) { _ in
+                    if remainingTime > 0 {
+                        remainingTime -= 1
+                    } else {
+                        isButtonDisabled = false
+                    }
+                }
             }
         }
         .padding()
         .onAppear {
             generateNewCaptcha()
+        }
+    }
+    
+    private func verifyCaptcha() {
+        if userInput == captchaText {
+            isVerified = true
+        } else {
+            attempts += 1
+            generateNewCaptcha()
+            
+            if attempts >= 3 {
+                isButtonDisabled = true
+                remainingTime = 30
+            }
         }
     }
     
