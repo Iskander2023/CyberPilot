@@ -16,6 +16,7 @@ class RegistrationManager: ObservableObject {
     @Published var password = ""
     @Published var passwordConfirm = ""
     @Published var phoneNumber = ""
+    @Published var confirmationCode = ""
 
    
     @Published var isLoginLengthValid = false
@@ -24,6 +25,8 @@ class RegistrationManager: ObservableObject {
     @Published var isPasswordConfirmValid = false
     @Published var isPhoneNumberValid = false
     @Published var isPhoneNumberLenghtValid = false
+    @Published var isConfirmationCodeValid = false
+    @Published var isConfirmationCodeLenghtValid = false
     
     var isRegFormValid: Bool {
             return isLoginLengthValid &&
@@ -39,6 +42,10 @@ class RegistrationManager: ObservableObject {
     
     var isPhoneNumberFormValid: Bool {
         return isPhoneNumberValid && isPhoneNumberLenghtValid
+    }
+    
+    var isCodeNumberFormValid: Bool {
+        return isConfirmationCodeValid && isConfirmationCodeLenghtValid
     }
     
 
@@ -93,7 +100,25 @@ class RegistrationManager: ObservableObject {
             }
             .assign(to: \.isPhoneNumberLenghtValid, on: self)
             .store(in: &cancellableSet)
-
+        
+        $confirmationCode
+            .receive(on: RunLoop.main)
+            .map { password in
+                let pattern = "[0-9]"
+                return password.range(of: pattern, options: .regularExpression) != nil
+            }
+            .assign(to: \.isConfirmationCodeValid, on: self)
+            .store(in: &cancellableSet)
+        
+        $confirmationCode
+            .receive(on: RunLoop.main)
+            .map { password in
+                return password.count == 4
+            }
+            .assign(to: \.isConfirmationCodeLenghtValid, on: self)
+            .store(in: &cancellableSet)
+        
+        
         Publishers.CombineLatest($password, $passwordConfirm)
             .receive(on: RunLoop.main)
             .map { (password, passwordConfirm) in
@@ -125,8 +150,13 @@ class RegistrationManager: ObservableObject {
         stateManager?.isAuthenticated = true
     }
     
-    
-    
+    func checkConfirmationCode(code: String) {
+        print("code", code)
+        if code == "3333" {
+            print("Sucess")
+            stateManager?.isAuthenticated = true
+        }
+    }
     
 }
 

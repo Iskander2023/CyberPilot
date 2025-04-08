@@ -15,17 +15,18 @@ struct CustomCaptchaView: View {
     @State private var isButtonDisabled = false
     @State private var remainingTime = 30
     
+    var onSuccess: (() -> Void)?
+    
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     
+    
     var body: some View {
         VStack(spacing: 20) {
-            if isVerified {
-                Text("✅ Капча пройдена!")
-                    .foregroundColor(.green)
-            } else {
+            if !isVerified {
                 Text("Введите текст ниже:")
                     .font(.headline)
+                
                 Text(captchaText)
                     .font(.system(size: 24, weight: .bold, design: .monospaced))
                     .padding(10)
@@ -35,6 +36,7 @@ struct CustomCaptchaView: View {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(Color.gray, lineWidth: 1)
                     )
+                
                 TextField("Введите капчу", text: $userInput)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.allCharacters)
@@ -47,32 +49,40 @@ struct CustomCaptchaView: View {
                         Text("Проверить")
                     }
                 }
+                .buttonStyle(.borderedProminent)
+                .disabled(isButtonDisabled || isVerified)
                 
                 Button("Обновить капчу") {
                     generateNewCaptcha()
                 }
                 .buttonStyle(.bordered)
-                
-                .buttonStyle(.borderedProminent)
-                .disabled(isButtonDisabled || isVerified)
-                .onReceive(timer) { _ in
-                    if remainingTime > 0 {
-                        remainingTime -= 1
-                    } else {
-                        isButtonDisabled = false
-                    }
-                }
             }
         }
         .padding()
         .onAppear {
-            generateNewCaptcha()
+            withAnimation {
+                generateNewCaptcha()
+            }
+        }
+        .onReceive(timer) { _ in
+            if remainingTime > 0 {
+                remainingTime -= 1
+            } else {
+                isButtonDisabled = false
+            }
+        }
+        .onChange(of: isVerified) {
+            if isVerified {
+                onSuccess?()
+            }
         }
     }
+    
     
     private func verifyCaptcha() {
         if userInput == captchaText {
             isVerified = true
+            attempts = 0
         } else {
             attempts += 1
             generateNewCaptcha()

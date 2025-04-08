@@ -1,50 +1,53 @@
 //
-//  BindingView.swift
-//  Robot_Controller
+//  ConfirmationCodeView.swift
+//  CyberPilot
 //
-//  Created by Admin on 4/04/25.
+//  Created by Admin on 7/04/25.
 //
 import SwiftUI
 
 
-struct PhoneView: View {
+struct ConfirmationCodeView: View {
+    
     @ObservedObject var stateManager: RobotManager
     @ObservedObject var registrationManager: RegistrationManager
-    var onNextStep: () -> Void
+    
+    init(stateManager: RobotManager, registrationManager: RegistrationManager) {
+        self.stateManager = stateManager
+        self.registrationManager = registrationManager
+    }
     
     
     var body: some View {
         VStack {
-            Text("Введите номер телефона")
+            Text("Введите полученый код")
                 .font(.system(.largeTitle, design: .rounded))
                 .bold()
                 .padding(.bottom, 30)
             
             VStack {
-                FormField(fieldName: "Номер +7", fieldValue: $registrationManager.phoneNumber)
+                FormField(fieldName: "Код", fieldValue: $registrationManager.confirmationCode)
                 
                 RequirementText(
                     iconName: "lock.open",
-                    iconColor: registrationManager.isPhoneNumberValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    iconColor: registrationManager.isConfirmationCodeValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
                     text: "только цифры",
-                    isStrikeThrough: registrationManager.isPhoneNumberValid
+                    isStrikeThrough: registrationManager.isConfirmationCodeValid
                 )
                 
                 RequirementText(
                     iconName: "lock.open",
-                    iconColor: registrationManager.isPhoneNumberLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "10",
-                    isStrikeThrough: registrationManager.isPhoneNumberLenghtValid
+                    iconColor: registrationManager.isConfirmationCodeLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    text: "4",
+                    isStrikeThrough: registrationManager.isConfirmationCodeLenghtValid
                 )
             }
             .padding()
             .padding(.bottom, 50)
             
-            Button(action: {
-                if registrationManager.isPhoneNumberFormValid {
-                    onNextStep()
-                }
-            }) {
+            Button(action: 
+                    {registrationManager.checkConfirmationCode(code: registrationManager.confirmationCode)})
+            {
                 Text("Отправить")
                     .font(.system(.body, design: .rounded))
                     .foregroundColor(.white)
@@ -64,9 +67,8 @@ struct PhoneView: View {
                     .cornerRadius(10)
                     .padding(.horizontal)
             }
-            .disabled(!registrationManager.isPhoneNumberFormValid)
-            .opacity(registrationManager.isPhoneNumberFormValid ? 1.0 : 0.5)
+            .disabled(!registrationManager.isCodeNumberFormValid)
+            .opacity(registrationManager.isCodeNumberFormValid ? 1.0 : 0.5)
+            }
         }
-            
-    }
-}
+   }
