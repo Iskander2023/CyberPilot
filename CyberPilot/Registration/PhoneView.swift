@@ -2,15 +2,16 @@
 //  BindingView.swift
 //  Robot_Controller
 //
-//  Created by Aleksandr Chumakov on 4/04/25.
+//  Created by Admin on 4/04/25.
 //
 import SwiftUI
 
 
 struct PhoneView: View {
     @ObservedObject var stateManager: RobotManager
-    @ObservedObject var registrationManager: RegistrationManager
-    var onNextStep: () -> Void
+    @ObservedObject var userRegistrationManager: UserRegistrationManager
+    
+    var onPhoneStep: () -> Void
     
     
     var body: some View {
@@ -21,28 +22,28 @@ struct PhoneView: View {
                 .padding(.bottom, 30)
             
             VStack {
-                FormField(fieldName: "Номер +7", fieldValue: $registrationManager.phoneNumber)
+                FormField(fieldName: "Номер +7", fieldValue: $userRegistrationManager.phoneNumber)
                 
                 RequirementText(
                     iconName: "lock.open",
-                    iconColor: registrationManager.isPhoneNumberValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    iconColor: userRegistrationManager.isPhoneNumberValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
                     text: "только цифры",
-                    isStrikeThrough: registrationManager.isPhoneNumberValid
+                    isStrikeThrough: userRegistrationManager.isPhoneNumberValid
                 )
                 
                 RequirementText(
                     iconName: "lock.open",
-                    iconColor: registrationManager.isPhoneNumberLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    iconColor: userRegistrationManager.isPhoneNumberLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
                     text: "10",
-                    isStrikeThrough: registrationManager.isPhoneNumberLenghtValid
+                    isStrikeThrough: userRegistrationManager.isPhoneNumberLenghtValid
                 )
             }
             .padding()
             .padding(.bottom, 50)
             
             Button(action: {
-                if registrationManager.isPhoneNumberFormValid {
-                    onNextStep()
+                if userRegistrationManager.isPhoneNumberFormValid {
+                    onPhoneStep()
                 }
             }) {
                 Text("Отправить")
@@ -64,8 +65,8 @@ struct PhoneView: View {
                     .cornerRadius(10)
                     .padding(.horizontal)
             }
-            .disabled(!registrationManager.isPhoneNumberFormValid)
-            .opacity(registrationManager.isPhoneNumberFormValid ? 1.0 : 0.5)
+            .disabled(!userRegistrationManager.isPhoneNumberFormValid)
+            .opacity(userRegistrationManager.isPhoneNumberFormValid ? 1.0 : 0.5)
         }
             
     }

@@ -9,10 +9,10 @@ import SwiftUI
 
 struct RegistrationFlowView: View {
     @ObservedObject var stateManager: RobotManager
-    @ObservedObject var registrationManager: RegistrationManager
+    @ObservedObject var userRegistrationManager: UserRegistrationManager
     
     @State private var currentStep: RegistrationStep = .phoneInput
-    @State private var isCaptchaVerified: Bool = false
+    //@State private var isCaptchaVerified: Bool = false
     
     @Environment(\.dismiss) private var dismiss
     
@@ -21,6 +21,7 @@ struct RegistrationFlowView: View {
         case phoneInput
         case captcha
         case confirmationCode
+        case userRegistrationInput
     }
     
     var body: some View {
@@ -35,7 +36,10 @@ struct RegistrationFlowView: View {
                 case .confirmationCode:
                     confirmationCodeView
                         .transition(.move(edge: .trailing))
-                }
+                case .userRegistrationInput:
+                    userRegistrationView
+                        .transition(.move(edge: .trailing))
+                    }
         }
         .animation(.easeInOut(duration: 0.4), value: currentStep)
         .padding()
@@ -49,8 +53,8 @@ struct RegistrationFlowView: View {
     private var phoneView: some View {
         PhoneView(
             stateManager: stateManager,
-            registrationManager: registrationManager,
-            onNextStep: {
+            userRegistrationManager: userRegistrationManager,
+            onPhoneStep: {
                 withAnimation {
                     currentStep = .captcha
                 }
@@ -61,8 +65,7 @@ struct RegistrationFlowView: View {
     
     private var captchaView: some View {
         CustomCaptchaView(
-            isVerified: $isCaptchaVerified,
-            onSuccess: {
+            onCaptchaStep: {
                 withAnimation {
                     currentStep = .confirmationCode
                 }
@@ -72,11 +75,23 @@ struct RegistrationFlowView: View {
 
 
     private var confirmationCodeView: some View {
-            ConfirmationCodeView(
-                stateManager: stateManager,
-                registrationManager: registrationManager
-            )}
-
+        ConfirmationCodeView(
+            stateManager: stateManager,
+            userRegistrationManager: userRegistrationManager,
+            onCodeStep: {
+                withAnimation {
+                    currentStep = .userRegistrationInput
+                }
+            }
+        )
+    }
+    
+    private var userRegistrationView: some View {
+        UserRegistarationView(
+            stateManager: stateManager,
+            userRegistrationManager: userRegistrationManager
+        )
+    }
         
     private func goToPreviousStep() {
         withAnimation {
@@ -87,6 +102,8 @@ struct RegistrationFlowView: View {
                 currentStep = .captcha
             case .phoneInput:
                 dismiss()
+            case .userRegistrationInput:
+                currentStep = .confirmationCode
             }
         }
     }

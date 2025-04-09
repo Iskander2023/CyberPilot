@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class RegistrationManager: ObservableObject {
+class UserRegistrationManager: ObservableObject {
     
     private weak var stateManager: RobotManager?
     
@@ -27,6 +27,10 @@ class RegistrationManager: ObservableObject {
     @Published var isPhoneNumberLenghtValid = false
     @Published var isConfirmationCodeValid = false
     @Published var isConfirmationCodeLenghtValid = false
+    @Published var isConfirmationCodeTrue = false
+    
+    
+    
     
     var isRegFormValid: Bool {
             return isLoginLengthValid &&
@@ -52,7 +56,6 @@ class RegistrationManager: ObservableObject {
     private var cancellableSet: Set<AnyCancellable> = []
 
     init(stateManager: RobotManager) {
-        
         self.stateManager = stateManager
         
         $userLogin
@@ -96,7 +99,7 @@ class RegistrationManager: ObservableObject {
         $phoneNumber
             .receive(on: RunLoop.main)
             .map { password in
-                return password.count == 10
+                return password.count == 12
             }
             .assign(to: \.isPhoneNumberLenghtValid, on: self)
             .store(in: &cancellableSet)
@@ -136,13 +139,7 @@ class RegistrationManager: ObservableObject {
         stateManager?.isAuthenticated = true
     }
     
-    func saveLoginData(userLogin: String, password: String) {
-        print("saveLoginData")
-        print("userlogin", userLogin)
-        print("password", password)
-        stateManager?.userLogin = userLogin
-        stateManager?.isAuthenticated = true
-    }
+
     
     func checkPhoneNumber(number: String) {
         print("checkPhoneNumber", number)
@@ -152,11 +149,17 @@ class RegistrationManager: ObservableObject {
     
     func checkConfirmationCode(code: String) {
         print("code", code)
+        print(password, phoneNumber)
         if code == "3333" {
             print("Sucess")
-            stateManager?.isAuthenticated = true
+            isConfirmationCodeTrue = true
+        } else {
+            print("не правильный код")
         }
     }
+    
+    
+    
     
 }
 

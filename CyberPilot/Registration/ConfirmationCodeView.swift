@@ -10,8 +10,9 @@ import SwiftUI
 struct ConfirmationCodeView: View {
     
     @ObservedObject var stateManager: RobotManager
-    @ObservedObject var registrationManager: RegistrationManager
+    @ObservedObject var userRegistrationManager: UserRegistrationManager
     
+    var onCodeStep: () -> Void
     
     var body: some View {
         VStack {
@@ -21,29 +22,33 @@ struct ConfirmationCodeView: View {
                 .padding(.bottom, 30)
             
             VStack {
-                FormField(fieldName: "Код", fieldValue: $registrationManager.confirmationCode)
+                FormField(fieldName: "Код", fieldValue: $userRegistrationManager.confirmationCode)
                 
                 RequirementText(
                     iconName: "lock.open",
-                    iconColor: registrationManager.isConfirmationCodeValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    iconColor: userRegistrationManager.isConfirmationCodeValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
                     text: "только цифры",
-                    isStrikeThrough: registrationManager.isConfirmationCodeValid
+                    isStrikeThrough: userRegistrationManager.isConfirmationCodeValid
                 )
                 
                 RequirementText(
                     iconName: "lock.open",
-                    iconColor: registrationManager.isConfirmationCodeLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    iconColor: userRegistrationManager.isConfirmationCodeLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
                     text: "4",
-                    isStrikeThrough: registrationManager.isConfirmationCodeLenghtValid
+                    isStrikeThrough: userRegistrationManager.isConfirmationCodeLenghtValid
                 )
             }
             .padding()
             .padding(.bottom, 50)
             
-            Button(action: 
-                    {registrationManager.checkConfirmationCode(code: registrationManager.confirmationCode)})
-            {
-                Text("Отправить")
+            Button(action: {
+                userRegistrationManager.checkConfirmationCode(code: userRegistrationManager.confirmationCode)
+                
+                if userRegistrationManager.isConfirmationCodeTrue && userRegistrationManager.isPhoneNumberFormValid {
+                    onCodeStep()
+                }
+            }) {
+                Text("Подтвердить")
                     .font(.system(.body, design: .rounded))
                     .foregroundColor(.white)
                     .bold()
@@ -62,8 +67,8 @@ struct ConfirmationCodeView: View {
                     .cornerRadius(10)
                     .padding(.horizontal)
             }
-            .disabled(!registrationManager.isCodeNumberFormValid)
-            .opacity(registrationManager.isCodeNumberFormValid ? 1.0 : 0.5)
-            }
+            .disabled(!userRegistrationManager.isCodeNumberFormValid)
+            .opacity(userRegistrationManager.isCodeNumberFormValid ? 1.0 : 0.5)
         }
-   }
+    }
+}

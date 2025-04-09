@@ -10,11 +10,13 @@ import SwiftUI
 struct LoginView: View {
     
     @ObservedObject var stateManager: RobotManager
-    @StateObject private var registrationManager: RegistrationManager
+    @StateObject private var loginManager: LoginManager
+    @StateObject var registrationManager: UserRegistrationManager
     
     init(stateManager: RobotManager) {
         self.stateManager = stateManager
-        self._registrationManager = StateObject(wrappedValue: RegistrationManager(stateManager: stateManager))
+        _loginManager = StateObject(wrappedValue: LoginManager(stateManager: stateManager))
+        _registrationManager = StateObject(wrappedValue: UserRegistrationManager(stateManager: stateManager))
     }
     
     
@@ -25,28 +27,28 @@ struct LoginView: View {
                 .bold()
                 .padding(.bottom, 30)
             
-            FormField(fieldName: "Логин", fieldValue: $registrationManager.userLogin)
+            FormField(fieldName: "Логин", fieldValue: $loginManager.userLogin)
             RequirementText(
-                iconColor: registrationManager.isLoginLengthValid ? Color.secondary
+                iconColor: loginManager.isLoginLengthValid ? Color.secondary
                 : Color(red: 220/255, green: 220/255, blue: 220/255),
                 text: "Минимум 4 символа",
-                isStrikeThrough: registrationManager.isLoginLengthValid
+                isStrikeThrough: loginManager.isLoginLengthValid
             )
             .padding()
             
-            FormField(fieldName: "Пароль", fieldValue: $registrationManager.password, isSecure: true)
+            FormField(fieldName: "Пароль", fieldValue: $loginManager.password, isSecure: true)
             RequirementText(
                 iconName: "lock.open",
-                iconColor: registrationManager.isPasswordLengthValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
+                iconColor: loginManager.isPasswordLengthValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
                 text: "Минимум 8 символов",
-                isStrikeThrough: registrationManager.isPasswordLengthValid
+                isStrikeThrough: loginManager.isPasswordLengthValid
             )
             .padding()
             
             HStack {
-                Button(action: {registrationManager.saveLoginData(
-                    userLogin:registrationManager.userLogin,
-                    password:registrationManager.password)
+                Button(action: {loginManager.saveLoginData(
+                    userLogin:loginManager.userLogin,
+                    password:loginManager.password)
                 }) {
                     Text("Вход")
                         .font(.system(.body, design: .rounded))
@@ -55,8 +57,8 @@ struct LoginView: View {
                 }
             }
             .padding(.top, 50)
-            .disabled(!registrationManager.isLoginFormValid)
-            .opacity(registrationManager.isLoginFormValid ? 1.0 : 0.5)
+            .disabled(!loginManager.isLoginFormValid)
+            .opacity(loginManager.isLoginFormValid ? 1.0 : 0.5)
             
             
             HStack {
@@ -64,7 +66,7 @@ struct LoginView: View {
                     .font(.system(.body, design: .rounded))
                     .bold()
 
-                NavigationLink(destination: RegistrationFlowView(stateManager: stateManager, registrationManager: registrationManager)) {
+                NavigationLink(destination: RegistrationFlowView(stateManager: stateManager, userRegistrationManager: registrationManager)) {
                     Text("Зарегистрироваться")
                         .font(.system(.body, design: .rounded))
                         .bold()
