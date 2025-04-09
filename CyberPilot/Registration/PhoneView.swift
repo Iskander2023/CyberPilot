@@ -2,7 +2,7 @@
 //  BindingView.swift
 //  Robot_Controller
 //
-//  Created by Admin on 4/04/25.
+//  Created by Aleksandr Chumakov on 4/04/25.
 //
 import SwiftUI
 

@@ -11,26 +11,21 @@ import CoreData
 
 struct ContentView: View {
     @ObservedObject var stateManager: RobotManager
-    @StateObject private var registrationManager: RegistrationManager
     
     init(stateManager: RobotManager) {
         self.stateManager = stateManager
-        self._registrationManager = StateObject(wrappedValue: RegistrationManager(stateManager: stateManager))
     }
     
     var body: some View {
         NavigationView {
             VStack {
-//                if stateManager.isPhoneNumber == false {
-//                    PhoneView(stateManager: stateManager)
-                
                 if stateManager.isAuthenticated == false {
                     LoginView(stateManager: stateManager)
-                      
                 } else {
                     mainContentView
                 }
             }
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text(stateManager.userLogin)

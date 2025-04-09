@@ -161,10 +161,10 @@ class SocketController: UIViewController, SocketDelegate {
         view.backgroundColor = .white
         let stackView = UIStackView()
         
-       connectionTypeSegmentedControl.selectedSegmentIndex = 0
-       connectionTypeSegmentedControl.addTarget(self, action: #selector(connectionTypeChanged), for: .valueChanged)
+        connectionTypeSegmentedControl.selectedSegmentIndex = 0
+        connectionTypeSegmentedControl.addTarget(self, action: #selector(connectionTypeChanged), for: .valueChanged)
        
-       remoteURLTextField.placeholder = defaultRemoteHost
+        remoteURLTextField.placeholder = defaultRemoteHost
 
         hostTextField.text = defaulLocaltHost
         hostTextField.borderStyle = .roundedRect

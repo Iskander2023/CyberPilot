@@ -64,7 +64,7 @@ struct LoginView: View {
                     .font(.system(.body, design: .rounded))
                     .bold()
 
-                NavigationLink(destination: RegView(stateManager: stateManager)) {
+                NavigationLink(destination: RegistrationFlowView(stateManager: stateManager, registrationManager: registrationManager)) {
                     Text("Зарегистрироваться")
                         .font(.system(.body, design: .rounded))
                         .bold()

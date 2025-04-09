@@ -7,52 +7,93 @@
 import SwiftUI
 
 
-struct RegView: View {
+struct RegistrationFlowView: View {
     @ObservedObject var stateManager: RobotManager
-    @StateObject private var registrationManager: RegistrationManager
-
+    @ObservedObject var registrationManager: RegistrationManager
+    
     @State private var currentStep: RegistrationStep = .phoneInput
     @State private var isCaptchaVerified: Bool = false
     
-
+    @Environment(\.dismiss) private var dismiss
+    
+    
     enum RegistrationStep {
         case phoneInput
         case captcha
         case confirmationCode
     }
-
-    init(stateManager: RobotManager) {
-        self.stateManager = stateManager
-        self._registrationManager = StateObject(wrappedValue: RegistrationManager(stateManager: stateManager))
-    }
-
+    
     var body: some View {
-        VStack {
+        ZStack {
             switch currentStep {
-            case .phoneInput:
-                            PhoneView(stateManager: stateManager, registrationManager: registrationManager, onNextStep: {
-                                currentStep = .captcha
-                            })
-            case .captcha:
-                captchaView
-            case .confirmationCode:
-                confirmationCodeView
-            }
+                case .phoneInput:
+                    phoneView
+                        .transition(.move(edge: .leading))
+                case .captcha:
+                    captchaView
+                        .transition(.move(edge: .trailing))
+                case .confirmationCode:
+                    confirmationCodeView
+                        .transition(.move(edge: .trailing))
+                }
         }
-        .animation(.easeInOut, value: currentStep)
-        .transition(.slide)
+        .animation(.easeInOut(duration: 0.4), value: currentStep)
+        .padding()
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: Button("< Назад") {
+            goToPreviousStep()
+        })
     }
 
-    private var captchaView: some View {
-        CustomCaptchaView(isVerified: $isCaptchaVerified) {
-            currentStep = .confirmationCode
-        }
+    
+    private var phoneView: some View {
+        PhoneView(
+            stateManager: stateManager,
+            registrationManager: registrationManager,
+            onNextStep: {
+                withAnimation {
+                    currentStep = .captcha
+                }
+            }
+        )
     }
+
+    
+    private var captchaView: some View {
+        CustomCaptchaView(
+            isVerified: $isCaptchaVerified,
+            onSuccess: {
+                withAnimation {
+                    currentStep = .confirmationCode
+                }
+            }
+        )
+    }
+
 
     private var confirmationCodeView: some View {
-        ConfirmationCodeView(stateManager: stateManager, registrationManager: registrationManager)
+            ConfirmationCodeView(
+                stateManager: stateManager,
+                registrationManager: registrationManager
+            )}
+
+        
+    private func goToPreviousStep() {
+        withAnimation {
+            switch currentStep {
+            case .captcha:
+                currentStep = .phoneInput
+            case .confirmationCode:
+                currentStep = .captcha
+            case .phoneInput:
+                dismiss()
+            }
+        }
     }
+
 }
+
+
 
 
 struct FormField: View {

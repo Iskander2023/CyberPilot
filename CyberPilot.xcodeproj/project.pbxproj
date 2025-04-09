@@ -27,7 +27,7 @@
 		84AE14732DA147BA0094A792 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14722DA147BA0094A792 /* LoginView.swift */; };
 		84AE14752DA147D30094A792 /* PhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14742DA147D30094A792 /* PhoneView.swift */; };
 		84AE14772DA147F40094A792 /* RegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14762DA147F40094A792 /* RegistrationManager.swift */; };
-		84AE14792DA1480F0094A792 /* RegView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14782DA1480F0094A792 /* RegView.swift */; };
+		84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */; };
 		84AE147B2DA148590094A792 /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* RobotManager.swift */; };
 		84AE147D2DA1489E0094A792 /* StructObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147C2DA1489E0094A792 /* StructObjects.swift */; };
 /* End PBXBuildFile section */
@@ -55,7 +55,7 @@
 		84AE14722DA147BA0094A792 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		84AE14742DA147D30094A792 /* PhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneView.swift; sourceTree = "<group>"; };
 		84AE14762DA147F40094A792 /* RegistrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationManager.swift; sourceTree = "<group>"; };
-		84AE14782DA1480F0094A792 /* RegView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegView.swift; sourceTree = "<group>"; };
+		84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationFlowView.swift; sourceTree = "<group>"; };
 		84AE147A2DA148590094A792 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		84AE147C2DA1489E0094A792 /* StructObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructObjects.swift; sourceTree = "<group>"; };
 		9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.debug.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.debug.xcconfig"; sourceTree = "<group>"; };
@@ -180,7 +180,7 @@
 				84AE14722DA147BA0094A792 /* LoginView.swift */,
 				84AE14742DA147D30094A792 /* PhoneView.swift */,
 				84AE14762DA147F40094A792 /* RegistrationManager.swift */,
-				84AE14782DA1480F0094A792 /* RegView.swift */,
+				84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */,
 				8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */,
 				8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */,
 			);
@@ -302,7 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84AE14772DA147F40094A792 /* RegistrationManager.swift in Sources */,
-				84AE14792DA1480F0094A792 /* RegView.swift in Sources */,
+				84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				84AE147B2DA148590094A792 /* RobotManager.swift in Sources */,

@@ -61,6 +61,7 @@ struct CustomCaptchaView: View {
         .padding()
         .onAppear {
             withAnimation {
+                isVerified = false // Принудительный сброс
                 generateNewCaptcha()
             }
         }
@@ -76,6 +77,16 @@ struct CustomCaptchaView: View {
                 onSuccess?()
             }
         }
+    }
+    
+    private func resetState() {
+        isVerified = false
+        captchaText = ""
+        userInput = ""
+        attempts = 0
+        isButtonDisabled = false
+        remainingTime = 30
+        generateNewCaptcha()
     }
     
     

@@ -12,11 +12,6 @@ struct ConfirmationCodeView: View {
     @ObservedObject var stateManager: RobotManager
     @ObservedObject var registrationManager: RegistrationManager
     
-    init(stateManager: RobotManager, registrationManager: RegistrationManager) {
-        self.stateManager = stateManager
-        self.registrationManager = registrationManager
-    }
-    
     
     var body: some View {
         VStack {
