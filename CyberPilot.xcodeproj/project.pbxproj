@@ -35,6 +35,7 @@
 		84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */; };
 		84AE147B2DA148590094A792 /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* RobotManager.swift */; };
 		84AE147D2DA1489E0094A792 /* StructObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147C2DA1489E0094A792 /* StructObjects.swift */; };
+		84C9262F2DAFCC4F009B1FFA /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9262E2DAFCC4F009B1FFA /* VideoViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +70,7 @@
 		84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationFlowView.swift; sourceTree = "<group>"; };
 		84AE147A2DA148590094A792 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		84AE147C2DA1489E0094A792 /* StructObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructObjects.swift; sourceTree = "<group>"; };
+		84C9262E2DAFCC4F009B1FFA /* VideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
 		9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.debug.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.debug.xcconfig"; sourceTree = "<group>"; };
 		BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.release.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -164,6 +166,7 @@
 			isa = PBXGroup;
 			children = (
 				84AE145E2DA145D20094A792 /* WebVideoView.swift */,
+				84C9262E2DAFCC4F009B1FFA /* VideoViewController.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
 				8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */,
 				84AE144D2DA144C20094A792 /* ContentView.swift in Sources */,
+				84C9262F2DAFCC4F009B1FFA /* VideoViewController.swift in Sources */,
 				84AE14702DA147840094A792 /* BluetoothView.swift in Sources */,
 				8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */,
 				84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */,

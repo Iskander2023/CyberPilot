@@ -46,6 +46,7 @@ class SocketController: UIViewController, SocketDelegate {
     
     private let connectionTypeSegmentedControl = UISegmentedControl(items: ["Локальная сеть", "Удалённый сервер"])
     private let remoteURLTextField = UITextField()
+    let openVideoButton = UIButton(type: .system)
 
     
     override func viewDidLoad() {
@@ -96,6 +97,7 @@ class SocketController: UIViewController, SocketDelegate {
             if isConnected {
                 self.logger.info("Подключение к сокету ✅")
                 self.webView.loadVideoStream(urlString: "https://selekpann.tech:8889/camera_robot_4")
+                
                 self.activityIndicator.stopAnimating()
                 self.updateConnectionStatus(isConnected: true)
             } else {
@@ -158,6 +160,16 @@ class SocketController: UIViewController, SocketDelegate {
         remoteURLTextField.isHidden = isLocal
     }
     
+    
+    @objc private func openVideoScreen() {
+        let videoVC = VideoViewController()
+        videoVC.videoURL = "https://selekpann.tech:8889/camera_robot_4"
+        videoVC.socketController = self // Передаем SocketController в VideoViewController
+        videoVC.modalPresentationStyle = .fullScreen
+        present(videoVC, animated: true)
+    }
+
+    
     private func setupUI() {
         view.backgroundColor = .white
         let stackView = UIStackView()
@@ -189,17 +201,20 @@ class SocketController: UIViewController, SocketDelegate {
         statusLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         hostTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        
+        openVideoButton.setTitle("🎥", for: .normal)
+        openVideoButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        openVideoButton.addTarget(self, action: #selector(openVideoScreen), for: .touchUpInside)
 
         stackView.axis = .vertical
         stackView.spacing = 15
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        
         stackView.addArrangedSubview(connectionTypeSegmentedControl)
         stackView.addArrangedSubview(remoteURLTextField)
-        
         stackView.addArrangedSubview(hostTextField)
         stackView.addArrangedSubview(connectButton)
+        stackView.addArrangedSubview(openVideoButton)
         stackView.addArrangedSubview(controlPanel)
         
         setupControlButtons()
@@ -215,6 +230,7 @@ class SocketController: UIViewController, SocketDelegate {
         view.addSubview(statusLabel)
         view.addSubview(stackView)
         view.addSubview(controlPanel)
+        view.addSubview(openVideoButton)
         view.addSubview(disconnectButton)
 
         NSLayoutConstraint.activate([
@@ -266,6 +282,7 @@ class SocketController: UIViewController, SocketDelegate {
             self.disconnectButton.isHidden = !isConnected
             self.webView.isHidden = !isConnected
             self.controlPanel.isHidden = !isConnected
+            self.openVideoButton.isHidden = !isConnected
             
         }
     }
@@ -312,6 +329,40 @@ class SocketController: UIViewController, SocketDelegate {
         }
     }
     
+//    func connectToRemoteServer() {
+//        socketManager.connectSocket(urlString: defaultRemoteHost)
+//        logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
+//        socketManager.sendJSONCommand(serverCommand.registerServerMsg)
+//        socketManager.onMessageReceived = { [weak self] message in
+//            guard let self = self else { return }
+//            if let type = message["type"] as? String {
+//                switch type {
+//                case "robotList":
+//                    if let robots = message["robots"] as? [Any], robots.isEmpty {
+//                        self.logger.info("❌ Нет доступных роботов. Завершаю выполнение.")
+//                        return
+//                    } else {
+//                        self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
+//                        self.logger.info("✅ Зарегистрирован как оператор для robot1")
+//                    }
+//                case "error":
+//                    if let msg = message["message"] as? String {
+//                        self.logger.info("❌ Ошибка: \(msg)")
+//                        return
+//                    }
+//                default:
+//                    break
+//                }
+//            }
+//        }
+
+        // Даем серверу время, потом отправляем запрос на список роботов
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
+//        }
+//    }
+
+    
     @objc private func disconnectFromRobot() {
         self.hide_input_fields_for_parameters(true)
         NotificationCenter.default.removeObserver(self)
@@ -329,20 +380,20 @@ class SocketController: UIViewController, SocketDelegate {
         }
 
     
-    func startRepeatingCommand(action: @escaping () -> Void) {
+    @objc public func startRepeatingCommand(action: @escaping () -> Void) {
         commandTimer?.invalidate()
         commandTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
             action()
         }
     }
 
-    
-    @objc func stopSendingCommand() {
+
+    @objc public func stopSendingCommand() {
         commandTimer?.invalidate()
         commandTimer = nil
         stopMove()
     }
-    
+
     
     func showAlert(title: String, message: String) {
         DispatchQueue.main.async {
@@ -368,24 +419,16 @@ class SocketController: UIViewController, SocketDelegate {
     @objc func startTurningRight() { startRepeatingCommand { self.turnRight() } }
     
     
-    @objc func moveForward() {commandSender.moveForward()}
-    @objc func moveBackward() {commandSender.moveBackward()}
-    @objc func turnLeft() {commandSender.turnLeft()}
-    @objc func turnRight() {commandSender.turnRight()}
-    @objc func stopMove() {commandSender.stopTheMovement()}
+    @objc public func moveForward() {commandSender.moveForward()}
+    @objc public func moveBackward() {commandSender.moveBackward()}
+    @objc public func turnLeft() {commandSender.turnLeft()}
+    @objc public func turnRight() {commandSender.turnRight()}
+    @objc public func stopMove() {commandSender.stopTheMovement()}
 
     
     
     func setupControlButtons() {
         let buttonSize: CGFloat = 80
-
-        func addHoldAction(for button: UIButton, startAction: Selector, stopAction: Selector) {
-            button.addTarget(self, action: startAction, for: .touchDown)         // Запуск при нажатии
-            button.addTarget(self, action: stopAction, for: .touchUpInside)      // Остановка при отпускании внутри кнопки
-            button.addTarget(self, action: stopAction, for: .touchUpOutside)     // Остановка при уходе пальца с кнопки
-            button.addTarget(self, action: stopAction, for: .touchCancel)
-        }
-
 
         func styleButton(_ button: UIButton, systemImage: String) {
             button.setTitle("", for: .normal)
@@ -404,6 +447,14 @@ class SocketController: UIViewController, SocketDelegate {
         styleButton(backButton, systemImage: "arrow.down")
         styleButton(leftButton, systemImage: "arrow.left")
         styleButton(rightButton, systemImage: "arrow.right")
+        
+        
+        func addHoldAction(for button: UIButton, startAction: Selector, stopAction: Selector) {
+            button.addTarget(self, action: startAction, for: .touchDown)         // Запуск при нажатии
+            button.addTarget(self, action: stopAction, for: .touchUpInside)      // Остановка при отпускании внутри кнопки
+            button.addTarget(self, action: stopAction, for: .touchUpOutside)     // Остановка при уходе пальца с кнопки
+            button.addTarget(self, action: stopAction, for: .touchCancel)
+        }
 
         addHoldAction(for: forwardButton, startAction: #selector(startMovingForward), stopAction: #selector(stopSendingCommand))
         addHoldAction(for: backButton, startAction: #selector(startMovingBackward), stopAction: #selector(stopSendingCommand))

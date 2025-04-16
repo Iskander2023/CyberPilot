@@ -12,6 +12,7 @@ class SocketManager: NSObject, WebSocketDelegate {
     var socket: WebSocket!
     var isLocalConnected: Bool = false
     weak var delegate: SocketDelegate?
+    var onMessageReceived: (([String: Any]) -> Void)?
 
     
     override init() {
@@ -119,6 +120,16 @@ class SocketManager: NSObject, WebSocketDelegate {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: false)}
         case .text(let message):
             self.logger.info("Text message from a robot: \(message)")
+            
+            if let data = message.data(using: .utf8) {
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                        self.onMessageReceived?(json)
+                    }
+                } catch {
+                    self.logger.info("Ошибка парсинга JSON: \(error.localizedDescription)")
+                }
+            }
         case .binary(let data):
             self.logger.info("Received binary data: \(data)")
         case .pong(let pongData):

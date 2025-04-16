@@ -8,6 +8,7 @@ import WebKit
 import UIKit
 import os
 
+ //рабочая версия
 class WebVideoView: UIView {
     
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
