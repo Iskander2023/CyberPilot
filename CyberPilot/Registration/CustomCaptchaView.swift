@@ -79,7 +79,7 @@ struct CustomCaptchaView: View {
     }
 
     private func generateNewCaptcha() {
-        captchaText = String((0..<6).map { _ in characters.randomElement()! })
+        captchaText = String((0..<4).map { _ in characters.randomElement()! })
         userInput = ""
     }
 }

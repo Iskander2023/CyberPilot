@@ -2,7 +2,7 @@
 //  RobotStateManager.swift
 //  Robot_Controller
 //
-//  Created by Admin on 20/01/25.
+//  Created by Aleksandr Chumakov on 20/01/25.
 //
 
 import Foundation

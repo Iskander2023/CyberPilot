@@ -56,6 +56,7 @@ class SocketController: UIViewController, SocketDelegate {
         setupUI()
         setupWebView()
         updateUI()
+        connectionTypeChanged()
         NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
@@ -84,7 +85,7 @@ class SocketController: UIViewController, SocketDelegate {
     
     func socketManager(_ manager: SocketManager, didReceiveResponse response: String) {
         self.logger.info("Message from server: \(response)")
-        self.showAlert(title: "Message", message: response)
+        UserMessageUIKit.showAlert(on: self, title: "Ошибка", message: "Не удалось подключиться")
     }
 
     

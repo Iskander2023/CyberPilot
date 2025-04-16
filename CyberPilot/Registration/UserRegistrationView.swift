@@ -2,7 +2,7 @@
 //  UserRegistrationView.swift
 //  CyberPilot
 //
-//  Created by Admin on 9/04/25.
+//  Created by Aleksandr Chumakov on 9/04/25.
 //
 import SwiftUI
 
@@ -11,6 +11,8 @@ struct UserRegistarationView: View {
     
     @ObservedObject var stateManager: RobotManager
     @ObservedObject var userRegistrationManager: UserRegistrationManager
+    
+    @State private var registrationStatus: String = ""
     
     
     var body: some View {
@@ -57,10 +59,17 @@ struct UserRegistarationView: View {
                 .padding(.bottom, 50)
                 
                 
-                Button(action: {userRegistrationManager.saveRegistrationData(
-                    userLogin:userRegistrationManager.userLogin,
-                    password:userRegistrationManager.password)
-                }) {
+                Button(action: {
+                    Task {
+                        do {
+                            try await userRegistrationManager.registerUser(username: userRegistrationManager.userLogin, password: userRegistrationManager.password)
+                        } catch {
+                            print("Ошибка регистрации: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            )
+                                                                                    {
                     Text("Зарегистрироваться")
                         .font(.system(.body, design: .rounded))
                         .foregroundColor(.white)

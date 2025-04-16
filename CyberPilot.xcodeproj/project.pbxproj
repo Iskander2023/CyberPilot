@@ -12,6 +12,9 @@
 		8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */; };
 		8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */; };
 		8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FD2DA6830C00BF884F /* LoginManager.swift */; };
+		8480B7002DA6B29300BF884F /* FormFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FF2DA6B29300BF884F /* FormFieldView.swift */; };
+		8480B7022DA6B73B00BF884F /* UserMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B7012DA6B73B00BF884F /* UserMessage.swift */; };
+		8480B7052DA7AE0A00BF884F /* AllertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B7042DA7AE0A00BF884F /* AllertManager.swift */; };
 		84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE144A2DA144C20094A792 /* CyberPilotApp.swift */; };
 		84AE144D2DA144C20094A792 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE144C2DA144C20094A792 /* ContentView.swift */; };
 		84AE144F2DA144C50094A792 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84AE144E2DA144C50094A792 /* Assets.xcassets */; };
@@ -41,6 +44,10 @@
 		8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationCodeView.swift; sourceTree = "<group>"; };
 		8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRegistrationView.swift; sourceTree = "<group>"; };
 		8480B6FD2DA6830C00BF884F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
+		8480B6FF2DA6B29300BF884F /* FormFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormFieldView.swift; sourceTree = "<group>"; };
+		8480B7012DA6B73B00BF884F /* UserMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMessage.swift; sourceTree = "<group>"; };
+		8480B7042DA7AE0A00BF884F /* AllertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllertManager.swift; sourceTree = "<group>"; };
+		8480B7062DA94A9200BF884F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		84AE14472DA144C20094A792 /* CyberPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CyberPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84AE144A2DA144C20094A792 /* CyberPilotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyberPilotApp.swift; sourceTree = "<group>"; };
 		84AE144C2DA144C20094A792 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -96,6 +103,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		8480B7032DA6B74700BF884F /* UserMessage */ = {
+			isa = PBXGroup;
+			children = (
+				8480B7012DA6B73B00BF884F /* UserMessage.swift */,
+				8480B7042DA7AE0A00BF884F /* AllertManager.swift */,
+			);
+			path = UserMessage;
+			sourceTree = "<group>";
+		};
 		84AE143E2DA144C20094A792 = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +133,8 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				8480B7062DA94A9200BF884F /* Info.plist */,
+				8480B7032DA6B74700BF884F /* UserMessage */,
 				84AE14712DA1479C0094A792 /* Registration */,
 				84AE146C2DA1473C0094A792 /* Bluetooth */,
 				84AE14632DA146810094A792 /* WebSocket */,
@@ -189,6 +207,7 @@
 				8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */,
 				8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */,
 				8480B6FD2DA6830C00BF884F /* LoginManager.swift */,
+				8480B6FF2DA6B29300BF884F /* FormFieldView.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -307,7 +326,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8480B7052DA7AE0A00BF884F /* AllertManager.swift in Sources */,
+				8480B7022DA6B73B00BF884F /* UserMessage.swift in Sources */,
 				84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */,
+				8480B7002DA6B29300BF884F /* FormFieldView.swift in Sources */,
 				84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
@@ -466,6 +488,8 @@
 				DEVELOPMENT_TEAM = BDMG6CSUM5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CyberPilot/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Приложению требуется Bluetooth для подключения к устройствам";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -497,6 +521,8 @@
 				DEVELOPMENT_TEAM = BDMG6CSUM5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CyberPilot/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Приложению требуется Bluetooth для подключения к устройствам";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

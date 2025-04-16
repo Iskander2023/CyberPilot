@@ -2,7 +2,7 @@
 //  RegView.swift
 //  Robot_Controller
 //
-//  Created by Admin on 2/04/25.
+//  Created by Aleksandr Chumakov on 2/04/25.
 //
 import SwiftUI
 
@@ -10,12 +10,11 @@ import SwiftUI
 struct RegistrationFlowView: View {
     @ObservedObject var stateManager: RobotManager
     @ObservedObject var userRegistrationManager: UserRegistrationManager
-    
     @State private var currentStep: RegistrationStep = .phoneInput
-    //@State private var isCaptchaVerified: Bool = false
     
     @Environment(\.dismiss) private var dismiss
     
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
     enum RegistrationStep {
         case phoneInput
@@ -46,7 +45,8 @@ struct RegistrationFlowView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button("< Назад") {
             goToPreviousStep()
-        })
+            }
+        )
     }
 
     
@@ -66,6 +66,15 @@ struct RegistrationFlowView: View {
     private var captchaView: some View {
         CustomCaptchaView(
             onCaptchaStep: {
+                //отправка кода
+                let code = String(Int.random(in: 1000...9999))
+                self.logger.info("code: \(code)")
+                userRegistrationManager.generatedCode = code
+                    // 2. Отправка SMS
+                userRegistrationManager.sendVerificationCode(
+                        to: userRegistrationManager.phoneNumber,
+                        code: code
+                   )
                 withAnimation {
                     currentStep = .confirmationCode
                 }
@@ -86,6 +95,7 @@ struct RegistrationFlowView: View {
         )
     }
     
+    
     private var userRegistrationView: some View {
         UserRegistarationView(
             stateManager: stateManager,
@@ -96,6 +106,7 @@ struct RegistrationFlowView: View {
     private func goToPreviousStep() {
         withAnimation {
             switch currentStep {
+                
             case .captcha:
                 currentStep = .phoneInput
             case .confirmationCode:
@@ -104,61 +115,12 @@ struct RegistrationFlowView: View {
                 dismiss()
             case .userRegistrationInput:
                 currentStep = .confirmationCode
-            }
-        }
-    }
-
-}
-
-
-
-
-struct FormField: View {
-    var fieldName = ""
-    @Binding var fieldValue: String
-    
-    var isSecure = false
-    
-    var body: some View {
-        
-        VStack {
-            if isSecure {
-                SecureField(fieldName, text: $fieldValue)
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .padding(.horizontal)
                 
-            } else {
-                TextField(fieldName, text: $fieldValue)
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .padding(.horizontal)
             }
-
-            Divider()
-                .frame(height: 1)
-                .background(Color(red: 220/255, green: 220/255, blue: 220/255))
-                .padding(.horizontal)
-            
         }
     }
 }
 
-struct RequirementText: View {
-    
-    var iconName = "xmark.square"
-    var iconColor = Color(red: 220/255, green: 220/255, blue: 220/255)
-    
-    var text = ""
-    var isStrikeThrough = false
-    
-    var body: some View {
-        HStack {
-            Image(systemName: iconName)
-                .foregroundColor(iconColor)
-            Text(text)
-                .font(.system(.body, design: .rounded))
-                .foregroundColor(.secondary)
-                .strikethrough(isStrikeThrough)
-            Spacer()
-        }
-    }
-}
+
+
+

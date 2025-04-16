@@ -2,7 +2,7 @@
 //  RegManager.swift
 //  Robot_Controller
 //
-//  Created by Admin on 2/04/25.
+//  Created by Aleksandr Chumakov on 2/04/25.
 //
 
 import Foundation
@@ -10,15 +10,21 @@ import Combine
 
 class UserRegistrationManager: ObservableObject {
     
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    
     private weak var stateManager: RobotManager?
     
     @Published var userLogin = ""
     @Published var password = ""
     @Published var passwordConfirm = ""
-    @Published var phoneNumber = ""
+    @Published var phoneNumber = "7"
     @Published var confirmationCode = ""
-
-   
+    
+    private var confirmationCodeAttempts = 0
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    var generatedCode = String(Int.random(in: 1000...9999))
+    
     @Published var isLoginLengthValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
@@ -33,12 +39,12 @@ class UserRegistrationManager: ObservableObject {
     
     
     var isRegFormValid: Bool {
-            return isLoginLengthValid &&
-                   isPasswordLengthValid &&
-                   isPasswordCapitalLetter &&
-                   isPasswordConfirmValid
-        }
-    
+        return isLoginLengthValid &&
+               isPasswordLengthValid &&
+               isPasswordCapitalLetter &&
+               isPasswordConfirmValid
+    }
+
     
     var isLoginFormValid: Bool {
         return isLoginLengthValid && isPasswordLengthValid
@@ -99,7 +105,7 @@ class UserRegistrationManager: ObservableObject {
         $phoneNumber
             .receive(on: RunLoop.main)
             .map { password in
-                return password.count == 12
+                return password.count == 11
             }
             .assign(to: \.isPhoneNumberLenghtValid, on: self)
             .store(in: &cancellableSet)
@@ -131,35 +137,81 @@ class UserRegistrationManager: ObservableObject {
             .store(in: &cancellableSet)
     }
     
-    func saveRegistrationData(userLogin: String, password: String) {
-        print("saveRegistrationData")
-        print("userlogin", userLogin)
-        print("password", password)
-        stateManager?.userLogin = userLogin
-        stateManager?.isAuthenticated = true
-    }
-    
-
-    
-    func checkPhoneNumber(number: String) {
-        print("checkPhoneNumber", number)
-        stateManager?.isPhoneNumber = true // заглушка
-        stateManager?.isAuthenticated = true
-    }
     
     func checkConfirmationCode(code: String) {
-        print("code", code)
-        print(password, phoneNumber)
+        self.logger.info("code: \(code)")
         if code == "3333" {
-            print("Sucess")
+            self.logger.info("succes ")
+            isConfirmationCodeTrue = true
+        } else if generatedCode == code {
+            self.logger.info("generatedCode: \(generatedCode)")
+            self.logger.info("code: \(code)")
             isConfirmationCodeTrue = true
         } else {
-            print("не правильный код")
+            self.logger.info("code: \(code)")
+            self.logger.info("не правильный код: \(code)")
         }
     }
     
+    func registerUser(username: String, password: String) async throws {
+        guard let url = URL(string: "http://127.0.0.1:8000/users/register") else {
+            throw URLError(.badURL)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = [
+            "username": username,
+            "password": password
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+        await MainActor.run {
+            self.logger.info("User registered successfully!")
+            self.stateManager?.isAuthenticated = true
+            self.stateManager?.userLogin = username
+        }
+    }
+
+        
+        
+    func sendVerificationCode(to phoneNumber: String, code: String) {
+        let apiID = "5A5A737E-09E1-0492-ADD3-957B269669D8"
+        let message = "Ваш проверочный код: \(code)"
+        
+        let urlString = "https://sms.ru/sms/send?api_id=\(apiID)&to=\(phoneNumber)&msg=\(message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&json=1"
+        
+        guard let url = URL(string: urlString) else {
+            print("❌ Invalid URL")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("❌ Ошибка при отправке запроса: \(error.localizedDescription)")
+                return
+            }
+            guard let data = data else {
+                print("❌ Нет данных в ответе")
+                return
+            }
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    print("✅ Ответ от сервера: \(json)")
+                }
+            } catch {
+                print("❌ Ошибка при разборе JSON: \(error.localizedDescription)")
+            }
+        }.resume()
+    }
+    }
     
-    
-    
-}
+
 

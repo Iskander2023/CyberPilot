@@ -2,7 +2,7 @@
 //  ConfirmationCodeView.swift
 //  CyberPilot
 //
-//  Created by Admin on 7/04/25.
+//  Created by Aleksandr Chumakov on 7/04/25.
 //
 import SwiftUI
 
@@ -11,6 +11,7 @@ struct ConfirmationCodeView: View {
     
     @ObservedObject var stateManager: RobotManager
     @ObservedObject var userRegistrationManager: UserRegistrationManager
+    @EnvironmentObject var alertManager: AlertManager
     
     var onCodeStep: () -> Void
     
@@ -46,6 +47,8 @@ struct ConfirmationCodeView: View {
                 
                 if userRegistrationManager.isConfirmationCodeTrue && userRegistrationManager.isPhoneNumberFormValid {
                     onCodeStep()
+                } else {
+                    alertManager.showAlert(title: "Ошибка", message: "Не правильный код")
                 }
             }) {
                 Text("Подтвердить")
@@ -70,5 +73,6 @@ struct ConfirmationCodeView: View {
             .disabled(!userRegistrationManager.isCodeNumberFormValid)
             .opacity(userRegistrationManager.isCodeNumberFormValid ? 1.0 : 0.5)
         }
+        .globalAlert()
     }
 }
