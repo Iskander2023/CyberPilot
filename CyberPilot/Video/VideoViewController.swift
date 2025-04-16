@@ -13,6 +13,8 @@ class VideoViewController: UIViewController {
     var videoURL: String?
     var webView: WKWebView!
     var socketController: SocketController?
+    var commandSender: CommandSender?
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +23,10 @@ class VideoViewController: UIViewController {
         loadVideoStream()
         setupCloseButton()
         setupControlButtons()
+        guard commandSender != nil else {
+                print("⚠️ CommandSender не был передан!")
+                return
+            }
     }
 
     private func setupWebView() {
@@ -66,7 +72,8 @@ class VideoViewController: UIViewController {
     }
 
     private func setupControlButtons() {
-        func createControlButton(title: String, startAction: Selector) -> UIButton {
+        
+        func createControlButton(title: String, startAction: Selector, stopAction: Selector) -> UIButton {
             let button = UIButton(type: .system)
             button.setTitle(title, for: .normal)
             button.titleLabel?.font = .systemFont(ofSize: 28)
@@ -74,37 +81,38 @@ class VideoViewController: UIViewController {
             button.setTitleColor(.white, for: .normal)
             button.layer.cornerRadius = 30
             button.translatesAutoresizingMaskIntoConstraints = false
-            
+
             button.addTarget(self, action: startAction, for: .touchDown)
-            button.addTarget(self, action: #selector(stopSendingCommand), for: .touchUpInside)
-            button.addTarget(self, action: #selector(stopSendingCommand), for: .touchUpOutside)
-            button.addTarget(self, action: #selector(stopSendingCommand), for: .touchCancel)
-            
+            button.addTarget(self, action: stopAction, for: .touchUpInside)
+            button.addTarget(self, action: stopAction, for: .touchUpOutside)
+            button.addTarget(self, action: stopAction, for: .touchCancel)
+
             return button
         }
 
+
         // Вперёд
-        let forwardButton = createControlButton(title: "⬆️", startAction: #selector(startMovingForward))
+        let forwardButton = createControlButton(title: "⬆️", startAction: #selector(startMovingForward), stopAction: #selector(stopMovingForward))
         view.addSubview(forwardButton)
         NSLayoutConstraint.activate([
-            forwardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            forwardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60),
             forwardButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -40),
             forwardButton.widthAnchor.constraint(equalToConstant: 60),
             forwardButton.heightAnchor.constraint(equalToConstant: 60)
         ])
 
         // Назад
-        let backwardButton = createControlButton(title: "⬇️", startAction: #selector(startMovingBackward))
+        let backwardButton = createControlButton(title: "⬇️", startAction: #selector(startMovingBackward), stopAction: #selector(stopMovingBackward))
         view.addSubview(backwardButton)
         NSLayoutConstraint.activate([
-            backwardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            backwardButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 60),
             backwardButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40),
             backwardButton.widthAnchor.constraint(equalToConstant: 60),
             backwardButton.heightAnchor.constraint(equalToConstant: 60)
         ])
 
         // Влево
-        let leftButton = createControlButton(title: "⬅️", startAction: #selector(startTurningLeft))
+        let leftButton = createControlButton(title: "⬅️", startAction: #selector(startTurningLeft), stopAction: #selector(stopTurningLeft))
         view.addSubview(leftButton)
         NSLayoutConstraint.activate([
             leftButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60),
@@ -114,7 +122,7 @@ class VideoViewController: UIViewController {
         ])
 
         // Вправо
-        let rightButton = createControlButton(title: "➡️", startAction: #selector(startTurningRight))
+        let rightButton = createControlButton(title: "➡️", startAction: #selector(startTurningRight), stopAction: #selector(stopTurningRight))
         view.addSubview(rightButton)
         NSLayoutConstraint.activate([
             rightButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -60),
@@ -124,27 +132,20 @@ class VideoViewController: UIViewController {
         ])
     }
 
-    // MARK: - Control Methods
-    @objc private func startMovingForward() {
-        socketController?.startRepeatingCommand { self.socketController?.moveForward() }
-    }
-    
-    @objc private func startMovingBackward() {
-        socketController?.startRepeatingCommand { self.socketController?.moveBackward() }
-    }
-    
-    @objc private func startTurningLeft() {
-        socketController?.startRepeatingCommand { self.socketController?.turnLeft() }
-    }
-    
-    @objc private func startTurningRight() {
-        socketController?.startRepeatingCommand { self.socketController?.turnRight() }
-    }
-    
-    @objc private func stopSendingCommand() {
-        socketController?.stopSendingCommand()
-        socketController?.stopMove()
-    }
+    @objc func startMovingForward() { commandSender?.moveForward(isPressed: true) }
+    @objc func stopMovingForward() { commandSender?.moveForward(isPressed: false) }
+
+    @objc func startMovingBackward() { commandSender?.moveBackward(isPressed: true) }
+    @objc func stopMovingBackward() { commandSender?.moveBackward(isPressed: false) }
+
+    @objc func startTurningLeft() { commandSender?.turnLeft(isPressed: true) }
+    @objc func stopTurningLeft() { commandSender?.turnLeft(isPressed: false) }
+
+    @objc func startTurningRight() { commandSender?.turnRight(isPressed: true) }
+    @objc func stopTurningRight() { commandSender?.turnRight(isPressed: false) }
+
+    @objc func stopMove() { commandSender?.stopTheMovement() }
+
     
     @objc private func close() {
         dismiss(animated: true)

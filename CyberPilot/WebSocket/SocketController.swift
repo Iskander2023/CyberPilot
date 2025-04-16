@@ -164,7 +164,8 @@ class SocketController: UIViewController, SocketDelegate {
     @objc private func openVideoScreen() {
         let videoVC = VideoViewController()
         videoVC.videoURL = "https://selekpann.tech:8889/camera_robot_4"
-        videoVC.socketController = self // Передаем SocketController в VideoViewController
+        //videoVC.socketController = self
+        videoVC.commandSender = self.commandSender// Передаем SocketController в VideoViewController
         videoVC.modalPresentationStyle = .fullScreen
         present(videoVC, animated: true)
     }
@@ -391,7 +392,7 @@ class SocketController: UIViewController, SocketDelegate {
     @objc public func stopSendingCommand() {
         commandTimer?.invalidate()
         commandTimer = nil
-        stopMove()
+        //stopMove()
     }
 
     
@@ -413,19 +414,20 @@ class SocketController: UIViewController, SocketDelegate {
         self.present(alert, animated: true, completion: nil)
     }
     
-    @objc func startMovingForward() { startRepeatingCommand { self.moveForward() } }
-    @objc func startMovingBackward() { startRepeatingCommand { self.moveBackward() } }
-    @objc func startTurningLeft() { startRepeatingCommand { self.turnLeft() } }
-    @objc func startTurningRight() { startRepeatingCommand { self.turnRight() } }
+    @objc func stopMove() { commandSender.stopTheMovement() }
     
-    
-    @objc public func moveForward() {commandSender.moveForward()}
-    @objc public func moveBackward() {commandSender.moveBackward()}
-    @objc public func turnLeft() {commandSender.turnLeft()}
-    @objc public func turnRight() {commandSender.turnRight()}
-    @objc public func stopMove() {commandSender.stopTheMovement()}
+    @objc func startMovingForward() { commandSender.moveForward(isPressed: true) }
+    @objc func stopMovingForward() { commandSender.moveForward(isPressed: false) }
 
-    
+    @objc func startMovingBackward() { commandSender.moveBackward(isPressed: true) }
+    @objc func stopMovingBackward() { commandSender.moveBackward(isPressed: false) }
+
+    // Повороты влево/вправо
+    @objc func startTurningLeft() { commandSender.turnLeft(isPressed: true) }
+    @objc func stopTurningLeft() { commandSender.turnLeft(isPressed: false) }
+
+    @objc func startTurningRight() { commandSender.turnRight(isPressed: true) }
+    @objc func stopTurningRight() { commandSender.turnRight(isPressed: false) }
     
     func setupControlButtons() {
         let buttonSize: CGFloat = 80
@@ -447,21 +449,31 @@ class SocketController: UIViewController, SocketDelegate {
         styleButton(backButton, systemImage: "arrow.down")
         styleButton(leftButton, systemImage: "arrow.left")
         styleButton(rightButton, systemImage: "arrow.right")
-        
-        
+
         func addHoldAction(for button: UIButton, startAction: Selector, stopAction: Selector) {
-            button.addTarget(self, action: startAction, for: .touchDown)         // Запуск при нажатии
-            button.addTarget(self, action: stopAction, for: .touchUpInside)      // Остановка при отпускании внутри кнопки
-            button.addTarget(self, action: stopAction, for: .touchUpOutside)     // Остановка при уходе пальца с кнопки
-            button.addTarget(self, action: stopAction, for: .touchCancel)
+            button.addTarget(self, action: startAction, for: .touchDown)         // Нажатие
+            button.addTarget(self, action: stopAction, for: .touchUpInside)      // Отпускание внутри
+            button.addTarget(self, action: stopAction, for: .touchUpOutside)     // Отпускание за пределами
+            button.addTarget(self, action: stopAction, for: .touchCancel)        // Прерывание касания
         }
 
-        addHoldAction(for: forwardButton, startAction: #selector(startMovingForward), stopAction: #selector(stopSendingCommand))
-        addHoldAction(for: backButton, startAction: #selector(startMovingBackward), stopAction: #selector(stopSendingCommand))
-        addHoldAction(for: leftButton, startAction: #selector(startTurningLeft), stopAction: #selector(stopSendingCommand))
-        addHoldAction(for: rightButton, startAction: #selector(startTurningRight), stopAction: #selector(stopSendingCommand))
+        addHoldAction(for: forwardButton,
+                      startAction: #selector(startMovingForward),
+                      stopAction: #selector(stopMovingForward))
 
-        stopTheMovementButton.addTarget(self, action: #selector(stopMove), for: .touchUpInside)
+        addHoldAction(for: backButton,
+                      startAction: #selector(startMovingBackward),
+                      stopAction: #selector(stopMovingBackward))
+
+        addHoldAction(for: leftButton,
+                      startAction: #selector(startTurningLeft),
+                      stopAction: #selector(stopTurningLeft))
+
+        addHoldAction(for: rightButton,
+                      startAction: #selector(startTurningRight),
+                      stopAction: #selector(stopTurningRight))
+
+        //stopTheMovementButton.addTarget(self, action: #selector(stopMove), for: .touchUpInside)
 
         let row1 = UIStackView(arrangedSubviews: [UIView(), forwardButton, UIView()])
         row1.axis = .horizontal
@@ -481,9 +493,9 @@ class SocketController: UIViewController, SocketDelegate {
         controlPanel.addArrangedSubview(row1)
         controlPanel.addArrangedSubview(row2)
         controlPanel.addArrangedSubview(row3)
-
-        }
     }
+
+}
 
 
 enum ConnectionType {
