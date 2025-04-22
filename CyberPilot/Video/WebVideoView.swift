@@ -50,13 +50,13 @@ class WebVideoView: UIView {
     func playVideo() {
         let playScript = "document.querySelectorAll('video').forEach(v => v.play());"
         webView.evaluateJavaScript(playScript, completionHandler: nil)
-        logger.info(" Запущено")
+        logger.info("Видео на основоном экране запущено")
     }
 
     
     func pauseVideo() {
         webView.pauseAllMediaPlayback()
-        logger.info(" Пауза")
+        logger.info("Пауза")
     }
     
     func stopVideo() {

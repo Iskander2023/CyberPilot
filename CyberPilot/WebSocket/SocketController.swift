@@ -46,6 +46,8 @@ class SocketController: UIViewController, SocketDelegate {
     
     private let connectionTypeSegmentedControl = UISegmentedControl(items: ["Локальная сеть", "Удалённый сервер"])
     private let remoteURLTextField = UITextField()
+    
+    let videoVC = VideoViewController()
     let openVideoButton = UIButton(type: .system)
 
     
@@ -76,6 +78,9 @@ class SocketController: UIViewController, SocketDelegate {
     
     func didFailToResolveIP(error: String?) {
         print("Ошибка: \(error ?? "Unknown")")
+        self.updateConnectionStatus(isConnected: false)
+        self.hide_input_fields_for_parameters(true)
+        self.activityIndicator.stopAnimating()
     }
     
     @objc func appDidEnterBackground() {
@@ -93,15 +98,17 @@ class SocketController: UIViewController, SocketDelegate {
     func socketManager(_ manager: SocketManager, didUpdateConnectionStatus isConnected: Bool) {
         DispatchQueue.main.async {
             self.isConnected = isConnected
-            
             if isConnected {
                 self.logger.info("Подключение к сокету ✅")
                 self.webView.loadVideoStream(urlString: "https://selekpann.tech:8889/camera_robot_4")
-                
+                self.commandSender.server_robot_avialable = true
                 self.activityIndicator.stopAnimating()
                 self.updateConnectionStatus(isConnected: true)
             } else {
                 self.logger.info("Подключение к сокету ❌")
+                self.commandSender.server_robot_avialable = false
+                self.commandSender.stopIdleStateSending()
+                self.commandSender.stopRepeatCommandSending()
                 self.activityIndicator.stopAnimating()
                 self.updateConnectionStatus(isConnected: false)
                 self.hide_input_fields_for_parameters(true)
@@ -162,10 +169,8 @@ class SocketController: UIViewController, SocketDelegate {
     
     
     @objc private func openVideoScreen() {
-        let videoVC = VideoViewController()
         videoVC.videoURL = "https://selekpann.tech:8889/camera_robot_4"
-        //videoVC.socketController = self
-        videoVC.commandSender = self.commandSender// Передаем SocketController в VideoViewController
+        videoVC.commandSender = self.commandSender
         videoVC.modalPresentationStyle = .fullScreen
         present(videoVC, animated: true)
     }
@@ -204,7 +209,7 @@ class SocketController: UIViewController, SocketDelegate {
         hostTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
         openVideoButton.setTitle("🎥", for: .normal)
-        openVideoButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        openVideoButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         openVideoButton.addTarget(self, action: #selector(openVideoScreen), for: .touchUpInside)
 
         stackView.axis = .vertical
@@ -319,49 +324,36 @@ class SocketController: UIViewController, SocketDelegate {
     
     func connectToRemoteServer() {
         socketManager.connectSocket(urlString: defaultRemoteHost)
-        self.logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
+        logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
         socketManager.sendJSONCommand(serverCommand.registerServerMsg)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
-                self.logger.info("Зарегистрирован как оператор для robot1")
+        socketManager.onMessageReceived = { [weak self] message in
+            guard let self = self else { return }
+            if let type = message["type"] as? String {
+                switch type {
+                case "robotList":
+                    if let robots = message["robots"] as? [Any], robots.isEmpty {
+                        self.logger.info("❌ Нет доступных роботов. Завершаю выполнение.")
+                        isConnected = false  // вернуть, отключено для теста
+                        disconnectFromRobot() // вернуть, отключено для теста
+                    } else {
+                        self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
+                        isConnected = true // вернуть, отключено для теста
+                        self.logger.info("✅ Зарегистрирован как оператор для robot1")
+                    }
+                case "error":
+                    if let msg = message["message"] as? String {
+                        self.logger.info("❌ Ошибка: \(msg)")
+                        return
+                    }
+                default:
+                    break
+                }
             }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
+        }
     }
-    
-//    func connectToRemoteServer() {
-//        socketManager.connectSocket(urlString: defaultRemoteHost)
-//        logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
-//        socketManager.sendJSONCommand(serverCommand.registerServerMsg)
-//        socketManager.onMessageReceived = { [weak self] message in
-//            guard let self = self else { return }
-//            if let type = message["type"] as? String {
-//                switch type {
-//                case "robotList":
-//                    if let robots = message["robots"] as? [Any], robots.isEmpty {
-//                        self.logger.info("❌ Нет доступных роботов. Завершаю выполнение.")
-//                        return
-//                    } else {
-//                        self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
-//                        self.logger.info("✅ Зарегистрирован как оператор для robot1")
-//                    }
-//                case "error":
-//                    if let msg = message["message"] as? String {
-//                        self.logger.info("❌ Ошибка: \(msg)")
-//                        return
-//                    }
-//                default:
-//                    break
-//                }
-//            }
-//        }
-
-        // Даем серверу время, потом отправляем запрос на список роботов
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
-//        }
-//    }
 
     
     @objc private func disconnectFromRobot() {
@@ -379,22 +371,6 @@ class SocketController: UIViewController, SocketDelegate {
     func updateConnectionStatus(isConnected: Bool) {
             statusIndicator.backgroundColor = isConnected ? .green : .red
         }
-
-    
-    @objc public func startRepeatingCommand(action: @escaping () -> Void) {
-        commandTimer?.invalidate()
-        commandTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
-            action()
-        }
-    }
-
-
-    @objc public func stopSendingCommand() {
-        commandTimer?.invalidate()
-        commandTimer = nil
-        //stopMove()
-    }
-
     
     func showAlert(title: String, message: String) {
         DispatchQueue.main.async {
@@ -473,7 +449,6 @@ class SocketController: UIViewController, SocketDelegate {
                       startAction: #selector(startTurningRight),
                       stopAction: #selector(stopTurningRight))
 
-        //stopTheMovementButton.addTarget(self, action: #selector(stopMove), for: .touchUpInside)
 
         let row1 = UIStackView(arrangedSubviews: [UIView(), forwardButton, UIView()])
         row1.axis = .horizontal

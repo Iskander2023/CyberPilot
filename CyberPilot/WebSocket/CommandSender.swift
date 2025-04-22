@@ -11,6 +11,7 @@ import Foundation
 final class CommandSender {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private weak var socketManager: SocketManager?
+    var server_robot_avialable = false
     
     private var currentKeysState: [String: Bool] = [
         "w": false,
@@ -29,7 +30,6 @@ final class CommandSender {
 
     init(socketManager: SocketManager) {
         self.socketManager = socketManager
-        startIdleStateSending()
     }
     
     private func updateKey(_ key: String, isPressed: Bool) {
@@ -48,12 +48,18 @@ final class CommandSender {
 
         sendCurrentState()
         
+        guard server_robot_avialable else {
+            logger.info("⛔️ Робот недоступен, команды не отправляются")
+            return
+        }
         // Если ни одна кнопка не нажата, запускаем таймер для отправки состояния с false
-        if !isAnyKeyPressed {
-            startIdleStateSending()
-        } else {
-            stopIdleStateSending()
-            startRepeatCommandSending() // Запуск отправки с интервалом 0.2 секунды для зажатых кнопок
+        if self.server_robot_avialable {
+            if !isAnyKeyPressed {
+                startIdleStateSending()
+            } else {
+                stopIdleStateSending()
+                startRepeatCommandSending() // Запуск отправки с интервалом 0.2 секунды для зажатых кнопок
+            }
         }
     }
 
@@ -78,19 +84,19 @@ final class CommandSender {
 
     // MARK: - Таймер для отправки пустого состояния (когда кнопки не нажаты)
     
-    private func startIdleStateSending() {
+    func startIdleStateSending() {
         // Прерываем старый таймер, если он есть
         stopIdleStateSending()
         
         // Настроим таймер, который будет отправлять команду с пустыми кнопками каждые 0.5 секунды
-        idleTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+        idleTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             self?.sendIdleState()
         }
         
         RunLoop.current.add(idleTimer!, forMode: .common)
     }
 
-    private func stopIdleStateSending() {
+    func stopIdleStateSending() {
         idleTimer?.invalidate()
         idleTimer = nil
     }
@@ -112,7 +118,7 @@ final class CommandSender {
         RunLoop.current.add(repeatTimer!, forMode: .common)
     }
 
-    private func stopRepeatCommandSending() {
+    func stopRepeatCommandSending() {
         repeatTimer?.invalidate()
         repeatTimer = nil
     }

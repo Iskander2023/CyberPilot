@@ -36,6 +36,9 @@
 		84AE147B2DA148590094A792 /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* RobotManager.swift */; };
 		84AE147D2DA1489E0094A792 /* StructObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147C2DA1489E0094A792 /* StructObjects.swift */; };
 		84C9262F2DAFCC4F009B1FFA /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9262E2DAFCC4F009B1FFA /* VideoViewController.swift */; };
+		84E5F1902DB134D300D41A4F /* TouchPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F18F2DB134D300D41A4F /* TouchPadView.swift */; };
+		84E5F1922DB13AC700D41A4F /* DirectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1912DB13AC700D41A4F /* DirectionOverlayView.swift */; };
+		84E5F1942DB1517C00D41A4F /* Perspective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1932DB1517C00D41A4F /* Perspective.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +74,9 @@
 		84AE147A2DA148590094A792 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		84AE147C2DA1489E0094A792 /* StructObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructObjects.swift; sourceTree = "<group>"; };
 		84C9262E2DAFCC4F009B1FFA /* VideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
+		84E5F18F2DB134D300D41A4F /* TouchPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadView.swift; sourceTree = "<group>"; };
+		84E5F1912DB13AC700D41A4F /* DirectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionOverlayView.swift; sourceTree = "<group>"; };
+		84E5F1932DB1517C00D41A4F /* Perspective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perspective.swift; sourceTree = "<group>"; };
 		9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.debug.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.debug.xcconfig"; sourceTree = "<group>"; };
 		BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.release.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -167,6 +173,9 @@
 			children = (
 				84AE145E2DA145D20094A792 /* WebVideoView.swift */,
 				84C9262E2DAFCC4F009B1FFA /* VideoViewController.swift */,
+				84E5F18F2DB134D300D41A4F /* TouchPadView.swift */,
+				84E5F1912DB13AC700D41A4F /* DirectionOverlayView.swift */,
+				84E5F1932DB1517C00D41A4F /* Perspective.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -332,12 +341,14 @@
 				8480B7052DA7AE0A00BF884F /* AllertManager.swift in Sources */,
 				8480B7022DA6B73B00BF884F /* UserMessage.swift in Sources */,
 				84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */,
+				84E5F1922DB13AC700D41A4F /* DirectionOverlayView.swift in Sources */,
 				8480B7002DA6B29300BF884F /* FormFieldView.swift in Sources */,
 				84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				84AE147B2DA148590094A792 /* RobotManager.swift in Sources */,
 				84AE145F2DA145D20094A792 /* WebVideoView.swift in Sources */,
+				84E5F1942DB1517C00D41A4F /* Perspective.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */,
 				84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */,
@@ -351,6 +362,7 @@
 				84AE14702DA147840094A792 /* BluetoothView.swift in Sources */,
 				8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */,
 				84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */,
+				84E5F1902DB134D300D41A4F /* TouchPadView.swift in Sources */,
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
 				84AE14692DA147020094A792 /* SocketManager.swift in Sources */,

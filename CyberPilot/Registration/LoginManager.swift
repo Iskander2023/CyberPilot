@@ -12,8 +12,8 @@ class LoginManager: ObservableObject {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private weak var stateManager: RobotManager?
     
-    @Published var userLogin = ""
-    @Published var password = ""
+    @Published var userLogin = "User"
+    @Published var password = "Ssssssss"
     
     @Published var isLoginLengthValid = false
     @Published var isPasswordLengthValid = false

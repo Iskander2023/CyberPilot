@@ -13,6 +13,7 @@ struct LoginView: View {
     @StateObject var registrationManager: UserRegistrationManager
     @State private var isLoginSuccessful = false
 
+
     init(stateManager: RobotManager) {
         self.stateManager = stateManager
         _loginManager = StateObject(wrappedValue: LoginManager(stateManager: stateManager))
