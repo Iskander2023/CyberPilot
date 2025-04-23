@@ -4,15 +4,18 @@
 //
 //  Created by Aleksandr Chumakov on 18/03/25.
 //
-import UIKit
 import Starscream
+import Combine
+
 
 class SocketManager: NSObject, WebSocketDelegate {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     var socket: WebSocket!
-    var isLocalConnected: Bool = false
+    var isConnected: Bool = false
     weak var delegate: SocketDelegate?
     var onMessageReceived: (([String: Any]) -> Void)?
+    let connectionStatus = PassthroughSubject<Bool, Never>()
+    let receivedMessages = PassthroughSubject<[String: Any], Never>()
 
     
     override init() {
@@ -97,8 +100,8 @@ class SocketManager: NSObject, WebSocketDelegate {
 
     
     func sendCommand(_ command: String) {
-        if isLocalConnected {
-            self.logger.info("Отправка команды: \(command)")
+        if isConnected {
+            //self.logger.info("Отправка команды: \(command)")
             socket.write(string: command)
         } else {
             self.logger.info("Ошибка: соединение не установлено.")
@@ -109,15 +112,19 @@ class SocketManager: NSObject, WebSocketDelegate {
     func didReceive(event: WebSocketEvent, client: WebSocketClient) {
         switch event {
         case .connected(let headers):
-            isLocalConnected = true
+            isConnected = true
             self.logger.info("Connection established. Headers: \(headers)")
             DispatchQueue.main.async {
-                self.delegate?.socketManager(self, didUpdateConnectionStatus: true)}
+                self.delegate?.socketManager(self, didUpdateConnectionStatus: true)
+                self.connectionStatus.send(true)
+            }
         case .disconnected(let reason, let code):
-            isLocalConnected = false
+            isConnected = false
             self.logger.info("Connection closed. Reason: \(reason), Код: \(code)")
             DispatchQueue.main.async {
-                self.delegate?.socketManager(self, didUpdateConnectionStatus: false)}
+                self.delegate?.socketManager(self, didUpdateConnectionStatus: false)
+                self.connectionStatus.send(false)
+            }
         case .text(let message):
             self.logger.info("Text message from a robot: \(message)")
             
@@ -125,6 +132,7 @@ class SocketManager: NSObject, WebSocketDelegate {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                         self.onMessageReceived?(json)
+                        self.receivedMessages.send(json)
                     }
                 } catch {
                     self.logger.info("Ошибка парсинга JSON: \(error.localizedDescription)")
@@ -144,13 +152,13 @@ class SocketManager: NSObject, WebSocketDelegate {
         case .reconnectSuggested(let shouldReconnect):
             self.logger.info("Reconnection suggested: \(shouldReconnect)")
         case .cancelled:
-            isLocalConnected = false
+            isConnected = false
             self.logger.info("Connection canceled.")
             DispatchQueue.main.async {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: false)
             }
         case .peerClosed:
-            isLocalConnected = false
+            isConnected = false
             self.logger.info("Connection closed")
             DispatchQueue.main.async {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: false)

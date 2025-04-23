@@ -2,478 +2,1050 @@
 //  SSHConnector
 //  Created by Aleksandr Chumakov on 18.03.2025.
 
+import SwiftUI
+import Combine
+import WebKit
 
-import UIKit
-import os
 
-
-class SocketController: UIViewController, SocketDelegate {
-    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    let prefix = "ws://"
-    let serverCommand = ServerRegisterCommand()
-    var webView: WebVideoView!
-    var socketManager: SocketManager!
-    var stateManager: RobotManager!
-    
-    var isConnected = false
-    
-    var defaulLocaltHost = "robot3.local"
-    var defaultRemoteHost = "ws://selekpann.tech:2000"
-    var robotIP: String?
-    
-    private var commandSender: CommandSender!
-    private var connectionType: ConnectionType!
-    private var commandTimer: Timer?
+final class SocketController: ObservableObject {
+    @Published var isConnected = false
+    @Published var host = "robot3.local"
+    @Published var remoteURL = "ws://selekpann.tech:2000"
+    @Published var robotSuffix = ""
+    @Published var isLoading = false
+    @Published var showError = false
+    @Published var errorMessage = ""
+    @Published var videoURL = "https://selekpann.tech:8889/camera_robot_4"
     
 
-    let hostTextField = UITextField()
+    private let socketManager = SocketManager()
+    public let commandSender: CommandSender
+    private var cancellables = Set<AnyCancellable>()
     
-    let connectButton = UIButton(type: .system)
-    let disconnectButton = UIButton(type: .system)
-    let controlPanel = UIStackView()
-    
-    let forwardButton = UIButton(type: .system)
-    let backButton = UIButton(type: .system)
-    let leftButton = UIButton(type: .system)
-    let rightButton = UIButton(type: .system)
-    let stopTheMovementButton = UIButton(type: .system)
-    
-    let activityIndicator = UIActivityIndicatorView(style: .large)
-    
-    let statusLabel = UILabel()
-    let statusIndicator = UIView()
-    
-    
-    private let connectionTypeSegmentedControl = UISegmentedControl(items: ["Локальная сеть", "Удалённый сервер"])
-    private let remoteURLTextField = UITextField()
-    
-    let videoVC = VideoViewController()
-    let openVideoButton = UIButton(type: .system)
-
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        socketManager = SocketManager()
-        socketManager.delegate = self
-        commandSender = CommandSender(socketManager: socketManager)
-        setupUI()
-        setupWebView()
-        updateUI()
-        connectionTypeChanged()
-        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+    init() {
+        self.commandSender = CommandSender(socketManager: socketManager)
+        setupSocketObservers()
     }
     
-    
-    init(stateManager: RobotManager) {
-        self.stateManager = stateManager
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-
-    func didResolveRobotIP(_ ip: String) {
-        print("Получен IP: \(ip)")
-        robotIP = ip
-    }
-    
-    
-    func didFailToResolveIP(error: String?) {
-        print("Ошибка: \(error ?? "Unknown")")
-        self.updateConnectionStatus(isConnected: false)
-        self.hide_input_fields_for_parameters(true)
-        self.activityIndicator.stopAnimating()
-    }
-    
-    @objc func appDidEnterBackground() {
-        disconnectFromRobot()
-        self.logger.info("⚠️ Приложение перешло в фон")
-    }
-    
-    
-    func socketManager(_ manager: SocketManager, didReceiveResponse response: String) {
-        self.logger.info("Message from server: \(response)")
-        UserMessageUIKit.showAlert(on: self, title: "Ошибка", message: "Не удалось подключиться")
-    }
-
-    
-    func socketManager(_ manager: SocketManager, didUpdateConnectionStatus isConnected: Bool) {
-        DispatchQueue.main.async {
-            self.isConnected = isConnected
-            if isConnected {
-                self.logger.info("Подключение к сокету ✅")
-                self.webView.loadVideoStream(urlString: "https://selekpann.tech:8889/camera_robot_4")
-                self.commandSender.server_robot_avialable = true
-                self.activityIndicator.stopAnimating()
-                self.updateConnectionStatus(isConnected: true)
-            } else {
-                self.logger.info("Подключение к сокету ❌")
-                self.commandSender.server_robot_avialable = false
-                self.commandSender.stopIdleStateSending()
-                self.commandSender.stopRepeatCommandSending()
-                self.activityIndicator.stopAnimating()
-                self.updateConnectionStatus(isConnected: false)
-                self.hide_input_fields_for_parameters(true)
-            }
-            self.updateUI()
-        }
-    }
-    
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    func hide_input_fields_for_parameters(_ isEnabled: Bool) {
-        hostTextField.isEnabled = isEnabled
-        connectButton.isEnabled = isEnabled
-        remoteURLTextField.isEnabled = isEnabled
-    }
-    
-    
-    @objc func textFieldDidChange() {
-            updateStatusLabel()
-        }
+    func connectionTypeChanged() {
         
-    
-    private func updateStatusLabel() {
-        let host = robotIP ?? ""
-        let lastDigit = getLastDigit(from: host)
-        statusLabel.text = "R\(lastDigit):"
     }
     
-    
-    private func getLastDigit(from host: String) -> String {
-        let parts = host.split(separator: ".")
-        if let lastPart = parts.last {
-            if let lastChar = lastPart.last, lastChar.isNumber {
-                return String(lastChar)
-            }
-        }
-        return ""
-    }
-    
-    
-    private func getPort(from host: String) -> String? {
-        let parts = host.split(separator: ".")
-        guard let lastPart = parts.last else { return nil }
-        let startPort = "8"
-        return startPort + String(lastPart)
-    }
-    
-    
-    @objc private func connectionTypeChanged() {
-        let isLocal = connectionTypeSegmentedControl.selectedSegmentIndex == 0
-        hostTextField.isHidden = !isLocal
-        remoteURLTextField.isHidden = isLocal
-    }
-    
-    
-    @objc private func openVideoScreen() {
-        videoVC.videoURL = "https://selekpann.tech:8889/camera_robot_4"
-        videoVC.commandSender = self.commandSender
-        videoVC.modalPresentationStyle = .fullScreen
-        present(videoVC, animated: true)
-    }
 
-    
-    private func setupUI() {
-        view.backgroundColor = .white
-        let stackView = UIStackView()
-        
-        connectionTypeSegmentedControl.selectedSegmentIndex = 0
-        connectionTypeSegmentedControl.addTarget(self, action: #selector(connectionTypeChanged), for: .valueChanged)
-       
-        remoteURLTextField.placeholder = defaultRemoteHost
-
-        hostTextField.text = defaulLocaltHost
-        hostTextField.borderStyle = .roundedRect
-        hostTextField.autocapitalizationType = .none
-
-
-        connectButton.setTitle("Connect", for: .normal)
-        connectButton.addTarget(self, action: #selector(connectToRobot), for: .touchUpInside)
-
-        disconnectButton.addTarget(self, action: #selector(disconnectFromRobot), for: .touchUpInside)
-
-        statusIndicator.backgroundColor = .red
-        statusIndicator.layer.cornerRadius = 10
-        statusIndicator.translatesAutoresizingMaskIntoConstraints = false
-
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-
-        
-        
-        statusLabel.text = "R:"
-        statusLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        hostTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        
-        openVideoButton.setTitle("🎥", for: .normal)
-        openVideoButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .medium)
-        openVideoButton.addTarget(self, action: #selector(openVideoScreen), for: .touchUpInside)
-
-        stackView.axis = .vertical
-        stackView.spacing = 15
-        stackView.alignment = .center
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.addArrangedSubview(connectionTypeSegmentedControl)
-        stackView.addArrangedSubview(remoteURLTextField)
-        stackView.addArrangedSubview(hostTextField)
-        stackView.addArrangedSubview(connectButton)
-        stackView.addArrangedSubview(openVideoButton)
-        stackView.addArrangedSubview(controlPanel)
-        
-        setupControlButtons()
-
-        disconnectButton.setTitle("✖️", for: .normal)
-        disconnectButton.titleLabel?.font = UIFont.systemFont(ofSize: 35)
-        disconnectButton.setTitleColor(.white, for: .normal)
-        disconnectButton.clipsToBounds = true
-        disconnectButton.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(statusIndicator)
-        view.addSubview(activityIndicator)
-        view.addSubview(statusLabel)
-        view.addSubview(stackView)
-        view.addSubview(controlPanel)
-        view.addSubview(openVideoButton)
-        view.addSubview(disconnectButton)
-
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            hostTextField.widthAnchor.constraint(equalToConstant: 250),
-
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.topAnchor.constraint(equalTo: hostTextField.bottomAnchor, constant: 20),
-
-            statusLabel.trailingAnchor.constraint(equalTo: statusIndicator.leadingAnchor, constant: -8),
-            statusLabel.centerYAnchor.constraint(equalTo: statusIndicator.centerYAnchor),
-
-            statusIndicator.widthAnchor.constraint(equalToConstant: 20),
-            statusIndicator.heightAnchor.constraint(equalToConstant: 20),
-            statusIndicator.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
-            statusIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-
-            disconnectButton.leadingAnchor.constraint(equalTo: statusIndicator.trailingAnchor, constant: -30),
-            disconnectButton.topAnchor.constraint(equalTo: statusIndicator.bottomAnchor, constant: 20),
-            disconnectButton.widthAnchor.constraint(equalToConstant: 40),
-            disconnectButton.heightAnchor.constraint(equalToConstant: 40),
-        ])
-            }
-    
-    private func setupWebView() {
-        webView = WebVideoView()
-        webView.backgroundColor = .black
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(webView)
-        NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100), // Отступ сверху
-            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), // Отступ слева
-            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), // Отступ справа
-            webView.heightAnchor.constraint(equalToConstant: 350),
-
-            controlPanel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 10),
-            controlPanel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
-    }
-    
-    
-    private func updateUI() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let isConnected = self.socketManager.isLocalConnected
-            self.hostTextField.isHidden = isConnected
-            self.connectButton.isHidden = isConnected
-            self.disconnectButton.isHidden = !isConnected
-            self.webView.isHidden = !isConnected
-            self.controlPanel.isHidden = !isConnected
-            self.openVideoButton.isHidden = !isConnected
-            
-        }
-    }
-    
-    
-    @objc private func connectToRobot() {
-        self.hide_input_fields_for_parameters(false)
-        activityIndicator.startAnimating()
-        let isLocal = connectionTypeSegmentedControl.selectedSegmentIndex == 0
+    func connect(isLocal: Bool) {
+        isLoading = true
         if isLocal {
             connectToLocalRobot()
         } else {
             connectToRemoteServer()
-            self.updateStatusLabel()
         }
     }
 
     
-    func connectToLocalRobot() {
-        if let hostname = hostTextField.text, !hostname.isEmpty {
-            socketManager.startResolvingIP(for: hostname)
-        } else {
-            print("Поле ввода пустое, IP не будет разрешён")
-        }
-        let host = hostTextField.text ?? defaulLocaltHost
-        let port = getPort(from: robotIP ?? "") ?? ""
-        let urlString = "\(prefix)\(robotIP ?? host):\(port)"
-        socketManager.connectSocket(urlString: urlString)
-        self.updateStatusLabel()
-        self.logger.info("Попытка подключения к \(urlString)")
-    }
-    
-    
-    func connectToRemoteServer() {
-        socketManager.connectSocket(urlString: defaultRemoteHost)
-        logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
-        socketManager.sendJSONCommand(serverCommand.registerServerMsg)
-        socketManager.onMessageReceived = { [weak self] message in
-            guard let self = self else { return }
-            if let type = message["type"] as? String {
-                switch type {
-                case "robotList":
-                    if let robots = message["robots"] as? [Any], robots.isEmpty {
-                        self.logger.info("❌ Нет доступных роботов. Завершаю выполнение.")
-                        isConnected = false  // вернуть, отключено для теста
-                        disconnectFromRobot() // вернуть, отключено для теста
-                    } else {
-                        self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
-                        isConnected = true // вернуть, отключено для теста
-                        self.logger.info("✅ Зарегистрирован как оператор для robot1")
-                    }
-                case "error":
-                    if let msg = message["message"] as? String {
-                        self.logger.info("❌ Ошибка: \(msg)")
-                        return
-                    }
-                default:
-                    break
-                }
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
-        }
-    }
-
-    
-    @objc private func disconnectFromRobot() {
-        self.hide_input_fields_for_parameters(true)
-        NotificationCenter.default.removeObserver(self)
-        self.updateConnectionStatus(isConnected: false)
-        self.webView.stopVideo()
-        self.commandTimer?.invalidate()
-        self.commandTimer = nil
+    func disconnect() {
         socketManager.disconnectSocket()
-        self.updateUI()
+        commandSender.stopIdleStateSending()
+        commandSender.stopRepeatCommandSending()
+        isConnected = false
+        videoURL = ""
+    }
+    
+    // заглушка для тестов
+    func simulateConnection() {
+        isLoading = false
+        isConnected = true
+        videoURL = "https://selekpann.tech:8889/camera_robot_4"  // Пример URL видео
+        commandSender.server_robot_available = true
+    }
+
+    
+    func connectionTypeChanged(isLocal: Bool) {
+        if isLocal {
+            host = "robot3.local"
+            videoURL = ""
+        } else {
+            remoteURL = "ws://selekpann.tech:2000"
+            videoURL = ""
+        }
+    }
+
+    
+    func updateRobotSuffix() {
+        let parts = host.split(separator: ".")
+        if let lastPart = parts.last, let lastChar = lastPart.last, lastChar.isNumber {
+            robotSuffix = String(lastChar)
+        } else {
+            robotSuffix = ""
+        }
+    }
+    
+
+    private func setupSocketObservers() {
+        socketManager.connectionStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isConnected in
+                self?.handleConnectionStatus(isConnected: isConnected)
+            }
+            .store(in: &cancellables)
+        
+        socketManager.receivedMessages
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.handleSocketMessage(message)
+            }
+            .store(in: &cancellables)
     }
     
     
-    func updateConnectionStatus(isConnected: Bool) {
-            statusIndicator.backgroundColor = isConnected ? .green : .red
+    private func handleConnectionStatus(isConnected: Bool) {
+        isLoading = false
+        self.isConnected = isConnected
+        
+        if isConnected {
+            videoURL = "https://selekpann.tech:8889/camera_robot_4"
+            commandSender.server_robot_available = true
+        } else {
+            commandSender.server_robot_available = false
+            videoURL = ""
         }
+    }
     
-    func showAlert(title: String, message: String) {
-        DispatchQueue.main.async {
-            if let presentedViewController = self.presentedViewController, presentedViewController is UIAlertController {
-                presentedViewController.dismiss(animated: false) {
-                    self.presentAlert(title: title, message: message)
-                }
-            } else {
-                self.presentAlert(title: title, message: message)
+    
+    private func handleSocketMessage(_ message: [String: Any]) {
+        if let type = message["type"] as? String {
+            switch type {
+            case "robotList":
+                handleRobotList(message)
+            case "error":
+                showError(message["message"] as? String ?? "Unknown error")
+            default: break
             }
         }
     }
-
-    private func presentAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+    
+    
+    private func connectToLocalRobot() {
+        socketManager.startResolvingIP(for: host)
+        let port = getPort(from: host)
+        let urlString = "ws://\(host):\(port)"
+        socketManager.connectSocket(urlString: urlString)
     }
     
-    @objc func stopMove() { commandSender.stopTheMovement() }
     
-    @objc func startMovingForward() { commandSender.moveForward(isPressed: true) }
-    @objc func stopMovingForward() { commandSender.moveForward(isPressed: false) }
-
-    @objc func startMovingBackward() { commandSender.moveBackward(isPressed: true) }
-    @objc func stopMovingBackward() { commandSender.moveBackward(isPressed: false) }
-
-    // Повороты влево/вправо
-    @objc func startTurningLeft() { commandSender.turnLeft(isPressed: true) }
-    @objc func stopTurningLeft() { commandSender.turnLeft(isPressed: false) }
-
-    @objc func startTurningRight() { commandSender.turnRight(isPressed: true) }
-    @objc func stopTurningRight() { commandSender.turnRight(isPressed: false) }
-    
-    func setupControlButtons() {
-        let buttonSize: CGFloat = 80
-
-        func styleButton(_ button: UIButton, systemImage: String) {
-            button.setTitle("", for: .normal)
-            let image = UIImage(systemName: systemImage)
-            button.setImage(image, for: .normal)
-            button.tintColor = .black
-            button.layer.cornerRadius = buttonSize / 2
-            button.layer.borderWidth = 2
-            button.layer.borderColor = UIColor.black.cgColor
-            button.translatesAutoresizingMaskIntoConstraints = false
-            button.widthAnchor.constraint(equalToConstant: buttonSize).isActive = true
-            button.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
+    private func connectToRemoteServer() {
+        socketManager.connectSocket(urlString: remoteURL)
+        socketManager.sendJSONCommand(ServerRegisterCommand().registerServerMsg)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.socketManager.sendJSONCommand(ServerRegisterCommand().listMsg)
         }
-
-        styleButton(forwardButton, systemImage: "arrow.up")
-        styleButton(backButton, systemImage: "arrow.down")
-        styleButton(leftButton, systemImage: "arrow.left")
-        styleButton(rightButton, systemImage: "arrow.right")
-
-        func addHoldAction(for button: UIButton, startAction: Selector, stopAction: Selector) {
-            button.addTarget(self, action: startAction, for: .touchDown)         // Нажатие
-            button.addTarget(self, action: stopAction, for: .touchUpInside)      // Отпускание внутри
-            button.addTarget(self, action: stopAction, for: .touchUpOutside)     // Отпускание за пределами
-            button.addTarget(self, action: stopAction, for: .touchCancel)        // Прерывание касания
-        }
-
-        addHoldAction(for: forwardButton,
-                      startAction: #selector(startMovingForward),
-                      stopAction: #selector(stopMovingForward))
-
-        addHoldAction(for: backButton,
-                      startAction: #selector(startMovingBackward),
-                      stopAction: #selector(stopMovingBackward))
-
-        addHoldAction(for: leftButton,
-                      startAction: #selector(startTurningLeft),
-                      stopAction: #selector(stopTurningLeft))
-
-        addHoldAction(for: rightButton,
-                      startAction: #selector(startTurningRight),
-                      stopAction: #selector(stopTurningRight))
-
-
-        let row1 = UIStackView(arrangedSubviews: [UIView(), forwardButton, UIView()])
-        row1.axis = .horizontal
-        row1.distribution = .equalSpacing
-
-        let row2 = UIStackView(arrangedSubviews: [leftButton, UIView(), rightButton])
-        row2.axis = .horizontal
-        row2.spacing = 30
-
-        let row3 = UIStackView(arrangedSubviews: [UIView(), backButton, UIView()])
-        row3.axis = .horizontal
-        row3.distribution = .equalSpacing
-
-        controlPanel.axis = .vertical
-        controlPanel.spacing = -10
-        controlPanel.alignment = .center
-        controlPanel.addArrangedSubview(row1)
-        controlPanel.addArrangedSubview(row2)
-        controlPanel.addArrangedSubview(row3)
     }
-
+    
+    
+    private func getPort(from host: String) -> String {
+        let parts = host.split(separator: ".")
+        guard let lastPart = parts.last else { return "80" }
+        return "8" + String(lastPart)
+    }
+    
+    
+    
+    private func handleRobotList(_ message: [String: Any]) {
+        guard let robots = message["robots"] as? [Any], !robots.isEmpty else {
+            showError("Нет доступных роботов")
+            
+            
+            
+            //disconnect() // вернуть на место после тестов!!!
+            
+            
+            
+            return
+        }
+        socketManager.sendJSONCommand(ServerRegisterCommand().registerOperatorMsg)
+    }
+    
+    
+    private func showError(_ message: String) {
+        errorMessage = message
+        showError = true
+    }
 }
 
 
-enum ConnectionType {
-    case localNetwork(urlString: String)  // Локальная сеть (robot.local)
-    case remoteServer(url: String)       // Удалённый сервер (wss://example.com)
-}
+
+
+//struct ControlPanelView: View {
+//    @ObservedObject var viewModel: SocketControllerViewModel
+//    
+//    var body: some View {
+//        HStack(spacing: 20) {
+//            ControlButton(systemName: "arrow.up", action: { viewModel.commandSender.moveForward() })
+//            ControlButton(systemName: "arrow.down", action: { viewModel.commandSender.moveBackward() })
+//            ControlButton(systemName: "arrow.left", action: { viewModel.commandSender.turnLeft() })
+//            ControlButton(systemName: "arrow.right", action: { viewModel.commandSender.turnRight() })
+//            ControlButton(systemName: "stop.fill", action: { viewModel.commandSender.stopMovement() })
+//        }
+//    }
+//}
+//
+//struct ControlButton: View {
+//    let systemName: String
+//    let action: () -> Void
+//    
+//    var body: some View {
+//        Button(action: action) {
+//            Image(systemName: systemName)
+//                .font(.title)
+//                .padding()
+//                .background(Color.blue)
+//                .foregroundColor(.white)
+//                .clipShape(Circle())
+//        }
+//    }
+//}
+
+
+
+//
+//class SocketController: UIViewController, SocketDelegate {
+//    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+//    let prefix = "ws://"
+//    let serverCommand = ServerRegisterCommand()
+//    var webView: WebVideoView!
+//    var socketManager: SocketManager!
+//    var stateManager: RobotManager!
+//    
+//    var isConnected = false
+//    
+//    var defaulLocaltHost = "robot3.local"
+//    var defaultRemoteHost = "ws://selekpann.tech:2000"
+//    var robotIP: String?
+//    
+//    private var commandSender: CommandSender!
+//    private var connectionType: ConnectionType!
+//    private var commandTimer: Timer?
+//    
+//
+//    let hostTextField = UITextField()
+//    
+//    let connectButton = UIButton(type: .system)
+//    let disconnectButton = UIButton(type: .system)
+//    let controlPanel = UIStackView()
+//    
+//    let forwardButton = UIButton(type: .system)
+//    let backButton = UIButton(type: .system)
+//    let leftButton = UIButton(type: .system)
+//    let rightButton = UIButton(type: .system)
+//    let stopTheMovementButton = UIButton(type: .system)
+//    
+//    let activityIndicator = UIActivityIndicatorView(style: .large)
+//    
+//    let statusLabel = UILabel()
+//    let statusIndicator = UIView()
+//    
+//    
+//    private let connectionTypeSegmentedControl = UISegmentedControl(items: ["Локальная сеть", "Удалённый сервер"])
+//    private let remoteURLTextField = UITextField()
+//    
+//    //let videoVC = VideoViewController()
+//    //let openVideoButton = UIButton(type: .system)
+//
+//    
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        socketManager = SocketManager()
+//        socketManager.delegate = self
+//        commandSender = CommandSender(socketManager: socketManager)
+//        setupUI()
+//        setupWebView()
+//        updateUI()
+//        connectionTypeChanged()
+//        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+//    }
+//    
+//    
+//    init(stateManager: RobotManager) {
+//        self.stateManager = stateManager
+//        super.init(nibName: nil, bundle: nil)
+//    }
+//    
+//
+//    func didResolveRobotIP(_ ip: String) {
+//        print("Получен IP: \(ip)")
+//        robotIP = ip
+//    }
+//    
+//    
+//    func didFailToResolveIP(error: String?) {
+//        print("Ошибка: \(error ?? "Unknown")")
+//        self.updateConnectionStatus(isConnected: false)
+//        self.hide_input_fields_for_parameters(true)
+//        self.activityIndicator.stopAnimating()
+//    }
+//    
+//    @objc func appDidEnterBackground() {
+//        disconnectFromRobot()
+//        self.logger.info("⚠️ Приложение перешло в фон")
+//    }
+//    
+//    
+//    func socketManager(_ manager: SocketManager, didReceiveResponse response: String) {
+//        self.logger.info("Message from server: \(response)")
+//        UserMessageUIKit.showAlert(on: self, title: "Ошибка", message: "Не удалось подключиться")
+//    }
+//
+//    
+//    func socketManager(_ manager: SocketManager, didUpdateConnectionStatus isConnected: Bool) {
+//        DispatchQueue.main.async {
+//            self.isConnected = isConnected
+//            if isConnected {
+//                self.logger.info("Подключение к сокету ✅")
+//                self.webView.loadVideoStream(urlString: "https://selekpann.tech:8889/camera_robot_4")
+//                self.commandSender.server_robot_avialable = true
+//                self.activityIndicator.stopAnimating()
+//                self.updateConnectionStatus(isConnected: true)
+//            } else {
+//                self.logger.info("Подключение к сокету ❌")
+//                self.commandSender.server_robot_avialable = false
+//                self.commandSender.stopIdleStateSending()
+//                self.commandSender.stopRepeatCommandSending()
+//                self.activityIndicator.stopAnimating()
+//                self.updateConnectionStatus(isConnected: false)
+//                self.hide_input_fields_for_parameters(true)
+//            }
+//            self.updateUI()
+//        }
+//    }
+//    
+//    
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//    
+//    
+//    func hide_input_fields_for_parameters(_ isEnabled: Bool) {
+//        hostTextField.isEnabled = isEnabled
+//        connectButton.isEnabled = isEnabled
+//        remoteURLTextField.isEnabled = isEnabled
+//    }
+//    
+//    
+//    @objc func textFieldDidChange() {
+//            updateStatusLabel()
+//        }
+//        
+//    
+//    private func updateStatusLabel() {
+//        let host = robotIP ?? ""
+//        let lastDigit = getLastDigit(from: host)
+//        statusLabel.text = "R\(lastDigit):"
+//    }
+//    
+//    
+//    private func getLastDigit(from host: String) -> String {
+//        let parts = host.split(separator: ".")
+//        if let lastPart = parts.last {
+//            if let lastChar = lastPart.last, lastChar.isNumber {
+//                return String(lastChar)
+//            }
+//        }
+//        return ""
+//    }
+//    
+//    
+//    private func getPort(from host: String) -> String? {
+//        let parts = host.split(separator: ".")
+//        guard let lastPart = parts.last else { return nil }
+//        let startPort = "8"
+//        return startPort + String(lastPart)
+//    }
+//    
+//    
+//    @objc private func connectionTypeChanged() {
+//        let isLocal = connectionTypeSegmentedControl.selectedSegmentIndex == 0
+//        hostTextField.isHidden = !isLocal
+//        remoteURLTextField.isHidden = isLocal
+//    }
+//    
+//    
+////    @objc private func openVideoScreen() {
+////        videoVC.videoURL = "https://selekpann.tech:8889/camera_robot_4"
+////        videoVC.commandSender = self.commandSender
+////        //videoVC.modalPresentationStyle = .fullScreen
+////        present(videoVC, animated: true)
+////    }
+//
+//    
+//    private func setupUI() {
+//        view.backgroundColor = .white
+//        let stackView = UIStackView()
+//        
+//        connectionTypeSegmentedControl.selectedSegmentIndex = 0
+//        connectionTypeSegmentedControl.addTarget(self, action: #selector(connectionTypeChanged), for: .valueChanged)
+//       
+//        remoteURLTextField.placeholder = defaultRemoteHost
+//
+//        hostTextField.text = defaulLocaltHost
+//        hostTextField.borderStyle = .roundedRect
+//        hostTextField.autocapitalizationType = .none
+//
+//
+//        connectButton.setTitle("Connect", for: .normal)
+//        connectButton.addTarget(self, action: #selector(connectToRobot), for: .touchUpInside)
+//
+//        disconnectButton.addTarget(self, action: #selector(disconnectFromRobot), for: .touchUpInside)
+//
+//        statusIndicator.backgroundColor = .red
+//        statusIndicator.layer.cornerRadius = 10
+//        statusIndicator.translatesAutoresizingMaskIntoConstraints = false
+//
+//        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+//
+//        
+//        
+//        statusLabel.text = "R:"
+//        statusLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+//        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+//        hostTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+//        
+////        openVideoButton.setTitle("🎥", for: .normal)
+////        openVideoButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+////        openVideoButton.addTarget(self, action: #selector(openVideoScreen), for: .touchUpInside)
+//
+//        stackView.axis = .vertical
+//        stackView.spacing = 15
+//        stackView.alignment = .center
+//        stackView.translatesAutoresizingMaskIntoConstraints = false
+//        stackView.addArrangedSubview(connectionTypeSegmentedControl)
+//        stackView.addArrangedSubview(remoteURLTextField)
+//        stackView.addArrangedSubview(hostTextField)
+//        stackView.addArrangedSubview(connectButton)
+//        //stackView.addArrangedSubview(openVideoButton)
+//        stackView.addArrangedSubview(controlPanel)
+//        
+//
+//        disconnectButton.setTitle("✖️", for: .normal)
+//        disconnectButton.titleLabel?.font = UIFont.systemFont(ofSize: 35)
+//        disconnectButton.setTitleColor(.white, for: .normal)
+//        disconnectButton.clipsToBounds = true
+//        disconnectButton.translatesAutoresizingMaskIntoConstraints = false
+//
+//        view.addSubview(statusIndicator)
+//        view.addSubview(activityIndicator)
+//        view.addSubview(statusLabel)
+//        view.addSubview(stackView)
+//        view.addSubview(controlPanel)
+//        //view.addSubview(openVideoButton)
+//        view.addSubview(disconnectButton)
+//
+//        NSLayoutConstraint.activate([
+//            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+//            hostTextField.widthAnchor.constraint(equalToConstant: 250),
+//
+//            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            activityIndicator.topAnchor.constraint(equalTo: hostTextField.bottomAnchor, constant: 20),
+//
+//            statusLabel.trailingAnchor.constraint(equalTo: statusIndicator.leadingAnchor, constant: -8),
+//            statusLabel.centerYAnchor.constraint(equalTo: statusIndicator.centerYAnchor),
+//
+//            statusIndicator.widthAnchor.constraint(equalToConstant: 20),
+//            statusIndicator.heightAnchor.constraint(equalToConstant: 20),
+//            statusIndicator.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+//            statusIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+//
+//            disconnectButton.leadingAnchor.constraint(equalTo: statusIndicator.trailingAnchor, constant: -30),
+//            disconnectButton.topAnchor.constraint(equalTo: statusIndicator.bottomAnchor, constant: 20),
+//            disconnectButton.widthAnchor.constraint(equalToConstant: 40),
+//            disconnectButton.heightAnchor.constraint(equalToConstant: 40),
+//        ])
+//            }
+//    
+//    private func setupWebView() {
+//        webView = WebVideoView()
+//        webView.backgroundColor = .black
+//        webView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(webView)
+//        NSLayoutConstraint.activate([
+//            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100), // Отступ сверху
+//            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), // Отступ слева
+//            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), // Отступ справа
+//            webView.heightAnchor.constraint(equalToConstant: 350),
+//
+//            controlPanel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 10),
+//            controlPanel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//        ])
+//    }
+//    
+//    
+//    private func updateUI() {
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            let isConnected = self.socketManager.isLocalConnected
+//            self.hostTextField.isHidden = isConnected
+//            self.connectButton.isHidden = isConnected
+//            self.disconnectButton.isHidden = !isConnected
+//            self.webView.isHidden = !isConnected
+//            self.controlPanel.isHidden = !isConnected
+//            //self.openVideoButton.isHidden = !isConnected
+//            
+//        }
+//    }
+//    
+//    
+//    @objc private func connectToRobot() {
+//        self.hide_input_fields_for_parameters(false)
+//        activityIndicator.startAnimating()
+//        let isLocal = connectionTypeSegmentedControl.selectedSegmentIndex == 0
+//        if isLocal {
+//            connectToLocalRobot()
+//        } else {
+//            connectToRemoteServer()
+//            self.updateStatusLabel()
+//        }
+//    }
+//
+//    
+//    func connectToLocalRobot() {
+//        if let hostname = hostTextField.text, !hostname.isEmpty {
+//            socketManager.startResolvingIP(for: hostname)
+//        } else {
+//            print("Поле ввода пустое, IP не будет разрешён")
+//        }
+//        let host = hostTextField.text ?? defaulLocaltHost
+//        let port = getPort(from: robotIP ?? "") ?? ""
+//        let urlString = "\(prefix)\(robotIP ?? host):\(port)"
+//        socketManager.connectSocket(urlString: urlString)
+//        self.updateStatusLabel()
+//        self.logger.info("Попытка подключения к \(urlString)")
+//    }
+//    
+//    
+//    func connectToRemoteServer() {
+//        socketManager.connectSocket(urlString: defaultRemoteHost)
+//        logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
+//        socketManager.sendJSONCommand(serverCommand.registerServerMsg)
+//        socketManager.onMessageReceived = { [weak self] message in
+//            guard let self = self else { return }
+//            if let type = message["type"] as? String {
+//                switch type {
+//                case "robotList":
+//                    if let robots = message["robots"] as? [Any], robots.isEmpty {
+//                        self.logger.info("❌ Нет доступных роботов. Завершаю выполнение.")
+//                        isConnected = false  // вернуть, отключено для теста
+//                        disconnectFromRobot() // вернуть, отключено для теста
+//                    } else {
+//                        self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
+//                        isConnected = true // вернуть, отключено для теста
+//                        self.logger.info("✅ Зарегистрирован как оператор для robot1")
+//                    }
+//                case "error":
+//                    if let msg = message["message"] as? String {
+//                        self.logger.info("❌ Ошибка: \(msg)")
+//                        return
+//                    }
+//                default:
+//                    break
+//                }
+//            }
+//        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
+//        }
+//    }
+//
+//    
+//    @objc private func disconnectFromRobot() {
+//        self.hide_input_fields_for_parameters(true)
+//        NotificationCenter.default.removeObserver(self)
+//        self.updateConnectionStatus(isConnected: false)
+//        self.webView.stopVideo()
+//        self.commandTimer?.invalidate()
+//        self.commandTimer = nil
+//        socketManager.disconnectSocket()
+//        self.updateUI()
+//    }
+//    
+//    
+//    func updateConnectionStatus(isConnected: Bool) {
+//            statusIndicator.backgroundColor = isConnected ? .green : .red
+//        }
+//}
+//
+//
+//enum ConnectionType {
+//    case localNetwork(urlString: String)  // Локальная сеть (robot.local)
+//    case remoteServer(url: String)       // Удалённый сервер (wss://example.com)
+//}
+
+//class SocketController: UIViewController, SocketDelegate {
+//    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+//    let prefix = "ws://"
+//    let serverCommand = ServerRegisterCommand()
+//    var webView: WebVideoView!
+//    var socketManager: SocketManager!
+//    var stateManager: RobotManager!
+//    
+//    var isConnected = false
+//    
+//    var defaulLocaltHost = "robot3.local"
+//    var defaultRemoteHost = "ws://selekpann.tech:2000"
+//    var robotIP: String?
+//    
+//    private var commandSender: CommandSender!
+//    private var connectionType: ConnectionType!
+//    private var commandTimer: Timer?
+//    
+//
+//    let hostTextField = UITextField()
+//    
+//    let connectButton = UIButton(type: .system)
+//    let disconnectButton = UIButton(type: .system)
+//    let controlPanel = UIStackView()
+//    
+//    let forwardButton = UIButton(type: .system)
+//    let backButton = UIButton(type: .system)
+//    let leftButton = UIButton(type: .system)
+//    let rightButton = UIButton(type: .system)
+//    let stopTheMovementButton = UIButton(type: .system)
+//    
+//    let activityIndicator = UIActivityIndicatorView(style: .large)
+//    
+//    let statusLabel = UILabel()
+//    let statusIndicator = UIView()
+//    
+//    
+//    private let connectionTypeSegmentedControl = UISegmentedControl(items: ["Локальная сеть", "Удалённый сервер"])
+//    private let remoteURLTextField = UITextField()
+//    
+//    let videoVC = VideoViewController()
+//    let openVideoButton = UIButton(type: .system)
+//
+//    
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        socketManager = SocketManager()
+//        socketManager.delegate = self
+//        commandSender = CommandSender(socketManager: socketManager)
+//        setupUI()
+//        setupWebView()
+//        updateUI()
+//        connectionTypeChanged()
+//        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+//    }
+//    
+//    
+//    init(stateManager: RobotManager) {
+//        self.stateManager = stateManager
+//        super.init(nibName: nil, bundle: nil)
+//    }
+//    
+//
+//    func didResolveRobotIP(_ ip: String) {
+//        print("Получен IP: \(ip)")
+//        robotIP = ip
+//    }
+//    
+//    
+//    func didFailToResolveIP(error: String?) {
+//        print("Ошибка: \(error ?? "Unknown")")
+//        self.updateConnectionStatus(isConnected: false)
+//        self.hide_input_fields_for_parameters(true)
+//        self.activityIndicator.stopAnimating()
+//    }
+//    
+//    @objc func appDidEnterBackground() {
+//        disconnectFromRobot()
+//        self.logger.info("⚠️ Приложение перешло в фон")
+//    }
+//    
+//    
+//    func socketManager(_ manager: SocketManager, didReceiveResponse response: String) {
+//        self.logger.info("Message from server: \(response)")
+//        UserMessageUIKit.showAlert(on: self, title: "Ошибка", message: "Не удалось подключиться")
+//    }
+//
+//    
+//    func socketManager(_ manager: SocketManager, didUpdateConnectionStatus isConnected: Bool) {
+//        DispatchQueue.main.async {
+//            self.isConnected = isConnected
+//            if isConnected {
+//                self.logger.info("Подключение к сокету ✅")
+//                self.webView.loadVideoStream(urlString: "https://selekpann.tech:8889/camera_robot_4")
+//                self.commandSender.server_robot_avialable = true
+//                self.activityIndicator.stopAnimating()
+//                self.updateConnectionStatus(isConnected: true)
+//            } else {
+//                self.logger.info("Подключение к сокету ❌")
+//                self.commandSender.server_robot_avialable = false
+//                self.commandSender.stopIdleStateSending()
+//                self.commandSender.stopRepeatCommandSending()
+//                self.activityIndicator.stopAnimating()
+//                self.updateConnectionStatus(isConnected: false)
+//                self.hide_input_fields_for_parameters(true)
+//            }
+//            self.updateUI()
+//        }
+//    }
+//    
+//    
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//    
+//    
+//    func hide_input_fields_for_parameters(_ isEnabled: Bool) {
+//        hostTextField.isEnabled = isEnabled
+//        connectButton.isEnabled = isEnabled
+//        remoteURLTextField.isEnabled = isEnabled
+//    }
+//    
+//    
+//    @objc func textFieldDidChange() {
+//            updateStatusLabel()
+//        }
+//        
+//    
+//    private func updateStatusLabel() {
+//        let host = robotIP ?? ""
+//        let lastDigit = getLastDigit(from: host)
+//        statusLabel.text = "R\(lastDigit):"
+//    }
+//    
+//    
+//    private func getLastDigit(from host: String) -> String {
+//        let parts = host.split(separator: ".")
+//        if let lastPart = parts.last {
+//            if let lastChar = lastPart.last, lastChar.isNumber {
+//                return String(lastChar)
+//            }
+//        }
+//        return ""
+//    }
+//    
+//    
+//    private func getPort(from host: String) -> String? {
+//        let parts = host.split(separator: ".")
+//        guard let lastPart = parts.last else { return nil }
+//        let startPort = "8"
+//        return startPort + String(lastPart)
+//    }
+//    
+//    
+//    @objc private func connectionTypeChanged() {
+//        let isLocal = connectionTypeSegmentedControl.selectedSegmentIndex == 0
+//        hostTextField.isHidden = !isLocal
+//        remoteURLTextField.isHidden = isLocal
+//    }
+//    
+//    
+//    @objc private func openVideoScreen() {
+//        videoVC.videoURL = "https://selekpann.tech:8889/camera_robot_4"
+//        videoVC.commandSender = self.commandSender
+//        //videoVC.modalPresentationStyle = .fullScreen
+//        present(videoVC, animated: true)
+//    }
+//
+//    
+//    private func setupUI() {
+//        view.backgroundColor = .white
+//        let stackView = UIStackView()
+//        
+//        connectionTypeSegmentedControl.selectedSegmentIndex = 0
+//        connectionTypeSegmentedControl.addTarget(self, action: #selector(connectionTypeChanged), for: .valueChanged)
+//       
+//        remoteURLTextField.placeholder = defaultRemoteHost
+//
+//        hostTextField.text = defaulLocaltHost
+//        hostTextField.borderStyle = .roundedRect
+//        hostTextField.autocapitalizationType = .none
+//
+//
+//        connectButton.setTitle("Connect", for: .normal)
+//        connectButton.addTarget(self, action: #selector(connectToRobot), for: .touchUpInside)
+//
+//        disconnectButton.addTarget(self, action: #selector(disconnectFromRobot), for: .touchUpInside)
+//
+//        statusIndicator.backgroundColor = .red
+//        statusIndicator.layer.cornerRadius = 10
+//        statusIndicator.translatesAutoresizingMaskIntoConstraints = false
+//
+//        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+//
+//        
+//        
+//        statusLabel.text = "R:"
+//        statusLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+//        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+//        hostTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+//        
+//        openVideoButton.setTitle("🎥", for: .normal)
+//        openVideoButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+//        openVideoButton.addTarget(self, action: #selector(openVideoScreen), for: .touchUpInside)
+//
+//        stackView.axis = .vertical
+//        stackView.spacing = 15
+//        stackView.alignment = .center
+//        stackView.translatesAutoresizingMaskIntoConstraints = false
+//        stackView.addArrangedSubview(connectionTypeSegmentedControl)
+//        stackView.addArrangedSubview(remoteURLTextField)
+//        stackView.addArrangedSubview(hostTextField)
+//        stackView.addArrangedSubview(connectButton)
+//        stackView.addArrangedSubview(openVideoButton)
+//        stackView.addArrangedSubview(controlPanel)
+//        
+//        setupControlButtons()
+//
+//        disconnectButton.setTitle("✖️", for: .normal)
+//        disconnectButton.titleLabel?.font = UIFont.systemFont(ofSize: 35)
+//        disconnectButton.setTitleColor(.white, for: .normal)
+//        disconnectButton.clipsToBounds = true
+//        disconnectButton.translatesAutoresizingMaskIntoConstraints = false
+//
+//        view.addSubview(statusIndicator)
+//        view.addSubview(activityIndicator)
+//        view.addSubview(statusLabel)
+//        view.addSubview(stackView)
+//        view.addSubview(controlPanel)
+//        view.addSubview(openVideoButton)
+//        view.addSubview(disconnectButton)
+//
+//        NSLayoutConstraint.activate([
+//            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+//            hostTextField.widthAnchor.constraint(equalToConstant: 250),
+//
+//            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            activityIndicator.topAnchor.constraint(equalTo: hostTextField.bottomAnchor, constant: 20),
+//
+//            statusLabel.trailingAnchor.constraint(equalTo: statusIndicator.leadingAnchor, constant: -8),
+//            statusLabel.centerYAnchor.constraint(equalTo: statusIndicator.centerYAnchor),
+//
+//            statusIndicator.widthAnchor.constraint(equalToConstant: 20),
+//            statusIndicator.heightAnchor.constraint(equalToConstant: 20),
+//            statusIndicator.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
+//            statusIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+//
+//            disconnectButton.leadingAnchor.constraint(equalTo: statusIndicator.trailingAnchor, constant: -30),
+//            disconnectButton.topAnchor.constraint(equalTo: statusIndicator.bottomAnchor, constant: 20),
+//            disconnectButton.widthAnchor.constraint(equalToConstant: 40),
+//            disconnectButton.heightAnchor.constraint(equalToConstant: 40),
+//        ])
+//            }
+//    
+//    private func setupWebView() {
+//        webView = WebVideoView()
+//        webView.backgroundColor = .black
+//        webView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(webView)
+//        NSLayoutConstraint.activate([
+//            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100), // Отступ сверху
+//            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20), // Отступ слева
+//            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20), // Отступ справа
+//            webView.heightAnchor.constraint(equalToConstant: 350),
+//
+//            controlPanel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 10),
+//            controlPanel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//        ])
+//    }
+//    
+//    
+//    private func updateUI() {
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            let isConnected = self.socketManager.isLocalConnected
+//            self.hostTextField.isHidden = isConnected
+//            self.connectButton.isHidden = isConnected
+//            self.disconnectButton.isHidden = !isConnected
+//            self.webView.isHidden = !isConnected
+//            self.controlPanel.isHidden = !isConnected
+//            self.openVideoButton.isHidden = !isConnected
+//            
+//        }
+//    }
+//    
+//    
+//    @objc private func connectToRobot() {
+//        self.hide_input_fields_for_parameters(false)
+//        activityIndicator.startAnimating()
+//        let isLocal = connectionTypeSegmentedControl.selectedSegmentIndex == 0
+//        if isLocal {
+//            connectToLocalRobot()
+//        } else {
+//            connectToRemoteServer()
+//            self.updateStatusLabel()
+//        }
+//    }
+//
+//    
+//    func connectToLocalRobot() {
+//        if let hostname = hostTextField.text, !hostname.isEmpty {
+//            socketManager.startResolvingIP(for: hostname)
+//        } else {
+//            print("Поле ввода пустое, IP не будет разрешён")
+//        }
+//        let host = hostTextField.text ?? defaulLocaltHost
+//        let port = getPort(from: robotIP ?? "") ?? ""
+//        let urlString = "\(prefix)\(robotIP ?? host):\(port)"
+//        socketManager.connectSocket(urlString: urlString)
+//        self.updateStatusLabel()
+//        self.logger.info("Попытка подключения к \(urlString)")
+//    }
+//    
+//    
+//    func connectToRemoteServer() {
+//        socketManager.connectSocket(urlString: defaultRemoteHost)
+//        logger.info("Подключение к удалённому серверу: \(defaultRemoteHost)")
+//        socketManager.sendJSONCommand(serverCommand.registerServerMsg)
+//        socketManager.onMessageReceived = { [weak self] message in
+//            guard let self = self else { return }
+//            if let type = message["type"] as? String {
+//                switch type {
+//                case "robotList":
+//                    if let robots = message["robots"] as? [Any], robots.isEmpty {
+//                        self.logger.info("❌ Нет доступных роботов. Завершаю выполнение.")
+////                        isConnected = false  // вернуть, отключено для теста
+////                        disconnectFromRobot() // вернуть, отключено для теста
+//                    } else {
+//                        self.socketManager.sendJSONCommand(self.serverCommand.registerOperatorMsg)
+//                        //isConnected = true // вернуть, отключено для теста
+//                        self.logger.info("✅ Зарегистрирован как оператор для robot1")
+//                    }
+//                case "error":
+//                    if let msg = message["message"] as? String {
+//                        self.logger.info("❌ Ошибка: \(msg)")
+//                        return
+//                    }
+//                default:
+//                    break
+//                }
+//            }
+//        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            self.socketManager.sendJSONCommand(self.serverCommand.listMsg)
+//        }
+//    }
+//
+//    
+//    @objc private func disconnectFromRobot() {
+//        self.hide_input_fields_for_parameters(true)
+//        NotificationCenter.default.removeObserver(self)
+//        self.updateConnectionStatus(isConnected: false)
+//        self.webView.stopVideo()
+//        self.commandTimer?.invalidate()
+//        self.commandTimer = nil
+//        socketManager.disconnectSocket()
+//        self.updateUI()
+//    }
+//    
+//    
+//    func updateConnectionStatus(isConnected: Bool) {
+//            statusIndicator.backgroundColor = isConnected ? .green : .red
+//        }
+//    
+//    func showAlert(title: String, message: String) {
+//        DispatchQueue.main.async {
+//            if let presentedViewController = self.presentedViewController, presentedViewController is UIAlertController {
+//                presentedViewController.dismiss(animated: false) {
+//                    self.presentAlert(title: title, message: message)
+//                }
+//            } else {
+//                self.presentAlert(title: title, message: message)
+//            }
+//        }
+//    }
+//
+//    private func presentAlert(title: String, message: String) {
+//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//        self.present(alert, animated: true, completion: nil)
+//    }
+//    
+//    @objc func stopMove() { commandSender.stopTheMovement() }
+//    
+//    @objc func startMovingForward() { commandSender.moveForward(isPressed: true) }
+//    @objc func stopMovingForward() { commandSender.moveForward(isPressed: false) }
+//
+//    @objc func startMovingBackward() { commandSender.moveBackward(isPressed: true) }
+//    @objc func stopMovingBackward() { commandSender.moveBackward(isPressed: false) }
+//
+//    // Повороты влево/вправо
+//    @objc func startTurningLeft() { commandSender.turnLeft(isPressed: true) }
+//    @objc func stopTurningLeft() { commandSender.turnLeft(isPressed: false) }
+//
+//    @objc func startTurningRight() { commandSender.turnRight(isPressed: true) }
+//    @objc func stopTurningRight() { commandSender.turnRight(isPressed: false) }
+//    
+//    func setupControlButtons() {
+//        let buttonSize: CGFloat = 80
+//
+//        func styleButton(_ button: UIButton, systemImage: String) {
+//            button.setTitle("", for: .normal)
+//            let image = UIImage(systemName: systemImage)
+//            button.setImage(image, for: .normal)
+//            button.tintColor = .black
+//            button.layer.cornerRadius = buttonSize / 2
+//            button.layer.borderWidth = 2
+//            button.layer.borderColor = UIColor.black.cgColor
+//            button.translatesAutoresizingMaskIntoConstraints = false
+//            button.widthAnchor.constraint(equalToConstant: buttonSize).isActive = true
+//            button.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
+//        }
+//
+//        styleButton(forwardButton, systemImage: "arrow.up")
+//        styleButton(backButton, systemImage: "arrow.down")
+//        styleButton(leftButton, systemImage: "arrow.left")
+//        styleButton(rightButton, systemImage: "arrow.right")
+//
+//        func addHoldAction(for button: UIButton, startAction: Selector, stopAction: Selector) {
+//            button.addTarget(self, action: startAction, for: .touchDown)         // Нажатие
+//            button.addTarget(self, action: stopAction, for: .touchUpInside)      // Отпускание внутри
+//            button.addTarget(self, action: stopAction, for: .touchUpOutside)     // Отпускание за пределами
+//            button.addTarget(self, action: stopAction, for: .touchCancel)        // Прерывание касания
+//        }
+//
+//        addHoldAction(for: forwardButton,
+//                      startAction: #selector(startMovingForward),
+//                      stopAction: #selector(stopMovingForward))
+//
+//        addHoldAction(for: backButton,
+//                      startAction: #selector(startMovingBackward),
+//                      stopAction: #selector(stopMovingBackward))
+//
+//        addHoldAction(for: leftButton,
+//                      startAction: #selector(startTurningLeft),
+//                      stopAction: #selector(stopTurningLeft))
+//
+//        addHoldAction(for: rightButton,
+//                      startAction: #selector(startTurningRight),
+//                      stopAction: #selector(stopTurningRight))
+//
+//
+//        let row1 = UIStackView(arrangedSubviews: [UIView(), forwardButton, UIView()])
+//        row1.axis = .horizontal
+//        row1.distribution = .equalSpacing
+//
+//        let row2 = UIStackView(arrangedSubviews: [leftButton, UIView(), rightButton])
+//        row2.axis = .horizontal
+//        row2.spacing = 30
+//
+//        let row3 = UIStackView(arrangedSubviews: [UIView(), backButton, UIView()])
+//        row3.axis = .horizontal
+//        row3.distribution = .equalSpacing
+//
+//        controlPanel.axis = .vertical
+//        controlPanel.spacing = -10
+//        controlPanel.alignment = .center
+//        controlPanel.addArrangedSubview(row1)
+//        controlPanel.addArrangedSubview(row2)
+//        controlPanel.addArrangedSubview(row3)
+//    }
+//
+//}
+//
+//
+//enum ConnectionType {
+//    case localNetwork(urlString: String)  // Локальная сеть (robot.local)
+//    case remoteServer(url: String)       // Удалённый сервер (wss://example.com)
+//}

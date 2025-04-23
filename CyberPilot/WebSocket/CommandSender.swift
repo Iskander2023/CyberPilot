@@ -11,7 +11,7 @@ import Foundation
 final class CommandSender {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private weak var socketManager: SocketManager?
-    var server_robot_avialable = false
+    var server_robot_available = false
     
     private var currentKeysState: [String: Bool] = [
         "w": false,
@@ -48,12 +48,12 @@ final class CommandSender {
 
         sendCurrentState()
         
-        guard server_robot_avialable else {
+        guard server_robot_available else {
             logger.info("⛔️ Робот недоступен, команды не отправляются")
             return
         }
         // Если ни одна кнопка не нажата, запускаем таймер для отправки состояния с false
-        if self.server_robot_avialable {
+        if self.server_robot_available {
             if !isAnyKeyPressed {
                 startIdleStateSending()
             } else {
@@ -87,7 +87,7 @@ final class CommandSender {
     func startIdleStateSending() {
         // Прерываем старый таймер, если он есть
         stopIdleStateSending()
-        
+    
         // Настроим таймер, который будет отправлять команду с пустыми кнопками каждые 0.5 секунды
         idleTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             self?.sendIdleState()
