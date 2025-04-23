@@ -137,7 +137,7 @@ struct FullScreenVideoView: View {
         let distY = currentPoint.y - initialTouchPoint.y
         var distance = sqrt(distX * distX + distY * distY)
         
-        // Ограничиваем расстояние максимальным значением
+     
         if distance > maxSizeTach {
             distance = maxSizeTach
         }
@@ -163,7 +163,7 @@ struct FullScreenVideoView: View {
                 delta += 2 * .pi
             }
             
-            let threshold: CGFloat = 0.05
+            let threshold: CGFloat = 0.1 // Игнорирует незначительные движения, чтобы не было "дребезга" управления 0.05
             if abs(delta) > threshold {
                 if delta > 0 {
                     commandSender.turnRight(isPressed: true)
@@ -177,13 +177,9 @@ struct FullScreenVideoView: View {
         
         previousAngle = angle
         currentAngle = angle
-        
-        let angleInDegrees = angle * 180 / .pi
-        print(angleInDegrees)
-        
-        let flags = controlFlags(for: angleInDegrees)
+    
+        let flags = controlFlags(for: angle)
         updateControls(with: flags)
-        updateOverlays(angle: angleInDegrees, flags: flags)
     }
 
     private func resetTouchPad() {
@@ -200,8 +196,6 @@ struct FullScreenVideoView: View {
         commandSender.turnLeft(isPressed: false)
         commandSender.turnRight(isPressed: false)
         
-        leftOverlayActive = false
-        rightOverlayActive = false
     }
 
     
@@ -210,29 +204,7 @@ struct FullScreenVideoView: View {
         angleUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
             let flags = controlFlags(for: currentAngle)
             updateControls(with: flags)
-            updateOverlays(angle: currentAngle, flags: flags)
         }
-    }
-
-    
-    private func handleTouchChange(_ location: CGPoint) {
-        touchLocation = location
-        let center = CGPoint(x: UIScreen.main.bounds.width/2, y: UIScreen.main.bounds.height/2)
-        let angle = atan2(location.y - center.y, location.x - center.x)
-        let flags = controlFlags(for: angle)
-        updateControls(with: flags)
-        updateOverlays(angle: angle, flags: flags)
-    }
-    
-    
-    private func handleTouchEnd() {
-        touchLocation = nil
-        commandSender.moveForward(isPressed: false)
-        commandSender.moveBackward(isPressed: false)
-        commandSender.turnLeft(isPressed: false)
-        commandSender.turnRight(isPressed: false)
-        leftOverlayActive = false
-        rightOverlayActive = false
     }
     
     
@@ -241,14 +213,6 @@ struct FullScreenVideoView: View {
         commandSender.moveBackward(isPressed: flags["backward"] ?? false)
         commandSender.turnLeft(isPressed: flags["left"] ?? false)
         commandSender.turnRight(isPressed: flags["right"] ?? false)
-    }
-    
-    
-    private func updateOverlays(angle: CGFloat, flags: [String: Bool]) {
-        leftOverlayAngle = angle
-        rightOverlayAngle = angle
-        leftOverlayActive = flags["left"] ?? false || flags["forward"] ?? false || flags["backward"] ?? false
-        rightOverlayActive = flags["right"] ?? false || flags["forward"] ?? false || flags["backward"] ?? false
     }
     
     
@@ -316,3 +280,7 @@ struct CloseButton: View {
         }
     }
 }
+
+
+
+

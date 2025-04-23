@@ -89,7 +89,7 @@ final class CommandSender {
         stopIdleStateSending()
     
         // Настроим таймер, который будет отправлять команду с пустыми кнопками каждые 0.5 секунды
-        idleTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+        idleTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.sendIdleState()
         }
         
