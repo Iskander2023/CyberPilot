@@ -1,6 +1,6 @@
 //
-//  SSHConnectorApp.swift
-//  SSHConnector
+//  CyberPilot.swift
+//  SocketView
 //
 //  Created by Aleksandr Chumakov on 18.03.2025.
 //
@@ -13,6 +13,7 @@ struct SocketView: View {
     @StateObject private var viewModel = SocketController()
     @State private var showVideoView = false
     @State private var selectedConnectionType = 0
+    @State private var webView: WKWebView? = nil
 
     var body: some View {
         ZStack {
@@ -23,13 +24,13 @@ struct SocketView: View {
 
                 if viewModel.isConnected {
                     WebViewRepresentable(urlString: viewModel.videoURL)
-                        .frame(height: 400)
+                        .frame(height: 350)
                         .padding(.horizontal, 20)
                 }
                     if !viewModel.isConnected {
                         Picker("Connection Type", selection: $selectedConnectionType) {
-                            Text("Локальная сеть").tag(0)
-                            Text("Удалённый сервер").tag(1)
+                            Text("Удалённый сервер").tag(0)
+                            Text("Локальная сеть").tag(1)
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal)
@@ -39,12 +40,13 @@ struct SocketView: View {
                         
                         Group {
                             if selectedConnectionType == 0 {
+                                TextField("ws://selekpann.tech:2000", text: $viewModel.remoteURL)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                
+                            } else {
                                 TextField("robot3.local", text: $viewModel.host)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .disableAutocorrection(true)
-                            } else {
-                                TextField("ws://selekpann.tech:2000", text: $viewModel.remoteURL)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
                             }
                         }
                         .frame(width: 250)

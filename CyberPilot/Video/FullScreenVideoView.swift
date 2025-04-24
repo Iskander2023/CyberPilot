@@ -10,6 +10,7 @@ import WebKit
 
 struct FullScreenVideoView: View {
     var videoURL: String?
+    var distance: CGFloat?
     let maxSize: CGFloat = 250
     let minSize: CGFloat = 100
     let maxSizeTach: CGFloat = 125
@@ -18,12 +19,7 @@ struct FullScreenVideoView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
-    @State private var leftOverlayAngle: CGFloat = 0
-    @State private var rightOverlayAngle: CGFloat = 0
-    @State private var leftOverlayActive = false
-    @State private var rightOverlayActive = false
     @State private var touchLocation: CGPoint? = nil
-    
     @State private var initialTouchPoint: CGPoint = .zero
     @State private var currentAngle: CGFloat = 0.0
     @State private var previousAngle: CGFloat?
@@ -31,7 +27,9 @@ struct FullScreenVideoView: View {
     @State private var touchIndicatorVisible = false
     @State private var touchIndicatorPosition: CGPoint = .zero
     @State private var angleUpdateTimer: Timer?
-
+    @State private var arrowLength: CGFloat = 0.0
+    @State private var isArc = false
+    @State private var curveAngle: CGFloat = 0.0
     
     var body: some View {
         ZStack {
@@ -39,6 +37,10 @@ struct FullScreenVideoView: View {
             WebViewRepresentable(urlString: videoURL ?? "")
                 .edgesIgnoringSafeArea(.all)
                 .allowsHitTesting(false) // Отключаем взаимодействие
+            
+           //перспектива
+            perspective()
+            
             
             // 2. Touch Area - основной слой для жестов
             Color.clear
@@ -65,7 +67,7 @@ struct FullScreenVideoView: View {
         .background(Color.black)
     }
     
-    
+
     private func touchIndicatorView() -> some View {
         ZStack {
             Circle()
@@ -76,8 +78,77 @@ struct FullScreenVideoView: View {
                 .transition(.opacity)
 
             DirectionArrow()
+            DirectionLabels()
         }
     }
+    
+    
+    private func perspective() -> some View {
+        GeometryReader { geometry in
+            DirectionArc(
+                curveAngle: curveAngle,
+                width: geometry.size.width,
+                height: geometry.size.height
+            )
+        }
+        .allowsHitTesting(false)
+    }
+    
+    
+    private func DirectionArc(curveAngle: Double, width: CGFloat, height: CGFloat) -> some View {
+        let radius: CGFloat = 350
+        let centerY = height - 200
+        
+        // Корректируем угол так, чтобы:
+        // - 270° (прямо) → 0
+        // - 0° (вправо) → +π/2
+        // - 180° (влево) → -π/2
+        // - 90° (назад) → ±π
+        var adjustedAngle = CGFloat(curveAngle - 3 * .pi / 2)
+        if adjustedAngle < -.pi { adjustedAngle += 2 * .pi }
+        
+        return Path { path in
+            let start = CGPoint(x: width * 0.2, y: height - 40)
+            
+            let sensitivity: CGFloat = 0.8
+            let angle = adjustedAngle * sensitivity
+            
+            let end = CGPoint(
+                x: width * 0.2 + radius * sin(angle) * 0.3,
+                y: centerY - radius * cos(angle) * 0.3
+            )
+            
+            let control = CGPoint(
+                x: (start.x + end.x) / 2,
+                y: (start.y + end.y) / 2 - abs(radius * 0.3 * angle)
+            )
+            
+            path.move(to: start)
+            path.addQuadCurve(to: end, control: control)
+        }
+        .stroke(Color.blue, lineWidth: 5)
+    }
+
+
+
+    private func DirectionLabels() -> some View {
+        ZStack {
+            ForEach(0..<8) { i in
+                let angle = Double(i) * .pi / 4 - .pi / 8 // каждый шаг — 45°
+                let radius = touchIndicatorSize / 2 - 15
+                let center = CGPoint(x: touchIndicatorSize / 2, y: touchIndicatorSize / 2)
+                let x = center.x + radius * cos(angle)
+                let y = center.y + radius * sin(angle)
+                Circle()
+                    .frame(width: 6, height: 6)
+                    .foregroundColor(.green)
+                    .position(x: x, y: y)
+            }
+        }
+        .frame(width: touchIndicatorSize, height: touchIndicatorSize)
+        .position(touchIndicatorPosition)
+    }
+
 
     private func DirectionArrow() -> some View {
         Path { path in
@@ -85,8 +156,8 @@ struct FullScreenVideoView: View {
             path.move(to: center)
 
             let endPoint = CGPoint(
-                x: center.x + 50 * cos(currentAngle),
-                y: center.y + 50 * sin(currentAngle)
+                x: center.x + arrowLength * cos(currentAngle),
+                y: center.y + arrowLength * sin(currentAngle)
             )
             path.addLine(to: endPoint)
 
@@ -141,7 +212,7 @@ struct FullScreenVideoView: View {
         if distance > maxSizeTach {
             distance = maxSizeTach
         }
-        
+        arrowLength = distance
         touchIndicatorSize = min(max(minSize, distance * 2), maxSize)
     }
 
@@ -174,7 +245,7 @@ struct FullScreenVideoView: View {
                 }
             }
         }
-        
+        curveAngle = angle
         previousAngle = angle
         currentAngle = angle
     
