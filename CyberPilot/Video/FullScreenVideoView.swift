@@ -15,6 +15,14 @@ struct FullScreenVideoView: View {
     let minSize: CGFloat = 100
     let maxSizeTach: CGFloat = 125
     
+    let start_point_left_horizontal: CGFloat = 0.365
+    let start_point_right_horizontal: CGFloat = 0.63
+    let start_point_vertical: CGFloat = 32
+    
+    let arc_length: CGFloat = 0.05
+    let arc_sensitivity: CGFloat = 1
+    
+    
     var commandSender: CommandSender
     
     @Environment(\.presentationMode) var presentationMode
@@ -82,55 +90,161 @@ struct FullScreenVideoView: View {
         }
     }
     
+    private func DirectionArc(
+        curveAngle: Double,
+        width: CGFloat,
+        height: CGFloat,
+        startX: CGFloat,
+        startY: CGFloat
+    ) -> Path {
+        let start = CGPoint(x: width * startX, y: height - startY)
+        let adjustedAngle = CGFloat(curveAngle)
+        let numberOfPoints = 15
+        let stepDistance: CGFloat = 15
+        var point = start
+        var angle = adjustedAngle - 1.5 * .pi
+        angle = atan2(sin(angle), cos(angle))  // Нормализация через тригонометрию
+        angle = max(min(.pi/2, angle), -.pi/2)
+        
+        var direction: Bool = false
+        if angle <= 0.5 * .pi {
+            direction = true
+        } else {
+            angle = angle - .pi/2
+        }
+        let da = angle / CGFloat(numberOfPoints)
+        return Path { path in
+            for i in 0..<numberOfPoints {
+                var angleZero: CGFloat = 0
+                if !direction {
+                    angleZero = .pi/2
+                }
+                
+                let dx = (CGFloat(1) - 0.3 * CGFloat(i) / CGFloat(numberOfPoints)) * stepDistance * sin(angleZero + CGFloat(i) * da)
+                let dy = -1 * stepDistance * cos(angleZero + CGFloat(i) * da)
+                
+                point = CGPoint(x: point.x + dx, y: point.y + dy)
+                
+                path.addEllipse(in: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6))
+            }
+        }
+    }
+    
+    
+//    private func DirectionArc(
+//        curveAngle: Double,
+//        width: CGFloat,
+//        height: CGFloat,
+//        startX: CGFloat,
+//        startY: CGFloat
+//    ) -> Path {
+//        let start = CGPoint(x: width * startX, y: height - startY)
+//        let adjustedAngle = CGFloat(curveAngle)
+//        print(adjustedAngle)
+//        let numberOfPoints = 15
+//        let stepDistance: CGFloat = 15
+//        var point = start
+//        var angle = adjustedAngle - 1.5 * .pi
+//        let da = angle / CGFloat(numberOfPoints)
+//        return Path { path in
+//            for i in 0..<numberOfPoints {
+//                let dx = stepDistance * sin(CGFloat(i) * da)
+//                let dy = -1 * stepDistance * cos(CGFloat(i) * da)
+//                
+//                point = CGPoint(x: point.x + dx, y: point.y + dy)
+//                
+//                path.addEllipse(in: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6))
+//            }
+//        }
+//    }
+
+    
     
     private func perspective() -> some View {
         GeometryReader { geometry in
             DirectionArc(
                 curveAngle: curveAngle,
                 width: geometry.size.width,
-                height: geometry.size.height
+                height: geometry.size.height,
+                startX: 0.5,
+                startY: 40
             )
+            .stroke(Color.blue, lineWidth: 5)
         }
         .allowsHitTesting(false)
     }
+
+
     
+//    private func DirectionArc(curveAngle: Double, 
+//                              width: CGFloat,
+//                              height: CGFloat,
+//                              startX: CGFloat,
+//                              total_arc_length: CGFloat,
+//                              sensitivity: CGFloat,
+//                              startY: CGFloat) -> some View {
+//        
+//        let radius: CGFloat = 500
+//        let centerY = height - 150
+//        // - 270° (прямо) → 0
+//        // - 0° (вправо) → +π/2
+//        // - 180° (влево) → -π/2
+//        // - 90° (назад) → ±π
+//        
+//        var adjustedAngle = CGFloat(curveAngle - 3 * .pi / 2)
+//        if adjustedAngle < -.pi { adjustedAngle += 2 * .pi }
+//        
+//        return Path { path in
+//            let start = CGPoint(x: width * startX, y: height - startY)
+//            let angle = adjustedAngle * sensitivity
+//            let end = CGPoint(
+//                x: width * startX + radius * sin(angle) * total_arc_length,
+//                y: centerY - radius * cos(angle) * total_arc_length
+//            )
+//            let control = CGPoint(
+//                x: (start.x + end.x) / 2,
+//                y: (start.y + end.y) / 2 - abs(radius * 0.3 * angle) //0.3
+//            )
+//            
+//            
+//            
+//            
+//            path.move(to: start)
+//            path.addQuadCurve(to: end, control: control)
+//        }
+//        .stroke(Color.red, lineWidth: 5)
+//    }
+//
+//    
+//    private func perspective() -> some View {
+//        GeometryReader { geometry in
+//            ZStack {
+//
+//                DirectionArc(
+//                    curveAngle: curveAngle,
+//                    width: geometry.size.width,
+//                    height: geometry.size.height,
+//                    startX: start_point_left_horizontal,  // Смещена влево
+//                    total_arc_length: arc_length,
+//                    sensitivity: arc_sensitivity,
+//                    startY: start_point_vertical
+//                    )
+//                
+//                DirectionArc(
+//                    curveAngle: curveAngle,
+//                    width: geometry.size.width,
+//                    height: geometry.size.height,
+//                    startX: start_point_right_horizontal,  // Смещена вправо
+//                    total_arc_length: arc_length,
+//                    sensitivity: arc_sensitivity,
+//                    startY: start_point_vertical
+//                )
+//            }
+//        }
+//        .allowsHitTesting(false)
+//    }
+
     
-    private func DirectionArc(curveAngle: Double, width: CGFloat, height: CGFloat) -> some View {
-        let radius: CGFloat = 350
-        let centerY = height - 200
-        
-        // Корректируем угол так, чтобы:
-        // - 270° (прямо) → 0
-        // - 0° (вправо) → +π/2
-        // - 180° (влево) → -π/2
-        // - 90° (назад) → ±π
-        var adjustedAngle = CGFloat(curveAngle - 3 * .pi / 2)
-        if adjustedAngle < -.pi { adjustedAngle += 2 * .pi }
-        
-        return Path { path in
-            let start = CGPoint(x: width * 0.2, y: height - 40)
-            
-            let sensitivity: CGFloat = 0.8
-            let angle = adjustedAngle * sensitivity
-            
-            let end = CGPoint(
-                x: width * 0.2 + radius * sin(angle) * 0.3,
-                y: centerY - radius * cos(angle) * 0.3
-            )
-            
-            let control = CGPoint(
-                x: (start.x + end.x) / 2,
-                y: (start.y + end.y) / 2 - abs(radius * 0.3 * angle)
-            )
-            
-            path.move(to: start)
-            path.addQuadCurve(to: end, control: control)
-        }
-        .stroke(Color.blue, lineWidth: 5)
-    }
-
-
-
     private func DirectionLabels() -> some View {
         ZStack {
             ForEach(0..<8) { i in
