@@ -35,8 +35,9 @@
 		84AE147B2DA148590094A792 /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* RobotManager.swift */; };
 		84AE147D2DA1489E0094A792 /* StructObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147C2DA1489E0094A792 /* StructObjects.swift */; };
 		84C9262F2DAFCC4F009B1FFA /* FullScreenVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9262E2DAFCC4F009B1FFA /* FullScreenVideoView.swift */; };
-		84E5F1942DB1517C00D41A4F /* Perspective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1932DB1517C00D41A4F /* Perspective.swift */; };
 		84E5F1962DB8CC9100D41A4F /* WebViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1952DB8CC9100D41A4F /* WebViewRepresentable.swift */; };
+		84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */; };
+		84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1C02DBEA5D600D41A4F /* RoadView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,8 +72,9 @@
 		84AE147A2DA148590094A792 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		84AE147C2DA1489E0094A792 /* StructObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructObjects.swift; sourceTree = "<group>"; };
 		84C9262E2DAFCC4F009B1FFA /* FullScreenVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenVideoView.swift; sourceTree = "<group>"; };
-		84E5F1932DB1517C00D41A4F /* Perspective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perspective.swift; sourceTree = "<group>"; };
 		84E5F1952DB8CC9100D41A4F /* WebViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRepresentable.swift; sourceTree = "<group>"; };
+		84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perspective.swift; sourceTree = "<group>"; };
+		84E5F1C02DBEA5D600D41A4F /* RoadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadView.swift; sourceTree = "<group>"; };
 		9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.debug.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.debug.xcconfig"; sourceTree = "<group>"; };
 		BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.release.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -137,6 +139,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				84E5F1BD2DBEA5A200D41A4F /* Perspective */,
 				8480B7062DA94A9200BF884F /* Info.plist */,
 				8480B7032DA6B74700BF884F /* UserMessage */,
 				84AE14712DA1479C0094A792 /* Registration */,
@@ -168,7 +171,6 @@
 			isa = PBXGroup;
 			children = (
 				84C9262E2DAFCC4F009B1FFA /* FullScreenVideoView.swift */,
-				84E5F1932DB1517C00D41A4F /* Perspective.swift */,
 				84E5F1952DB8CC9100D41A4F /* WebViewRepresentable.swift */,
 			);
 			path = Video;
@@ -216,6 +218,15 @@
 				8480B6FF2DA6B29300BF884F /* FormFieldView.swift */,
 			);
 			path = Registration;
+			sourceTree = "<group>";
+		};
+		84E5F1BD2DBEA5A200D41A4F /* Perspective */ = {
+			isa = PBXGroup;
+			children = (
+				84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */,
+				84E5F1C02DBEA5D600D41A4F /* RoadView.swift */,
+			);
+			path = Perspective;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -340,7 +351,6 @@
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				84AE147B2DA148590094A792 /* RobotManager.swift in Sources */,
-				84E5F1942DB1517C00D41A4F /* Perspective.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */,
 				84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */,
@@ -358,7 +368,9 @@
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
 				84AE14692DA147020094A792 /* SocketManager.swift in Sources */,
+				84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */,
 				84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */,
+				84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
