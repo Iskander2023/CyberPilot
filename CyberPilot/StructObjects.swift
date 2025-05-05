@@ -38,7 +38,17 @@ struct PeripheralDevice: Identifiable {
 }
 
 struct ServerRegisterCommand {
-    let registerServerMsg: [String: Any] = ["type": "register", "role": "server"]
+    //let registerServerMsg: [String: Any] = ["type": "register", "role": "server", "id": "robot1", "robotid": "robot1", "token": "token"]
+    func registerServerMsg(token: String, robotId: String) -> [String: Any] {
+            return [
+                "type": "register",
+                "role": "operator",
+                "id": robotId,
+                "robotid": robotId,
+                "token": token
+            ]
+        }
+
     let listMsg: [String: Any] = ["type": "listRobots"]
     let registerOperatorMsg: [String: Any] = ["type": "register", "role": "operator", "robotId": "KIBORG_YBIVCA"]
 }

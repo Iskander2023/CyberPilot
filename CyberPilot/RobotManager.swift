@@ -12,11 +12,12 @@ class RobotManager: ObservableObject {
     @Published var userLogin: String = ""
     @Published var isAuthenticated = false
     @Published var isPhoneNumber = false
-    
+    @Published var token: String?
     
     func logout() {
         isAuthenticated = false
         userLogin = ""
+        //token = nil
     }
 }
 //    @Published var isAuthenticated = false {

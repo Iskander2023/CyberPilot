@@ -30,6 +30,7 @@ struct FullScreenVideoView: View {
     @State private var touchIndicatorPosition: CGPoint = .zero
     @State private var angleUpdateTimer: Timer?
     @State private var arrowLength: CGFloat = 0.0
+    @State private var perspectiveLength: Int = 0
 
     @State private var accumulatedRotation: CGFloat = 0
     @State private var lastUpdateTime: Date?
@@ -45,7 +46,8 @@ struct FullScreenVideoView: View {
                 // 2. Перспектива
                 RoadView(horizontalPixels: geometry.size.width,
                          verticalPixels: geometry.size.height,
-                         angle: currentAngle
+                         angle: currentAngle,
+                         segmentsCount: perspectiveLength
                 )
                 .animation(.linear(duration: 0.2), value: offsetAngle)
                 
@@ -78,6 +80,8 @@ struct FullScreenVideoView: View {
             }
         }
     }
+    
+    
 
     private func touchIndicatorView() -> some View {
         ZStack {
@@ -97,7 +101,7 @@ struct FullScreenVideoView: View {
     private func DirectionLabels() -> some View {
         ZStack {
             ForEach(0..<8) { i in
-                let angle = Double(i) * .pi / 4 - .pi / 8 // каждый шаг — 45°
+                let angle = Double(i) * .pi / 4 - .pi / 8
                 let radius = touchIndicatorSize / 2 - 15
                 let center = CGPoint(x: touchIndicatorSize / 2, y: touchIndicatorSize / 2)
                 let x = center.x + radius * cos(angle)
@@ -156,7 +160,7 @@ struct FullScreenVideoView: View {
     }
 
 
-    /// Инициализирует индикатор касания.
+    // Инициализирует индикатор касания.
     private func initializeTouchIndicator(value: DragGesture.Value) {
         initialTouchPoint = value.startLocation
         touchIndicatorPosition = initialTouchPoint
@@ -165,7 +169,7 @@ struct FullScreenVideoView: View {
         startAngleUpdateTimer()
     }
 
-    /// Обновляет размер индикатора касания.
+    // Обновляет размер индикатора касания.
     private func updateTouchIndicatorSize(currentPoint: CGPoint) {
         let distX = currentPoint.x - initialTouchPoint.x
         let distY = currentPoint.y - initialTouchPoint.y
@@ -176,7 +180,18 @@ struct FullScreenVideoView: View {
             distance = maxSizeTach
         }
         arrowLength = distance
+        updateLenghtPerspective(distance: distance) // меняем длину перспективы
         touchIndicatorSize = min(max(minSize, distance * 2), maxSize)
+    }
+    
+    private func updateLenghtPerspective(distance: CGFloat) {
+        if distance > 50 && distance <= 80 {
+            perspectiveLength = 4
+        } else if distance > 80 {
+            perspectiveLength = 5
+        } else {
+            perspectiveLength = 3
+        }
     }
 
     
@@ -218,7 +233,7 @@ struct FullScreenVideoView: View {
         }
         previousAngle = angle
         currentAngle = angle
-    
+        print("currentAngle", currentAngle)
         let flags = controlFlags(for: angle)
         updateControls(with: flags)
     }
@@ -232,6 +247,8 @@ struct FullScreenVideoView: View {
         accumulatedRotation = 0
         lastUpdateTime = nil
         //
+        perspectiveLength = 3
+        currentAngle = 1.5 * .pi
         withAnimation(.easeOut(duration: 0.3)) {
                 touchIndicatorVisible = false
             }
@@ -332,467 +349,3 @@ struct CloseButton: View {
     }
 }
 
-
-
-//    private func DirectionArc(
-//        curveAngle: Double,
-//        width: CGFloat,
-//        height: CGFloat,
-//        startX: CGFloat,
-//        startY: CGFloat
-//    ) -> Path {
-//        let start = CGPoint(x: width * startX, y: height - startY)
-//        let adjustedAngle = CGFloat(curveAngle)
-//        print(adjustedAngle)
-//        let numberOfPoints = 15
-//        let stepDistance: CGFloat = 15
-//        var point = start
-//        var angle = adjustedAngle - 1.5 * .pi
-//        let da = angle / CGFloat(numberOfPoints)
-//        return Path { path in
-//            for i in 0..<numberOfPoints {
-//                let dx = stepDistance * sin(CGFloat(i) * da)
-//                let dy = -1 * stepDistance * cos(CGFloat(i) * da)
-//
-//                point = CGPoint(x: point.x + dx, y: point.y + dy)
-//
-//                path.addEllipse(in: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6))
-//            }
-//        }
-//    }
-
-
-
-//    private func DirectionArc(curveAngle: Double,
-//                              width: CGFloat,
-//                              height: CGFloat,
-//                              startX: CGFloat,
-//                              total_arc_length: CGFloat,
-//                              sensitivity: CGFloat,
-//                              startY: CGFloat) -> some View {
-//
-//        let radius: CGFloat = 500
-//        let centerY = height - 150
-//        // - 270° (прямо) → 0
-//        // - 0° (вправо) → +π/2
-//        // - 180° (влево) → -π/2
-//        // - 90° (назад) → ±π
-//
-//        var adjustedAngle = CGFloat(curveAngle - 3 * .pi / 2)
-//        if adjustedAngle < -.pi { adjustedAngle += 2 * .pi }
-//
-//        return Path { path in
-//            let start = CGPoint(x: width * startX, y: height - startY)
-//            let angle = adjustedAngle * sensitivity
-//            let end = CGPoint(
-//                x: width * startX + radius * sin(angle) * total_arc_length,
-//                y: centerY - radius * cos(angle) * total_arc_length
-//            )
-//            let control = CGPoint(
-//                x: (start.x + end.x) / 2,
-//                y: (start.y + end.y) / 2 - abs(radius * 0.3 * angle) //0.3
-//            )
-//
-//
-//
-//
-//            path.move(to: start)
-//            path.addQuadCurve(to: end, control: control)
-//        }
-//        .stroke(Color.red, lineWidth: 5)
-//    }
-//
-//
-//    private func perspective() -> some View {
-//        GeometryReader { geometry in
-//            ZStack {
-//
-//                DirectionArc(
-//                    curveAngle: curveAngle,
-//                    width: geometry.size.width,
-//                    height: geometry.size.height,
-//                    startX: start_point_left_horizontal,  // Смещена влево
-//                    total_arc_length: arc_length,
-//                    sensitivity: arc_sensitivity,
-//                    startY: start_point_vertical
-//                    )
-//
-//                DirectionArc(
-//                    curveAngle: curveAngle,
-//                    width: geometry.size.width,
-//                    height: geometry.size.height,
-//                    startX: start_point_right_horizontal,  // Смещена вправо
-//                    total_arc_length: arc_length,
-//                    sensitivity: arc_sensitivity,
-//                    startY: start_point_vertical
-//                )
-//            }
-//        }
-//        .allowsHitTesting(false)
-//    }
-
-
-
-
-//
-//struct FullScreenVideoView: View {
-//    var videoURL: String?
-//    var distance: CGFloat?
-//    let maxSize: CGFloat = 250
-//    let minSize: CGFloat = 100
-//    let maxSizeTach: CGFloat = 125
-//    
-//    let start_point_left_horizontal: CGFloat = 0.365
-//    let start_point_right_horizontal: CGFloat = 0.63
-//    let start_point_vertical: CGFloat = 32
-//    
-//    let arc_length: CGFloat = 0.05
-//    let arc_sensitivity: CGFloat = 1
-//    
-//    
-//    var commandSender: CommandSender
-//    
-//    @Environment(\.presentationMode) var presentationMode
-//    
-//    @State private var touchLocation: CGPoint? = nil
-//    @State private var initialTouchPoint: CGPoint = .zero
-//    @State private var currentAngle: CGFloat = 0.0
-//    @State private var previousAngle: CGFloat?
-//    @State private var touchIndicatorSize: CGFloat = 100
-//    @State private var touchIndicatorVisible = false
-//    @State private var touchIndicatorPosition: CGPoint = .zero
-//    @State private var angleUpdateTimer: Timer?
-//    @State private var arrowLength: CGFloat = 0.0
-//    @State private var isArc = false
-//    @State private var curveAngle: CGFloat = 0.0
-//    
-//    //@StateObject var perspective = Perspective()
-//    @StateObject var model = RoadModel()
-//    
-//    var body: some View {
-//        ZStack {
-//            // 1. WebView - самый нижний слой
-//            WebViewRepresentable(urlString: videoURL ?? "")
-//                .edgesIgnoringSafeArea(.all)
-//                .allowsHitTesting(false) // Отключаем взаимодействие
-//            
-//           //перспектива
-//            perspective()
-//            
-//            
-//            // 2. Touch Area - основной слой для жестов
-//            Color.clear
-//                .contentShape(Rectangle())
-//                .gesture(
-//                    DragGesture(minimumDistance: 0)
-//                                .onChanged { value in
-//                                    handleTouchChanged(value)
-//                                }
-//                                .onEnded { _ in
-//                                    resetTouchPad()
-//                                }
-//                )
-//            // 3. Визуализация касания
-//            if touchIndicatorVisible {
-//                touchIndicatorView()
-//            }
-//
-//            // 4. UI элементы - самый верхний слой
-//            CloseButton {
-//                presentationMode.wrappedValue.dismiss()
-//            }
-//        }
-//        .background(Color.black)
-//    }
-//    
-//
-//    private func touchIndicatorView() -> some View {
-//        ZStack {
-//            Circle()
-//                .stroke(Color.white.opacity(0.5), lineWidth: 2)
-//                .background(Circle().fill(Color.white.opacity(0.05)))
-//                .frame(width: touchIndicatorSize, height: touchIndicatorSize)
-//                .position(touchIndicatorPosition)
-//                .transition(.opacity)
-//
-//            DirectionArrow()
-//            DirectionLabels()
-//        }
-//    }
-//    
-//    private func DirectionArc(
-//        curveAngle: Double,
-//        width: CGFloat,
-//        height: CGFloat,
-//        startX: CGFloat,
-//        startY: CGFloat
-//    ) -> Path {
-//        let start = CGPoint(x: width * startX, y: height - startY)
-//        let adjustedAngle = CGFloat(curveAngle)
-//        let numberOfPoints = 15
-//        let stepDistance: CGFloat = 15
-//        var point = start
-//        var angle = adjustedAngle - 1.5 * .pi
-//        angle = atan2(sin(angle), cos(angle))  // Нормализация через тригонометрию
-//        angle = max(min(.pi/2, angle), -.pi/2)
-//        
-//        var direction: Bool = false
-//        if angle <= 0.5 * .pi {
-//            direction = true
-//        } else {
-//            angle = angle - .pi/2
-//        }
-//        let da = angle / CGFloat(numberOfPoints)
-//        return Path { path in
-//            for i in 0..<numberOfPoints {
-//                var angleZero: CGFloat = 0
-//                if !direction {
-//                    angleZero = .pi/2
-//                }
-//                
-//                let dx = (CGFloat(1) - 0.3 * CGFloat(i) / CGFloat(numberOfPoints)) * stepDistance * sin(angleZero + CGFloat(i) * da)
-//                let dy = -1 * stepDistance * cos(angleZero + CGFloat(i) * da)
-//                
-//                point = CGPoint(x: point.x + dx, y: point.y + dy)
-//                
-//                path.addEllipse(in: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6))
-//            }
-//        }
-//    }
-//    
-//    
-//    private func perspective() -> some View {
-//        GeometryReader { geometry in
-//            DirectionArc(
-//                curveAngle: curveAngle,
-//                width: geometry.size.width,
-//                height: geometry.size.height,
-//                startX: 0.5,
-//                startY: 40
-//            )
-//            .stroke(Color.blue, lineWidth: 5)
-//        }
-//        .allowsHitTesting(false)
-//    }
-//
-//    
-//    private func DirectionLabels() -> some View {
-//        ZStack {
-//            ForEach(0..<8) { i in
-//                let angle = Double(i) * .pi / 4 - .pi / 8 // каждый шаг — 45°
-//                let radius = touchIndicatorSize / 2 - 15
-//                let center = CGPoint(x: touchIndicatorSize / 2, y: touchIndicatorSize / 2)
-//                let x = center.x + radius * cos(angle)
-//                let y = center.y + radius * sin(angle)
-//                Circle()
-//                    .frame(width: 6, height: 6)
-//                    .foregroundColor(.green)
-//                    .position(x: x, y: y)
-//            }
-//        }
-//        .frame(width: touchIndicatorSize, height: touchIndicatorSize)
-//        .position(touchIndicatorPosition)
-//    }
-//
-//
-//    private func DirectionArrow() -> some View {
-//        Path { path in
-//            let center = CGPoint(x: touchIndicatorSize / 2, y: touchIndicatorSize / 2)
-//            path.move(to: center)
-//
-//            let endPoint = CGPoint(
-//                x: center.x + arrowLength * cos(currentAngle),
-//                y: center.y + arrowLength * sin(currentAngle)
-//            )
-//            path.addLine(to: endPoint)
-//
-//            let arrowHeadLength: CGFloat = 15
-//            let angle1 = currentAngle + .pi * 0.8
-//            let angle2 = currentAngle + .pi * 1.2
-//
-//            path.move(to: endPoint)
-//            path.addLine(to: CGPoint(
-//                x: endPoint.x + arrowHeadLength * cos(angle1),
-//                y: endPoint.y + arrowHeadLength * sin(angle1)
-//            ))
-//
-//            path.move(to: endPoint)
-//            path.addLine(to: CGPoint(
-//                x: endPoint.x + arrowHeadLength * cos(angle2),
-//                y: endPoint.y + arrowHeadLength * sin(angle2)
-//            ))
-//        }
-//        .stroke(Color.blue, lineWidth: 4)
-//        .frame(width: touchIndicatorSize, height: touchIndicatorSize)
-//        .position(touchIndicatorPosition)
-//    }
-//
-//    
-//    private func handleTouchChanged(_ value: DragGesture.Value) {
-//        if !touchIndicatorVisible {
-//            initializeTouchIndicator(value: value)
-//        }
-//        
-//        updateTouchIndicatorSize(currentPoint: value.location)
-//        updateAngle(for: value.location)
-//    }
-//
-//
-//    /// Инициализирует индикатор касания.
-//    private func initializeTouchIndicator(value: DragGesture.Value) {
-//        initialTouchPoint = value.startLocation
-//        touchIndicatorPosition = initialTouchPoint
-//        touchIndicatorSize = 100
-//        touchIndicatorVisible = true
-//        startAngleUpdateTimer()
-//    }
-//
-//    /// Обновляет размер индикатора касания.
-//    private func updateTouchIndicatorSize(currentPoint: CGPoint) {
-//        let distX = currentPoint.x - initialTouchPoint.x
-//        let distY = currentPoint.y - initialTouchPoint.y
-//        var distance = sqrt(distX * distX + distY * distY)
-//        
-//     
-//        if distance > maxSizeTach {
-//            distance = maxSizeTach
-//        }
-//        arrowLength = distance
-//        touchIndicatorSize = min(max(minSize, distance * 2), maxSize)
-//    }
-//
-//    
-//    private func updateAngle(for touchLocation: CGPoint) {
-//        let dx = touchLocation.x - touchIndicatorPosition.x
-//        let dy = touchLocation.y - touchIndicatorPosition.y
-//        
-//        var angle = atan2(dy, dx)
-//        if angle < 0 {
-//            angle += 2 * .pi
-//        }
-//        
-//        if let prev = previousAngle {
-//            var delta = angle - prev
-//            if delta > .pi {
-//                delta -= 2 * .pi
-//            } else if delta < -.pi {
-//                delta += 2 * .pi
-//            }
-//            
-//            let threshold: CGFloat = 0.1 // Игнорирует незначительные движения, чтобы не было "дребезга" управления 0.05
-//            if abs(delta) > threshold {
-//                if delta > 0 {
-//                    commandSender.turnRight(isPressed: true)
-//                    commandSender.turnLeft(isPressed: false)
-//                } else {
-//                    commandSender.turnLeft(isPressed: true)
-//                    commandSender.turnRight(isPressed: false)
-//                }
-//            }
-//        }
-//        curveAngle = angle
-//        previousAngle = angle
-//        currentAngle = angle
-//    
-//        let flags = controlFlags(for: angle)
-//        updateControls(with: flags)
-//    }
-//
-//    private func resetTouchPad() {
-//        angleUpdateTimer?.invalidate()
-//        angleUpdateTimer = nil
-//        previousAngle = nil
-//        
-//        withAnimation {
-//            touchIndicatorVisible = false
-//        }
-//        
-//        commandSender.moveForward(isPressed: false)
-//        commandSender.moveBackward(isPressed: false)
-//        commandSender.turnLeft(isPressed: false)
-//        commandSender.turnRight(isPressed: false)
-//        
-//    }
-//
-//    
-//    private func startAngleUpdateTimer() {
-//        angleUpdateTimer?.invalidate()
-//        angleUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
-//            let flags = controlFlags(for: currentAngle)
-//            updateControls(with: flags)
-//        }
-//    }
-//    
-//    
-//    private func updateControls(with flags: [String: Bool]) {
-//        commandSender.moveForward(isPressed: flags["forward"] ?? false)
-//        commandSender.moveBackward(isPressed: flags["backward"] ?? false)
-//        commandSender.turnLeft(isPressed: flags["left"] ?? false)
-//        commandSender.turnRight(isPressed: flags["right"] ?? false)
-//    }
-//    
-//    
-//    func controlFlags(for angle: CGFloat) -> [String: Bool] {
-//        let degrees = angle * 180 / .pi
-//
-//        var flags = [
-//            "forward": false,
-//            "backward": false,
-//            "left": false,
-//            "right": false
-//        ]
-//
-//        switch degrees {
-//        case 337.5..<360, 0..<22.5:
-//            flags["right"] = true
-//        case 22.5..<67.5:
-//            flags["right"] = true
-//            flags["backward"] = true
-//        case 67.5..<112.5:
-//            flags["backward"] = true
-//        case 112.5..<157.5:
-//            flags["left"] = true
-//            flags["backward"] = true
-//        case 157.5..<202.5:
-//            flags["left"] = true
-//        case 202.5..<247.5:
-//            flags["left"] = true
-//            flags["forward"] = true
-//        case 247.5..<292.5:
-//            flags["forward"] = true
-//        case 292.5..<337.5:
-//            flags["right"] = true
-//            flags["forward"] = true
-//        default:
-//            break
-//        }
-//
-//        return flags
-//    }
-//}
-//
-//
-//struct CloseButton: View {
-//    var action: () -> Void
-//    
-//    var body: some View {
-//        VStack {
-//            HStack {
-//                Button(action: action) {
-//                    Text("Закрыть")
-//                        .font(.system(size: 16, weight: .bold))
-//                        .foregroundColor(.white)
-//                        .padding(.horizontal, 16)
-//                        .padding(.vertical, 8)
-//                        .background(Color.black.opacity(0.5))
-//                        .cornerRadius(8)
-//                }
-//                .padding(.top, 16)
-//                .padding(.leading, 16)
-//                
-//                Spacer()
-//            }
-//            Spacer()
-//        }
-//    }
-//}

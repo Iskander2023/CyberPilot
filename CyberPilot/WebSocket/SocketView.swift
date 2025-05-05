@@ -10,10 +10,15 @@ import WebKit
 
 struct SocketView: View {
     @ObservedObject var stateManager: RobotManager
-    @StateObject private var viewModel = SocketController()
+    @StateObject private var viewModel: SocketController
     @State private var showVideoView = false
     @State private var selectedConnectionType = 0
     @State private var webView: WKWebView? = nil
+    
+    init(stateManager: RobotManager) {
+            self._stateManager = ObservedObject(initialValue: stateManager)
+        _viewModel = StateObject(wrappedValue: SocketController(robotManager: stateManager))
+        }
 
     var body: some View {
         ZStack {

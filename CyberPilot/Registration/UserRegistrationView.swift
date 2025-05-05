@@ -23,7 +23,16 @@ struct UserRegistarationView: View {
                     .bold()
                     .padding(.bottom, 30)
                 
-                FormField(fieldName: "Логин", fieldValue: $userRegistrationManager.userLogin)
+                FormField(fieldName: "Почта", fieldValue: $userRegistrationManager.email)
+                RequirementText(
+                    iconColor: userRegistrationManager.isMailValid ? Color.secondary
+                    : Color(red: 220/255, green: 220/255, blue: 220/255),
+                    text: "Email",
+                    isStrikeThrough: userRegistrationManager.isMailValid
+                )
+                .padding()
+                
+                FormField(fieldName: "Логин", fieldValue: $userRegistrationManager.userName)
                 RequirementText(
                     iconColor: userRegistrationManager.isLoginLengthValid ? Color.secondary
                     : Color(red: 220/255, green: 220/255, blue: 220/255),
@@ -62,7 +71,7 @@ struct UserRegistarationView: View {
                 Button(action: {
                     Task {
                         do {
-                            try await userRegistrationManager.registerUser(username: userRegistrationManager.userLogin, password: userRegistrationManager.password)
+                            try await userRegistrationManager.registerUser(email: userRegistrationManager.email, username: userRegistrationManager.userName, password: userRegistrationManager.password)
                         } catch {
                             print("Ошибка регистрации: \(error.localizedDescription)")
                         }

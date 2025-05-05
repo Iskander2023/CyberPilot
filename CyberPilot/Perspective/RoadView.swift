@@ -7,25 +7,24 @@
 import SwiftUI
 
 
-
 struct RoadView: View {
     @State private var roadWidth: CGFloat = 400
-    @State private var lineHeight: CGFloat = 150
+    @State private var lineHeight: CGFloat = 30
     @State private var segmentAngle: CGFloat = 0
-
-    let segmentsCount = 5
+    @State private var previousDegrees: CGFloat = 270
+    
     var horizontalPixels: CGFloat
     var verticalPixels: CGFloat
     var angle: CGFloat
-    @State private var direction: Bool = true
-    @State private var previousDegrees: CGFloat = 270
+    var segmentsCount: Int
+    
 
     var body: some View {
         VStack {
             Canvas { context, size in
                 let perspective = Perspective(horizontalPixels: horizontalPixels, verticalPixels: verticalPixels)
                 let bottom = perspective.bottomCentralPoint
-                let segmentHeight = lineHeight / CGFloat(segmentsCount)
+                let segmentHeight = lineHeight * CGFloat(segmentsCount)
                 let halfRoadWidth = roadWidth / 2
                 var bottomPoints: [(CGFloat, CGFloat)] = [(-halfRoadWidth, bottom), (halfRoadWidth, bottom)]
                 var upperPoints: [(CGFloat, CGFloat)] = []
@@ -38,20 +37,16 @@ struct RoadView: View {
                         bottomPoints: bottomPoints,
                         roadWidth: roadWidth
                     )
-
                     let points = [bottomPoints[0], upperPoints[0], upperPoints[1], bottomPoints[1]]
                     let projected = perspective.project(points: points)
-
                     var path = Path()
                     path.move(to: CGPoint(x: projected[0].0, y: size.height - projected[0].1))
                     for p in projected.dropFirst() {
                         path.addLine(to: CGPoint(x: p.0, y: size.height - p.1))
                     }
                     path.closeSubpath()
-
                     context.fill(path, with: .color(.clear.opacity(0.2)))
                     context.stroke(path, with: .color(.yellow), lineWidth: 2)
-
                     bottomPoints = upperPoints
                 }
             }
@@ -68,7 +63,6 @@ struct RoadView: View {
         var degrees = angle * 180 / .pi
         degrees = normalizeDegrees(degrees)
         let delta = shortestAngleDifference(from: previousDegrees, to: degrees)
-        direction = delta < 0
         var clampedDegrees = previousDegrees + delta
         clampedDegrees = min(max(clampedDegrees, 180), 360)
         previousDegrees = clampedDegrees

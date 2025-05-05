@@ -14,11 +14,12 @@ class UserRegistrationManager: ObservableObject {
     
     private weak var stateManager: RobotManager?
     
-    @Published var userLogin = ""
-    @Published var password = ""
-    @Published var passwordConfirm = ""
-    @Published var phoneNumber = "7"
-    @Published var confirmationCode = ""
+    @Published var email = "newuser@example.com"
+    @Published var userName = "Alex777"
+    @Published var password = "Sssssssss"
+    @Published var passwordConfirm = "Sssssssss"
+    @Published var phoneNumber = "79895317697"
+    @Published var confirmationCode = "3333"
     
     private var confirmationCodeAttempts = 0
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -34,15 +35,16 @@ class UserRegistrationManager: ObservableObject {
     @Published var isConfirmationCodeValid = false
     @Published var isConfirmationCodeLenghtValid = false
     @Published var isConfirmationCodeTrue = false
+    @Published var isMailValid = false
     
-    
-    
+
     
     var isRegFormValid: Bool {
         return isLoginLengthValid &&
                isPasswordLengthValid &&
                isPasswordCapitalLetter &&
-               isPasswordConfirmValid
+               isPasswordConfirmValid &&
+               isMailValid
     }
 
     
@@ -64,7 +66,16 @@ class UserRegistrationManager: ObservableObject {
     init(stateManager: RobotManager) {
         self.stateManager = stateManager
         
-        $userLogin
+        $email
+            .map { email in
+                        let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+                        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailPattern)
+                        return emailPredicate.evaluate(with: email)
+                    }
+                .assign(to: \.isMailValid, on: self)
+                .store(in: &cancellableSet)
+        
+        $userName
             .receive(on: RunLoop.main)
             .map { userLogin in
                 return userLogin.count >= 4
@@ -153,8 +164,8 @@ class UserRegistrationManager: ObservableObject {
         }
     }
     
-    func registerUser(username: String, password: String) async throws {
-        guard let url = URL(string: "http://127.0.0.1:8000/users/register") else {
+    func registerUser(email: String, username: String, password: String) async throws {
+        guard let url = URL(string: "http://selekpann.tech:3000/register") else {
             throw URLError(.badURL)
         }
 
@@ -163,23 +174,84 @@ class UserRegistrationManager: ObservableObject {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let body: [String: Any] = [
+            "email": email,
             "username": username,
             "password": password
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        self.logger.info("body: \(body)")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
-        await MainActor.run {
-            self.logger.info("User registered successfully!")
-            self.stateManager?.isAuthenticated = true
-            self.stateManager?.userLogin = username
+        
+        // Правильное декодирование ответа с русским текстом
+        let responseString = String(data: data, encoding: .utf8) ?? "No response data"
+        print("Raw server response:", responseString)
+        
+        do {
+            if let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                print("Decoded server response:", jsonResponse)
+            }
+        } catch {
+            print("Failed to decode JSON:", error)
+        }
+
+        switch httpResponse.statusCode {
+        case 201:
+            // Успешная регистрация
+            await MainActor.run {
+                self.logger.info("User registered successfully!")
+                self.stateManager?.isAuthenticated = true
+                self.stateManager?.userLogin = username
+            }
+        case 409:
+            // Пользователь уже существует
+            let errorMessage = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? "Пользователь с таким email уже зарегистрирован"
+            throw NSError(
+                domain: "RegistrationError",
+                code: 409,
+                userInfo: [NSLocalizedDescriptionKey: errorMessage]
+            )
+        case 400...499:
+            // Другие клиентские ошибки
+            let errorMessage = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? "Неверные данные регистрации"
+            throw NSError(
+                domain: "RegistrationError",
+                code: httpResponse.statusCode,
+                userInfo: [NSLocalizedDescriptionKey: errorMessage]
+            )
+        case 500...599:
+            // Серверные ошибки
+            let encodings: [String.Encoding] = [.utf8, .windowsCP1251, .isoLatin1]
+                    
+            for encoding in encodings {
+                if let message = String(data: data, encoding: encoding),
+                   !message.contains("???") {
+                    throw ServerError.serverError(message: message)
+                }
+            }
+            throw URLError(.badServerResponse)
+        default:
+            throw URLError(.unknown)
         }
     }
-
+    
+    
+    enum ServerError: Error {
+        case serverError(message: String)
+        case networkError(URLError)
+        
+        var localizedDescription: String {
+            switch self {
+            case .serverError(let message):
+                return message
+            case .networkError(let error):
+                return error.localizedDescription
+            }
+        }
+    }
         
         
     func sendVerificationCode(to phoneNumber: String, code: String) {

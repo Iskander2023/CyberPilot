@@ -11,7 +11,6 @@ struct Robot_ControllerApp: App {
     @StateObject private var stateManager = RobotManager()
     @StateObject private var alertManager = AlertManager()
 
-
     var body: some Scene {
         WindowGroup {
             ContentView(stateManager: stateManager)

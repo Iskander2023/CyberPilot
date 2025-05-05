@@ -11,16 +11,17 @@ import Combine
 class LoginManager: ObservableObject {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private weak var stateManager: RobotManager?
+    let login_url = "http://selekpann.tech:3000/login"
     
-    @Published var userLogin = "User"
-    @Published var password = "Ssssssss"
+    @Published var email = "newuser@example.com"
+    @Published var password = "Sssssssss"
     
-    @Published var isLoginLengthValid = false
+    @Published var isMailValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
 
     var isLoginFormValid: Bool {
-        return isLoginLengthValid && isPasswordCapitalLetter
+        return isMailValid && isPasswordCapitalLetter
     }
 
     private var cancellableSet: Set<AnyCancellable> = []
@@ -28,41 +29,45 @@ class LoginManager: ObservableObject {
     init(stateManager: RobotManager) {
         self.stateManager = stateManager
         
-        $userLogin
-                .map { $0.count >= 4 }
-                .assign(to: \.isLoginLengthValid, on: self)
+        $email
+            .map { email in
+                        let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+                        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailPattern)
+                        return emailPredicate.evaluate(with: email)
+                    }
+                .assign(to: \.isMailValid, on: self)
                 .store(in: &cancellableSet)
             
-            $password
-                .map { $0.count >= 8 }
-                .assign(to: \.isPasswordLengthValid, on: self)
-                .store(in: &cancellableSet)
-            
-            $password
-                .map { $0.range(of: "[A-Z]", options: .regularExpression) != nil }
-                .assign(to: \.isPasswordCapitalLetter, on: self)
-                .store(in: &cancellableSet)
+        $password
+            .map { $0.count >= 8 }
+            .assign(to: \.isPasswordLengthValid, on: self)
+            .store(in: &cancellableSet)
+        
+        $password
+            .map { $0.range(of: "[A-Z]", options: .regularExpression) != nil }
+            .assign(to: \.isPasswordCapitalLetter, on: self)
+            .store(in: &cancellableSet)
     }
 
 
-    func login(username: String, password: String) async throws -> String {
+    func login(email: String, password: String) async throws -> String {
         // Заглушка: если тестовый пользователь
-        if username == "User" && password == "Ssssssss" {
+        if email == "User" && password == "DiMeKo2025" {
             await MainActor.run {
                 self.stateManager?.isAuthenticated = true
-                self.stateManager?.userLogin = username
+                //self.stateManager?.userLogin = emeil
             }
             return "mock_token_for_testuser"
         }
         //
-        guard let url = URL(string: "http://127.0.0.1:8000/users/login") else {
+        guard let url = URL(string: login_url) else {
             throw URLError(.badURL)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let body: [String: Any] = [
-            "username": username,
+            "email": email,
             "password": password
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -71,16 +76,20 @@ class LoginManager: ObservableObject {
             throw URLError(.badServerResponse)
         }
         let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        guard let accessToken = jsonResponse?["access_token"] as? String else {
+    
+        guard let token = jsonResponse?["token"] as? String else {
             throw NSError(domain: "LoginError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Token not found in response"])
         }
+        
         await MainActor.run {
             self.logger.info("User login successfully!")
+            self.stateManager?.token = token
+            logger.info("\(String(describing: self.stateManager?.token))")
             self.stateManager?.isAuthenticated = true
-            self.stateManager?.userLogin = username
+            
         }
 
-        return accessToken
+        return token
     }
 }
 

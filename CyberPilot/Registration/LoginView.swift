@@ -29,12 +29,12 @@ struct LoginView: View {
                     .bold()
                     .padding(.bottom, 30)
                 
-                FormField(fieldName: "Логин", fieldValue: $loginManager.userLogin)
+                FormField(fieldName: "Логин", fieldValue: $loginManager.email)
                 RequirementText(
-                    iconColor: loginManager.isLoginLengthValid ? Color.secondary
+                    iconColor: loginManager.isMailValid ? Color.secondary
                     : Color(red: 220/255, green: 220/255, blue: 220/255),
                     text: "Минимум 4 символа",
-                    isStrikeThrough: loginManager.isLoginLengthValid
+                    isStrikeThrough: loginManager.isMailValid
                 )
                 .padding()
                 
@@ -51,9 +51,9 @@ struct LoginView: View {
                     Button(action: {
                         Task {
                             do {
-                                let token = try await loginManager.login(username: loginManager.userLogin, password: loginManager.password)
+                                let token = try await loginManager.login(email: loginManager.email, password: loginManager.password)
                                 isLoginSuccessful = true
-                                print("Успешный вход, токен: \(token)")
+                                print("Успешный вход")
                             } catch {
                                 print("Ошибка входа: \(error.localizedDescription)")
                             }

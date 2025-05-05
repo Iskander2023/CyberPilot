@@ -16,10 +16,23 @@ class SocketManager: NSObject, WebSocketDelegate {
     var onMessageReceived: (([String: Any]) -> Void)?
     let connectionStatus = PassthroughSubject<Bool, Never>()
     let receivedMessages = PassthroughSubject<[String: Any], Never>()
-
     
-    override init() {
+    
+    @Published var token: String?
+    private var cancellables = Set<AnyCancellable>()
+    var robotManager: RobotManager
+    
+    init(robotManager: RobotManager) {
+        self.robotManager = robotManager
         super.init()
+        // Подписка на изменения token
+        self.robotManager.$token
+            .sink { [weak self] newToken in
+                guard let self = self else { return }
+                self.token = newToken
+                self.logger.info("Получен новый токен: \(newToken ?? "nil")")
+            }
+            .store(in: &cancellables)
     }
     
     
@@ -94,6 +107,7 @@ class SocketManager: NSObject, WebSocketDelegate {
             self.logger.info("Ошибка: не удалось закодировать JSON")
             return
         }
+        self.logger.info("\(jsonString)")
         sendCommand(jsonString)
     }
 
@@ -113,6 +127,20 @@ class SocketManager: NSObject, WebSocketDelegate {
         switch event {
         case .connected(let headers):
             isConnected = true
+            guard let validToken = token else {
+                    logger.info("Токен отсутствует — регистрация не отправлена.")
+                    return
+                }
+            logger.info("\(String(describing: validToken))")
+            let reg: [String: Any] = [
+                    "type": "register",
+                    "role": "operator", 
+                    "id": "robot1",
+                    "robotId": "robot1",
+                    "token": validToken
+                ]
+            sendJSONCommand(reg)
+            
             self.logger.info("Connection established. Headers: \(headers)")
             DispatchQueue.main.async {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: true)

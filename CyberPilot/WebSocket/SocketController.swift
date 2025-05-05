@@ -8,6 +8,7 @@ import WebKit
 
 
 final class SocketController: ObservableObject {
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     @Published var isConnected = false
     @Published var host = "robot3.local"
     @Published var remoteURL = "ws://selekpann.tech:2000"
@@ -15,14 +16,15 @@ final class SocketController: ObservableObject {
     @Published var isLoading = false
     @Published var showError = false
     @Published var errorMessage = ""
-    @Published var videoURL = "https://selekpann.tech:8889/camera_robot_4"
-    
-
-    private let socketManager = SocketManager()
-    public let commandSender: CommandSender
+    @Published var videoURL = ""
+    @Published private var robotManager = RobotManager()
     private var cancellables = Set<AnyCancellable>()
+    private let socketManager: SocketManager
+    public let commandSender: CommandSender
     
-    init() {
+    init(robotManager: RobotManager) {
+        self.robotManager = robotManager
+        self.socketManager = SocketManager(robotManager: robotManager)
         self.commandSender = CommandSender(socketManager: socketManager)
         setupSocketObservers()
     }
@@ -50,15 +52,7 @@ final class SocketController: ObservableObject {
         videoURL = ""
     }
     
-    // заглушка для тестов
-    func simulateConnection() {
-        isLoading = false
-        isConnected = true
-        videoURL = "https://selekpann.tech:8889/camera_robot_4"  // Пример URL видео
-        commandSender.server_robot_available = true
-    }
 
-    
     func connectionTypeChanged(isLocal: Bool) {
         if isLocal {
             host = "robot3.local"
@@ -102,7 +96,7 @@ final class SocketController: ObservableObject {
         self.isConnected = isConnected
         
         if isConnected {
-            videoURL = "https://selekpann.tech:8889/camera_robot_4"
+            videoURL = self.videoURL
             commandSender.server_robot_available = true
         } else {
             commandSender.server_robot_available = false
@@ -133,11 +127,18 @@ final class SocketController: ObservableObject {
     
     
     private func connectToRemoteServer() {
+//        guard let token = self.token else {
+//                print("❌ Токен отсутствует")
+//                return
+//            }
+        //let robotId = "robot1"
         socketManager.connectSocket(urlString: remoteURL)
-        socketManager.sendJSONCommand(ServerRegisterCommand().registerServerMsg)
-        
+        //let message = ServerRegisterCommand().registerServerMsg(token: token, robotId: robotId)
+        //logger.info("\(message)")
+        //self.socketManager.sendJSONCommand(message) // регистрация
+        //logger.info("1")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.socketManager.sendJSONCommand(ServerRegisterCommand().listMsg)
+            self.socketManager.sendJSONCommand(ServerRegisterCommand().listMsg) //
         }
     }
     
@@ -153,15 +154,12 @@ final class SocketController: ObservableObject {
     private func handleRobotList(_ message: [String: Any]) {
         guard let robots = message["robots"] as? [Any], !robots.isEmpty else {
             showError("Нет доступных роботов")
-            
-            
-            
-            //disconnect() // вернуть на место после тестов!!!
-            
-            
+
+            disconnect() // вернуть на место после тестов!!!
             
             return
         }
+        logger.info("2")
         socketManager.sendJSONCommand(ServerRegisterCommand().registerOperatorMsg)
     }
     

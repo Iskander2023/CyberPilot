@@ -27,5 +27,68 @@
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DA44FED8-8B98-4CB5-8B67-376082FA0706"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CyberPilot/WebSocket/SocketController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
+            landmarkName = "connectToRemoteServer()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "DA44FED8-8B98-4CB5-8B67-376082FA0706 - 47189f6848bce2c7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CyberPilot.SocketController.connectToRemoteServer() -&gt; ()"
+                  moduleName = "CyberPilot"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/admin/Desktop/work/CyberPilot/CyberPilot/WebSocket/SocketController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "148"
+                  endingLineNumber = "148"
+                  offsetFromSymbolStart = "605">
+               </Location>
+               <Location
+                  uuid = "DA44FED8-8B98-4CB5-8B67-376082FA0706 - 47189f6848bce2a6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CyberPilot.SocketController.connectToRemoteServer() -&gt; ()"
+                  moduleName = "CyberPilot"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/admin/Desktop/work/CyberPilot/CyberPilot/WebSocket/SocketController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "149"
+                  endingLineNumber = "149"
+                  offsetFromSymbolStart = "605">
+               </Location>
+               <Location
+                  uuid = "DA44FED8-8B98-4CB5-8B67-376082FA0706 - 47189f6848bce285"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CyberPilot.SocketController.connectToRemoteServer() -&gt; ()"
+                  moduleName = "CyberPilot"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/admin/Desktop/work/CyberPilot/CyberPilot/WebSocket/SocketController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "150"
+                  endingLineNumber = "150"
+                  offsetFromSymbolStart = "473">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
