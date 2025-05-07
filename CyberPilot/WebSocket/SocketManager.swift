@@ -18,19 +18,17 @@ class SocketManager: NSObject, WebSocketDelegate {
     let receivedMessages = PassthroughSubject<[String: Any], Never>()
     
     
-    @Published var token: String?
+    var token: String?
     private var cancellables = Set<AnyCancellable>()
     var robotManager: RobotManager
     
     init(robotManager: RobotManager) {
         self.robotManager = robotManager
         super.init()
-        // Подписка на изменения token
         self.robotManager.$token
             .sink { [weak self] newToken in
                 guard let self = self else { return }
                 self.token = newToken
-                self.logger.info("Получен новый токен: \(newToken ?? "nil")")
             }
             .store(in: &cancellables)
     }
@@ -131,7 +129,6 @@ class SocketManager: NSObject, WebSocketDelegate {
                     logger.info("Токен отсутствует — регистрация не отправлена.")
                     return
                 }
-            logger.info("\(String(describing: validToken))")
             let reg: [String: Any] = [
                     "type": "register",
                     "role": "operator", 
@@ -141,7 +138,7 @@ class SocketManager: NSObject, WebSocketDelegate {
                 ]
             sendJSONCommand(reg)
             
-            self.logger.info("Connection established. Headers: \(headers)")
+            //self.logger.info("Connection established. Headers: \(headers)")
             DispatchQueue.main.async {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: true)
                 self.connectionStatus.send(true)

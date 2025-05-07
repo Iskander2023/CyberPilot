@@ -12,14 +12,16 @@ struct LoginView: View {
     @StateObject private var loginManager: LoginManager
     @StateObject var registrationManager: UserRegistrationManager
     @State private var isLoginSuccessful = false
-
-
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
+    
+    
     init(stateManager: RobotManager) {
         self.stateManager = stateManager
         _loginManager = StateObject(wrappedValue: LoginManager(stateManager: stateManager))
         _registrationManager = StateObject(wrappedValue: UserRegistrationManager(stateManager: stateManager))
     }
-
+    
     
     var body: some View {
         ScrollView {
@@ -51,11 +53,13 @@ struct LoginView: View {
                     Button(action: {
                         Task {
                             do {
-                                let token = try await loginManager.login(email: loginManager.email, password: loginManager.password)
+                                _ = try await loginManager.login(email: loginManager.email, password: loginManager.password)
                                 isLoginSuccessful = true
-                                print("Успешный вход")
                             } catch {
-                                print("Ошибка входа: \(error.localizedDescription)")
+                                //errorMessage = error.localizedDescription
+                                errorMessage = "Не удалось войти. Проверьте данные и попробуйте снова."
+                               //"The operation couldn’t be completed. (NSURLErrorDomain error -1011.)"
+                                showErrorAlert = true
                             }
                         }
                     }) {
@@ -83,6 +87,11 @@ struct LoginView: View {
                     }
                 }.padding(.top, 50)
                 
+            }
+            .alert("Ошибка входа", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage)
             }
         }
     }

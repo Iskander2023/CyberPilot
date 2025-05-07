@@ -2,7 +2,7 @@
 //  Perspective.swift
 //  CyberPilot
 //
-//  Created by Admin on 27/04/25.
+//  Created by Aleksandr Chumakov on 27/04/25.
 //
 
 import SwiftUI

@@ -10,90 +10,165 @@ import WebKit
 
 struct SocketView: View {
     @ObservedObject var stateManager: RobotManager
-    @StateObject private var viewModel: SocketController
+    @StateObject private var controller: SocketController
+    
+    // Локальные состояния представления
     @State private var showVideoView = false
     @State private var selectedConnectionType = 0
     @State private var webView: WKWebView? = nil
     
     init(stateManager: RobotManager) {
-            self._stateManager = ObservedObject(initialValue: stateManager)
-        _viewModel = StateObject(wrappedValue: SocketController(robotManager: stateManager))
-        }
+        self._stateManager = ObservedObject(initialValue: stateManager)
+        self._controller = StateObject(wrappedValue: SocketController(robotManager: stateManager))
+    }
 
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                Spacer()
-
-                if viewModel.isConnected {
-                    WebViewRepresentable(urlString: viewModel.videoURL)
-                        .frame(height: 350)
-                        .padding(.horizontal, 20)
-                }
-                    if !viewModel.isConnected {
-                        Picker("Connection Type", selection: $selectedConnectionType) {
-                            Text("Удалённый сервер").tag(0)
-                            Text("Локальная сеть").tag(1)
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal)
-                        .onChange(of: selectedConnectionType) {
-                            viewModel.connectionTypeChanged(isLocal: selectedConnectionType == 0)
-                        }
-                        
-                        Group {
-                            if selectedConnectionType == 0 {
-                                TextField("ws://selekpann.tech:2000", text: $viewModel.remoteURL)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                
-                            } else {
-                                TextField("robot3.local", text: $viewModel.host)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .disableAutocorrection(true)
-                            }
-                        }
-                        .frame(width: 250)
-                }
-                if viewModel.isConnected {
-                    HStack {
-                        Button(action: viewModel.disconnect) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 35))
-                                .foregroundColor(.red)
-                        }
-                    }
-                } else {
-                    Button(action: {
-                        viewModel.connect(isLocal: selectedConnectionType == 0)
-                    }) {
-                        Text("Connect")
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(8)
-                    }
-                }
-
-                Spacer()
+            mainContent
+                .padding(.top, 100)
+            
+            connectionIndicator
+            
+            cameraButton
+            
+            loadingIndicator
+        }
+        .onReceive(controller.connectionManager.$host) { _ in
+            controller.updateRobotSuffix()
+        }
+        .alert("Ошибка", isPresented: $controller.errorManager.showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(controller.errorManager.errorMessage)
+        }
+        .sheet(isPresented: $showVideoView) {
+            FullScreenVideoView(
+                videoURL: controller.videoStreamManager.videoURL,
+                commandSender: controller.commandSender
+            )
+        }
+        .sheet(isPresented: $controller.robotListManager.showRobotPicker) {
+            RobotSelectionView(
+                robots: controller.robotListManager.availableRobots
+            ) { selectedRobot in
+                controller.robotListManager.registerAsOperator(for: selectedRobot)
             }
-            .padding(.top, 100)
-
-            // 🔴 Индикатор подключения
-            HStack {
-                Text("R\(viewModel.robotSuffix):")
-                    .font(.system(size: 16, weight: .medium))
-
-                Circle()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(viewModel.isConnected ? .green : .red)
+        }
+    }
+    
+    // MARK: - Subviews
+    
+    private var mainContent: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            
+            if controller.connectionManager.isConnected {
+                WebViewRepresentable(urlString: controller.videoStreamManager.videoURL)
+                    .frame(height: 350)
+                    .padding(.horizontal, 20)
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-
-            // 🔵 Кнопка камеры (только если подключено)
-            if viewModel.isConnected {
+            
+            if !controller.connectionManager.isConnected {
+                connectionTypePicker
+                connectionAddressField
+            }
+            
+            connectionButton
+            
+            if !controller.connectionManager.isConnected {
+                testConnectionButton
+            }
+            
+            Spacer()
+        }
+    }
+    
+    private var connectionTypePicker: some View {
+        Picker("Connection Type", selection: $selectedConnectionType) {
+            Text("Удалённый сервер").tag(0)
+            Text("Локальная сеть").tag(1)
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+        .onChange(of: selectedConnectionType) {
+            controller.connectionManager.connectionTypeChanged(isLocal: selectedConnectionType == 1)
+        }
+    }
+    
+    private var connectionAddressField: some View {
+        Group {
+            if selectedConnectionType == 0 {
+                TextField("ws://selekpann.tech:2000", text: $controller.connectionManager.remoteURL)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            } else {
+                TextField("robot3.local", text: $controller.connectionManager.host)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .disableAutocorrection(true)
+            }
+        }
+        .frame(width: 250)
+    }
+    
+    private var connectionButton: some View {
+        Group {
+            if controller.connectionManager.isConnected {
+                disconnectButton
+            } else {
+                connectButton
+            }
+        }
+    }
+    
+    private var connectButton: some View {
+        Button(action: {
+            controller.connectionManager.connect(isLocal: selectedConnectionType == 1)
+        }) {
+            Text("Connect")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(8)
+        }
+    }
+    
+    private var disconnectButton: some View {
+        HStack {
+            Button(action: controller.connectionManager.disconnect) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 35))
+                    .foregroundColor(.red)
+            }
+        }
+    }
+    
+    private var testConnectionButton: some View {
+        Button("Симулировать подключение") {
+            controller.simulateRobotListResponse()
+        }
+        .foregroundColor(.white)
+        .padding()
+        .background(Color.orange)
+        .cornerRadius(8)
+    }
+    
+    private var connectionIndicator: some View {
+        HStack {
+            Text("R\(controller.robotSuffix):")
+                .font(.system(size: 16, weight: .medium))
+            
+            Circle()
+                .frame(width: 20, height: 20)
+                .foregroundColor(controller.connectionManager.isConnected ? .green : .red)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+    }
+    
+    private var cameraButton: some View {
+        Group {
+            if controller.connectionManager.isConnected {
                 VStack {
                     HStack {
                         Button(action: {
@@ -107,36 +182,23 @@ struct SocketView: View {
                         }
                         .padding(.top, 16)
                         .padding(.leading, 16)
-
+                        
                         Spacer()
                     }
                     Spacer()
                 }
             }
-
-            // ⏳ Загрузка
-            if viewModel.isLoading {
+        }
+    }
+    
+    private var loadingIndicator: some View {
+        Group {
+            if controller.isLoading {
                 ProgressView()
                     .scaleEffect(1.5)
                     .progressViewStyle(CircularProgressViewStyle(tint: .blue))
             }
         }
-        .onReceive(viewModel.$host) { _ in
-            viewModel.updateRobotSuffix()
-        }
-        .alert("Ошибка", isPresented: $viewModel.showError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(viewModel.errorMessage)
-        }
-        // 📹 Переход к VideoView
-        .sheet(isPresented: $showVideoView) {
-            FullScreenVideoView(
-                videoURL: viewModel.videoURL,
-                commandSender: viewModel.commandSender
-            )
-        }
     }
 }
-
 

@@ -19,6 +19,8 @@ class LoginManager: ObservableObject {
     @Published var isMailValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
+    var token: String?
+    var userName: String?
 
     var isLoginFormValid: Bool {
         return isMailValid && isPasswordCapitalLetter
@@ -60,6 +62,7 @@ class LoginManager: ObservableObject {
             return "mock_token_for_testuser"
         }
         //
+        
         guard let url = URL(string: login_url) else {
             throw URLError(.badURL)
         }
@@ -75,21 +78,22 @@ class LoginManager: ObservableObject {
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
-        let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-    
-        guard let token = jsonResponse?["token"] as? String else {
-            throw NSError(domain: "LoginError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Token not found in response"])
+        do {
+            let response = try JSONDecoder().decode(UserResponse.self, from: data)
+            self.token = response.token
+            self.userName = response.user.username
+        } catch {
+            logger.info("Error decoding: \(error)")
         }
-        
+
         await MainActor.run {
             self.logger.info("User login successfully!")
             self.stateManager?.token = token
-            logger.info("\(String(describing: self.stateManager?.token))")
+            self.stateManager?.userLogin = userName ?? ""
             self.stateManager?.isAuthenticated = true
             
         }
-
-        return token
+        return token ?? ""
     }
 }
 
