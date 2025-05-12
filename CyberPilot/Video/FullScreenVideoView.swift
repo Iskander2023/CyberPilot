@@ -246,7 +246,7 @@ struct FullScreenVideoView: View {
         //
         accumulatedRotation = 0
         lastUpdateTime = nil
-        //
+        // здесь можно установить значения по умолчанию
         perspectiveLength = 3
         currentAngle = 1.5 * .pi
         withAnimation(.easeOut(duration: 0.3)) {

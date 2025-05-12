@@ -123,7 +123,7 @@ class SocketManager: NSObject, WebSocketDelegate {
 
     func didReceive(event: WebSocketEvent, client: WebSocketClient) {
         switch event {
-        case .connected(let headers):
+        case .connected(_):
             isConnected = true
             guard let validToken = token else {
                     logger.info("Токен отсутствует — регистрация не отправлена.")

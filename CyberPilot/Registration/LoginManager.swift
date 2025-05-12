@@ -14,7 +14,8 @@ class LoginManager: ObservableObject {
     let login_url = "http://selekpann.tech:3000/login"
     
     @Published var email = "newuser@example.com"
-    @Published var password = "Sssssssss"
+//    @Published var password = "Sssssssss"
+    @Published var password = "DiMeKo2025"
     
     @Published var isMailValid = false
     @Published var isPasswordLengthValid = false
@@ -54,7 +55,7 @@ class LoginManager: ObservableObject {
 
     func login(email: String, password: String) async throws -> String {
         // Заглушка: если тестовый пользователь
-        if email == "User" && password == "DiMeKo2025" {
+        if email == "newuser@example.com" && password == "DiMeKo2025" {
             await MainActor.run {
                 self.stateManager?.isAuthenticated = true
                 //self.stateManager?.userLogin = emeil
@@ -73,15 +74,19 @@ class LoginManager: ObservableObject {
             "email": email,
             "password": password
         ]
+        logger.info("отправлено \(body)")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
+        logger.info("\(httpResponse)")
         do {
             let response = try JSONDecoder().decode(UserResponse.self, from: data)
+            logger.info("\(response)")
             self.token = response.token
             self.userName = response.user.username
+            logger.info("\(String(describing: token)), \(String(describing: userName))")
         } catch {
             logger.info("Error decoding: \(error)")
         }

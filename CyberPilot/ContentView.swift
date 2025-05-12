@@ -32,7 +32,7 @@ struct ContentView: View {
                         .font(.system(size: 16))
                         .foregroundColor(.primary)
                 }
-            
+                
                 ToolbarItem {
                     Button(action: {
                         stateManager.logout()
@@ -47,7 +47,8 @@ struct ContentView: View {
             }
         }
     }
-        
+    
+    @State private var loadedMap: OccupancyGridMap? = nil
     
     private var mainContentView: some View {
         VStack {
@@ -60,8 +61,19 @@ struct ContentView: View {
                     .tabItem {
                         Label("Bluetooth", systemImage: "antenna.radiowaves.left.and.right")
                     }
+                MapView(map: loadedMap)
+                    .tabItem {
+                        Label("Map", systemImage: "map")
+                    }
             }
             .padding(.top, 10)
+        }
+        .onAppear {
+            if let path = Bundle.main.path(forResource: "map", ofType: "yaml") {
+                self.loadedMap = loadOccupancyGridMap(from: path)
+            } else {
+                print("Файл не найден в Bundle")
+            }
         }
     }
 }
