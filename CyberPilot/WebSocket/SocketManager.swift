@@ -123,7 +123,7 @@ class SocketManager: NSObject, WebSocketDelegate {
 
     func didReceive(event: WebSocketEvent, client: WebSocketClient) {
         switch event {
-        case .connected(_):
+        case .connected(let headers):
             isConnected = true
             guard let validToken = token else {
                     logger.info("Токен отсутствует — регистрация не отправлена.")
@@ -138,7 +138,7 @@ class SocketManager: NSObject, WebSocketDelegate {
                 ]
             sendJSONCommand(reg)
             
-            //self.logger.info("Connection established. Headers: \(headers)")
+            self.logger.info("Connection established. Headers: \(headers)")
             DispatchQueue.main.async {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: true)
                 self.connectionStatus.send(true)

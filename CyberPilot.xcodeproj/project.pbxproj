@@ -9,9 +9,11 @@
 /* Begin PBXBuildFile section */
 		5C3F139D1E22022C67C74C32 /* Pods_CyberPilot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1762666A9678416263BA440C /* Pods_CyberPilot.framework */; };
 		8406345A2DD24054007E0E1F /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 840634592DD24054007E0E1F /* Yams */; };
-		8406345C2DD243E8007E0E1F /* StructObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8406345B2DD243E8007E0E1F /* StructObjects.swift */; };
-		8406345E2DD244F4007E0E1F /* MapLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8406345D2DD244F4007E0E1F /* MapLoader.swift */; };
+		8406345E2DD244F4007E0E1F /* MapServise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8406345D2DD244F4007E0E1F /* MapServise.swift */; };
 		840634602DD24CE1007E0E1F /* map.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 8406345F2DD24CE1007E0E1F /* map.yaml */; };
+		840634622DD4A9B1007E0E1F /* MapStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634612DD4A9B1007E0E1F /* MapStructs.swift */; };
+		840634642DD4B00E007E0E1F /* BluetoothStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634632DD4B00E007E0E1F /* BluetoothStructs.swift */; };
+		840634662DD4B071007E0E1F /* RegistrationStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634652DD4B071007E0E1F /* RegistrationStructs.swift */; };
 		8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */; };
 		8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */; };
 		8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */; };
@@ -46,15 +48,17 @@
 		84E5F1CD2DCB77E700D41A4F /* ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1CC2DCB77E700D41A4F /* ErrorManager.swift */; };
 		84E5F1CF2DCB781400D41A4F /* RobotListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1CE2DCB781400D41A4F /* RobotListManager.swift */; };
 		84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1D02DCB787700D41A4F /* ConnectionManager.swift */; };
-		84E5F1D42DCB8A3800D41A4F /* MapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1D32DCB8A3700D41A4F /* MapModel.swift */; };
+		84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1D32DCB8A3700D41A4F /* MapManager.swift */; };
 		84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1D52DCB8AAA00D41A4F /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1762666A9678416263BA440C /* Pods_CyberPilot.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CyberPilot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8406345B2DD243E8007E0E1F /* StructObjects.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StructObjects.swift; path = ../../../CyberPilot/CyberPilot/StructObjects.swift; sourceTree = "<group>"; };
-		8406345D2DD244F4007E0E1F /* MapLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLoader.swift; sourceTree = "<group>"; };
+		8406345D2DD244F4007E0E1F /* MapServise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapServise.swift; sourceTree = "<group>"; };
 		8406345F2DD24CE1007E0E1F /* map.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = map.yaml; sourceTree = "<group>"; };
+		840634612DD4A9B1007E0E1F /* MapStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapStructs.swift; sourceTree = "<group>"; };
+		840634632DD4B00E007E0E1F /* BluetoothStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothStructs.swift; sourceTree = "<group>"; };
+		840634652DD4B071007E0E1F /* RegistrationStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStructs.swift; sourceTree = "<group>"; };
 		8480B6F12DA17B9600BF884F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCaptchaView.swift; sourceTree = "<group>"; };
 		8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationCodeView.swift; sourceTree = "<group>"; };
@@ -92,7 +96,7 @@
 		84E5F1CC2DCB77E700D41A4F /* ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorManager.swift; sourceTree = "<group>"; };
 		84E5F1CE2DCB781400D41A4F /* RobotListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotListManager.swift; sourceTree = "<group>"; };
 		84E5F1D02DCB787700D41A4F /* ConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionManager.swift; sourceTree = "<group>"; };
-		84E5F1D32DCB8A3700D41A4F /* MapModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModel.swift; sourceTree = "<group>"; };
+		84E5F1D32DCB8A3700D41A4F /* MapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapManager.swift; sourceTree = "<group>"; };
 		84E5F1D52DCB8AAA00D41A4F /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		9420E363036D9FED3EB51496 /* Pods-CyberPilot.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.debug.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.debug.xcconfig"; sourceTree = "<group>"; };
 		BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CyberPilot.release.xcconfig"; path = "Target Support Files/Pods-CyberPilot/Pods-CyberPilot.release.xcconfig"; sourceTree = "<group>"; };
@@ -170,7 +174,6 @@
 				84AE145D2DA145A70094A792 /* Video */,
 				84AE144A2DA144C20094A792 /* CyberPilotApp.swift */,
 				84AE144C2DA144C20094A792 /* ContentView.swift */,
-				8406345B2DD243E8007E0E1F /* StructObjects.swift */,
 				84AE147A2DA148590094A792 /* RobotManager.swift */,
 				84AE144E2DA144C50094A792 /* Assets.xcassets */,
 				84AE14532DA144C50094A792 /* Persistence.swift */,
@@ -226,6 +229,7 @@
 			children = (
 				84AE146D2DA147660094A792 /* BluetoothManager.swift */,
 				84AE146F2DA147840094A792 /* BluetoothView.swift */,
+				840634632DD4B00E007E0E1F /* BluetoothStructs.swift */,
 			);
 			path = Bluetooth;
 			sourceTree = "<group>";
@@ -242,6 +246,7 @@
 				8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */,
 				8480B6FD2DA6830C00BF884F /* LoginManager.swift */,
 				8480B6FF2DA6B29300BF884F /* FormFieldView.swift */,
+				840634652DD4B071007E0E1F /* RegistrationStructs.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -258,10 +263,11 @@
 		84E5F1D22DCB8A0A00D41A4F /* Map */ = {
 			isa = PBXGroup;
 			children = (
-				84E5F1D32DCB8A3700D41A4F /* MapModel.swift */,
+				84E5F1D32DCB8A3700D41A4F /* MapManager.swift */,
 				8406345F2DD24CE1007E0E1F /* map.yaml */,
 				84E5F1D52DCB8AAA00D41A4F /* MapView.swift */,
-				8406345D2DD244F4007E0E1F /* MapLoader.swift */,
+				8406345D2DD244F4007E0E1F /* MapServise.swift */,
+				840634612DD4A9B1007E0E1F /* MapStructs.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -394,10 +400,9 @@
 				84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				84E5F1C52DCA186000D41A4F /* RobotSelectionView.swift in Sources */,
-				8406345E2DD244F4007E0E1F /* MapLoader.swift in Sources */,
+				8406345E2DD244F4007E0E1F /* MapServise.swift in Sources */,
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				84AE147B2DA148590094A792 /* RobotManager.swift in Sources */,
-				8406345C2DD243E8007E0E1F /* StructObjects.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,
 				8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */,
@@ -406,23 +411,26 @@
 				84E5F1962DB8CC9100D41A4F /* WebViewRepresentable.swift in Sources */,
 				84E5F1CF2DCB781400D41A4F /* RobotListManager.swift in Sources */,
 				8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */,
-				84E5F1D42DCB8A3800D41A4F /* MapModel.swift in Sources */,
+				84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */,
 				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
 				8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */,
 				84AE144D2DA144C20094A792 /* ContentView.swift in Sources */,
 				84C9262F2DAFCC4F009B1FFA /* FullScreenVideoView.swift in Sources */,
 				84AE14702DA147840094A792 /* BluetoothView.swift in Sources */,
 				8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */,
+				840634622DD4A9B1007E0E1F /* MapStructs.swift in Sources */,
 				84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */,
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
 				84E5F1CB2DCB774700D41A4F /* VideoStreamManager.swift in Sources */,
+				840634642DD4B00E007E0E1F /* BluetoothStructs.swift in Sources */,
 				84AE14692DA147020094A792 /* SocketManager.swift in Sources */,
 				84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */,
 				84E5F1CD2DCB77E700D41A4F /* ErrorManager.swift in Sources */,
 				84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */,
 				84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */,
 				84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */,
+				840634662DD4B071007E0E1F /* RegistrationStructs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

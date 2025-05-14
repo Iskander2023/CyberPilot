@@ -54,6 +54,7 @@ class LoginManager: ObservableObject {
 
 
     func login(email: String, password: String) async throws -> String {
+        
         // Заглушка: если тестовый пользователь
         if email == "newuser@example.com" && password == "DiMeKo2025" {
             await MainActor.run {
