@@ -6,10 +6,18 @@
 
 
 
-struct OccupancyGridMap: Codable {
+struct OccupancyGridMap: Codable, Equatable {
     let width: Int
     let height: Int
     let resolution: Double
-    var data: [Int]
+    let data: [Int]
+
+    static func == (lhs: OccupancyGridMap, rhs: OccupancyGridMap) -> Bool {
+        return lhs.width == rhs.width &&
+               lhs.height == rhs.height &&
+               lhs.resolution == rhs.resolution &&
+               lhs.data == rhs.data
+    }
 }
+
 

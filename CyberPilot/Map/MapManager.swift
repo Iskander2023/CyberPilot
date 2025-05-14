@@ -8,17 +8,17 @@ import Foundation
 import Yams
 
 final class MapManager: ObservableObject {
+    @Published var map: OccupancyGridMap?
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let cacheFilename = "cached_map.json"
-    @Published var map: OccupancyGridMap?
+    
 
-
-    //Инициализация
     init() {
         map = loadMapFromCache()
     }
 
-    //Загрузка из локального YAML
+    
+    //Загрузка из локального YAML не используется!!!
     func loadFromYAMLFile(url: URL) -> Bool {
         guard let yamlString = try? String(contentsOf: url),
               let parsed = try? Yams.load(yaml: yamlString) as? [String: Any],
@@ -39,33 +39,46 @@ final class MapManager: ObservableObject {
         return true
     }
 
+    
     // Загрузка из сети
-    func downloadMap(from urlString: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(false)
-            return
-        }
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data,
-                  let string = String(data: data, encoding: .utf8),
-                  let parsed = try? Yams.load(yaml: string) as? [String: Any],
-                  let info = parsed["info"] as? [String: Any],
-                  let width = info["width"] as? Int,
-                  let height = info["height"] as? Int,
-                  let resolution = info["resolution"] as? Double,
-                  let data = info["data"] as? [Int] else {
-                DispatchQueue.main.async {
-                    completion(false)
-                }
+    func downloadMap(from urlString: String, completion: ((Bool) -> Void)? = nil) {
+            guard let url = URL(string: urlString) else {
+                completion?(false)
                 return
             }
-            DispatchQueue.main.async {
-                self.map = OccupancyGridMap(width: width, height: height, resolution: resolution, data: data)
-                completion(true)
-            }
-        }.resume()
-    }
+            URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+                guard let self = self else { return }
+                
+                guard let data = data,
+                      let string = String(data: data, encoding: .utf8),
+                      let parsed = try? Yams.load(yaml: string) as? [String: Any],
+                      let info = parsed["info"] as? [String: Any],
+                      let width = info["width"] as? Int,
+                      let height = info["height"] as? Int,
+                      let resolution = info["resolution"] as? Double,
+                      let data = info["data"] as? [Int] else {
+                    DispatchQueue.main.async {
+                        completion?(false)
+                    }
+                    return
+                }
+                let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: data)
+                DispatchQueue.main.async {
+                    if self.map != newMap {
+                        //self.logger.info("🔄 Карта изменилась — сохраняем в кэш")
+                        self.map = newMap
+                        self.saveToCache()
+                        completion?(true)
+                    } else {
+                        //self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
+                        completion?(false)
+                    }
+                    
+                }
+            }.resume()
+        }
 
+    
     //Сохранение и загрузка карты
     func saveToCache() {
         guard let map = map else { return }
@@ -76,11 +89,13 @@ final class MapManager: ObservableObject {
             let data = try encoder.encode(map)
             let url = getDocumentsDirectory().appendingPathComponent(cacheFilename)
             try data.write(to: url)
-            logger.info("✅ Карта сохранена в кэш по пути: \(url)")
+            //logger.info("✅ Карта сохранена в кэш по пути: \(url)")
         } catch {
             logger.info("❌ Ошибка при сохранении карты: \(error)")
         }
     }
+    
+    
      // загрузка из кэша
     private func loadMapFromCache() -> OccupancyGridMap? {
         let url = getDocumentsDirectory().appendingPathComponent(cacheFilename)
