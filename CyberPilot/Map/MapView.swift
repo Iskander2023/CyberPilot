@@ -24,7 +24,7 @@ struct MapView: View {
             if let map = map {
                 ZStack {
                     Canvas { context, size in
-                        //logger.info("🔁 MapView updated")
+                        logger.info("🔁 MapView updated")
                         // Рассчитываем соотношения сторон
                         let mapAspect = CGFloat(map.width) / CGFloat(map.height)
                         let viewAspect = size.width / size.height
@@ -65,35 +65,35 @@ struct MapView: View {
                                 case 500: 
                                     color = .indigo
                                     // Основной круг
-                                    let robotColor = Color.indigo
-                                    let center = CGPoint(
-                                                        x: CGFloat(x) * cellSize + offsetX + cellSize/2,
-                                                        y: CGFloat(map.height - y - 1) * cellSize + offsetY + cellSize/2
-                                                    )
-                                    let radius = cellSize / 2 * 0.9
-                                    
-                                    // Внешний контур
-                                    let outlinePath = Path(ellipseIn: CGRect(
-                                        x: center.x - radius,
-                                        y: center.y - radius,
-                                        width: radius * 2,
-                                        height: radius * 2
-                                    ))
-                                    context.stroke(outlinePath, with: .color(.white), lineWidth: 2)
-                                    
-                                    // Заливка
-                                    context.fill(outlinePath, with: .color(robotColor))
-                                    
-                                    // Точка-ориентир спереди
-                                    let frontMarker = Path(ellipseIn: CGRect(
-                                        x: center.x + radius * 0.5 - 2,
-                                        y: center.y - 2,
-                                        width: 4,
-                                        height: 4
-                                    ))
-                                    context.fill(frontMarker, with: .color(.yellow))
-                                    
-                                    continue
+//                                    let robotColor = Color.indigo
+//                                    let center = CGPoint(
+//                                                        x: CGFloat(x) * cellSize + offsetX + cellSize/2,
+//                                                        y: CGFloat(map.height - y - 1) * cellSize + offsetY + cellSize/2
+//                                                    )
+//                                    let radius = cellSize / 2 * 0.9
+//                                    
+//                                    // Внешний контур
+//                                    let outlinePath = Path(ellipseIn: CGRect(
+//                                        x: center.x - radius,
+//                                        y: center.y - radius,
+//                                        width: radius * 2,
+//                                        height: radius * 2
+//                                    ))
+//                                    context.stroke(outlinePath, with: .color(.white), lineWidth: 2)
+//                                    
+//                                    // Заливка
+//                                    context.fill(outlinePath, with: .color(robotColor))
+//                                    
+//                                    // Точка-ориентир спереди
+//                                    let frontMarker = Path(ellipseIn: CGRect(
+//                                        x: center.x + radius * 0.5 - 2,
+//                                        y: center.y - 2,
+//                                        width: 4,
+//                                        height: 4
+//                                    ))
+//                                    context.fill(frontMarker, with: .color(.yellow))
+//                                    
+//                                    continue
                                 default: color = .red
                                 }
                                 

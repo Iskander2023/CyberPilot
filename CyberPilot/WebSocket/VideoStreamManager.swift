@@ -7,23 +7,24 @@
 import Combine
 
 
-final class VideoStreamManager: ObservableObject {
+final class VideoStreamManager: ObservableObject, TokenUpdatable {
     @Published var prefixUrl = "https://selekpann.tech:8889/mystream/?token="
     @Published var videoURL = ""
-    @Published var token: String?
-    
-    private var cancellables = Set<AnyCancellable>()
+    var token: String?
+    var cancellables = Set<AnyCancellable>()
     
     init(robotManager: RobotManager) {
-        setupTokenSubscription(robotManager: robotManager)
+        setupTokenBinding(from: robotManager)
     }
     
-    private func setupTokenSubscription(robotManager: RobotManager) {
-        robotManager.$token
-            .sink { [weak self] newToken in
-                guard let self = self, let token = newToken else { return }
-                self.videoURL = "\(self.prefixUrl)\(token)"
-            }
-            .store(in: &cancellables)
+    func updateToken(_ newToken: String?) {
+        self.token = newToken
+        if let token = newToken {
+            self.videoURL = "\(prefixUrl)\(token)"
+            print("video ==== \(self.videoURL)")
+        } else {
+            self.videoURL = ""
+            
+        }
     }
 }

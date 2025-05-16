@@ -6,42 +6,77 @@
 ////
 import Foundation
 import Yams
+import Combine
 
 final class MapManager: ObservableObject {
     @Published var map: OccupancyGridMap?
+    var robotManager: RobotManager
+    private var socketManager: SocketManager?
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let cacheFilename = "cached_map.json"
+    private let mapUpdateTime: TimeInterval = 2
+    private var timerCancellable: AnyCancellable?
+    var localIp: String = "http://127.0.0.1:8000/map.yaml"
+    var socketIp: String = "ws://172.16.17.79:8765"
+    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml"
+    var mapApdateTime: Double = 5
+    
     
 
-    init() {
+    init(robotManager: RobotManager) {
+        self.robotManager = robotManager
         map = loadMapFromCache()
+        socketManager = SocketManager(robotManager: robotManager)
+        //setupSocket() // загрузка с лидара через сокет
+        setupFromLocalFile() // загрузка с файла yaml на локальной машине
     }
-
     
-    //Загрузка из локального YAML не используется!!!
-    func loadFromYAMLFile(url: URL) -> Bool {
-        guard let yamlString = try? String(contentsOf: url),
-              let parsed = try? Yams.load(yaml: yamlString) as? [String: Any],
-              let info = parsed["info"] as? [String: Any],
-              let width = info["width"] as? Int,
-              let height = info["height"] as? Int,
-              let resolution = info["resolution"] as? Double,
-              let data = info["data"] as? [Int] else {
-            logger.info("Ошибка разбора карты из YAML")
-            return false
+    // метод для загрузки карты с сокета
+    func updateMap(with dataArray: [Int], len: Int) {
+        let width = len
+        let height = len
+        let resolution = 0.1 // можно вынести в переменную или параметр
+        guard dataArray.count == width * height else {
+            logger.info("❌ Размер массива не совпадает с размерами карты.")
+            return
         }
 
-        guard data.count == width * height else {
-            logger.info("Размер данных не совпадает с размерами карты.")
-            return false
+        let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: dataArray)
+        DispatchQueue.main.async {
+            self.map = newMap
+            self.saveToCache()
         }
-        self.map = OccupancyGridMap(width: width, height: height, resolution: resolution, data: data)
-        return true
     }
-
     
-    // Загрузка из сети
-    func downloadMap(from urlString: String, completion: ((Bool) -> Void)? = nil) {
+    private func setupFromLocalFile() {
+        logger.info("✅ setupFromLocalFile вызван")
+        downloadMapFromLocalFile(from: localIp)
+        setupRefreshTimer()
+    }
+    
+    
+    private func setupRefreshTimer() {
+        timerCancellable?.cancel()
+        timerCancellable = Timer.publish(every: mapApdateTime, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.downloadMapFromLocalFile(from: self.localIp)
+            }
+    }
+    
+    
+    // запуск сокета
+    private func setupSocket() {
+        socketManager?.connectSocket(urlString: socketIp)
+        socketManager?.onMapArrayReceived = { [weak self] array, len in
+            self?.updateMap(with: array, len: len)
+        }
+    }
+ 
+    
+    // Загрузка из локальной сети(из файла yaml)
+    func downloadMapFromLocalFile(from urlString: String, completion: ((Bool) -> Void)? = nil) {
             guard let url = URL(string: urlString) else {
                 completion?(false)
                 return
@@ -73,7 +108,6 @@ final class MapManager: ObservableObject {
                         //self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
                         completion?(false)
                     }
-                    
                 }
             }.resume()
         }
@@ -117,3 +151,26 @@ final class MapManager: ObservableObject {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 }
+
+
+
+////Загрузка из локального YAML не используется!!!
+//func loadFromYAMLFile(url: URL) -> Bool {
+//    guard let yamlString = try? String(contentsOf: url),
+//          let parsed = try? Yams.load(yaml: yamlString) as? [String: Any],
+//          let info = parsed["info"] as? [String: Any],
+//          let width = info["width"] as? Int,
+//          let height = info["height"] as? Int,
+//          let resolution = info["resolution"] as? Double,
+//          let data = info["data"] as? [Int] else {
+//        logger.info("Ошибка разбора карты из YAML")
+//        return false
+//    }
+//
+//    guard data.count == width * height else {
+//        logger.info("Размер данных не совпадает с размерами карты.")
+//        return false
+//    }
+//    self.map = OccupancyGridMap(width: width, height: height, resolution: resolution, data: data)
+//    return true
+//}

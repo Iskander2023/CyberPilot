@@ -20,7 +20,7 @@ final class SocketController: ObservableObject {
     
     init(robotManager: RobotManager) {
         let socketManager = SocketManager(robotManager: robotManager)
-        self.connectionManager = ConnectionManager(socketManager: socketManager)
+        self.connectionManager = ConnectionManager(robotManager: robotManager, socketManager: socketManager)
         self.robotListManager = RobotListManager(socketManager: socketManager)
         self.videoStreamManager = VideoStreamManager(robotManager: robotManager)
         self.errorManager = ErrorManager()

@@ -9,21 +9,22 @@ import Combine
 
 
 class SocketManager: NSObject, WebSocketDelegate {
-    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    var socket: WebSocket!
-    var isConnected: Bool = false
     weak var delegate: SocketDelegate?
-    var onMessageReceived: (([String: Any]) -> Void)?
+    var socket: WebSocket!
+    var token: String?
+    var isConnected: Bool = false
+    var robotManager: RobotManager
+    var connectionMode: SocketConnectionMode = .plain
+    var onMapArrayReceived: (([Int], Int) -> Void)?
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     let connectionStatus = PassthroughSubject<Bool, Never>()
     let receivedMessages = PassthroughSubject<[String: Any], Never>()
-    
-    
-    var token: String?
     private var cancellables = Set<AnyCancellable>()
-    var robotManager: RobotManager
     
-    init(robotManager: RobotManager) {
+    
+    init(robotManager: RobotManager, connectionMode: SocketConnectionMode = .plain) {
         self.robotManager = robotManager
+        self.connectionMode = connectionMode
         super.init()
         self.robotManager.$token
             .sink { [weak self] newToken in
@@ -80,6 +81,10 @@ class SocketManager: NSObject, WebSocketDelegate {
 
     
     func connectSocket(urlString: String, timeout: TimeInterval = 5) {
+        guard !isConnected else {
+                logger.info("Уже подключено.")
+                return
+            }
         guard let url = URL(string: urlString) else {
             self.logger.info("Ошибка: неверный URL")
             return
@@ -119,26 +124,47 @@ class SocketManager: NSObject, WebSocketDelegate {
             self.logger.info("Ошибка: соединение не установлено.")
         }
     }
+    
+    private func parseJSONMessage(_ message: String) -> [String: Any]? {
+        guard let data = message.data(using: .utf8) else { return nil }
+        return try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+    }
+
 
 
     func didReceive(event: WebSocketEvent, client: WebSocketClient) {
         switch event {
         case .connected(let headers):
             isConnected = true
-            guard let validToken = token else {
-                    logger.info("Токен отсутствует — регистрация не отправлена.")
-                    return
-                }
-            let reg: [String: Any] = [
+            self.logger.info("Connection established. Headers: \(headers)")
+            // Отправляем регистрацию, если необходимо
+            switch connectionMode {
+            case .withRegistration(let token):
+                let reg: [String: Any] = [
                     "type": "register",
-                    "role": "operator", 
+                    "role": "operator",
                     "id": "robot1",
                     "robotId": "robot1",
-                    "token": validToken
+                    "token": token
                 ]
-            sendJSONCommand(reg)
+                sendJSONCommand(reg)
+            case .plain:
+                logger.info("Режим без регистрации — регистрация не требуется.")
+            }
+//            guard let validToken = token else {
+//                    logger.info("Токен отсутствует — регистрация не отправлена.")
+//                    return
+//                }
+//            let reg: [String: Any] = [
+//                    "type": "register",
+//                    "role": "operator", 
+//                    "id": "robot1",
+//                    "robotId": "robot1",
+//                    "token": validToken
+//                ]
+//            sendJSONCommand(reg)
             
-            self.logger.info("Connection established. Headers: \(headers)")
+            
             DispatchQueue.main.async {
                 self.delegate?.socketManager(self, didUpdateConnectionStatus: true)
                 self.connectionStatus.send(true)
@@ -151,17 +177,16 @@ class SocketManager: NSObject, WebSocketDelegate {
                 self.connectionStatus.send(false)
             }
         case .text(let message):
-            self.logger.info("Text message from a robot: \(message)")
-            
-            if let data = message.data(using: .utf8) {
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                        self.onMessageReceived?(json)
-                        self.receivedMessages.send(json)
-                    }
-                } catch {
-                    self.logger.info("Ошибка парсинга JSON: \(error.localizedDescription)")
-                }
+            //self.logger.info("Text message from a robot: \(message)")
+            guard let json = parseJSONMessage(message) else {
+                logger.info("Не удалось распарсить JSON")
+                return
+            }
+            receivedMessages.send(json)
+            if let type = json["type"] as? String, type == "map",
+               let dataArray = json["data"] as? [Int],
+               let len = json["len"] as? Int {
+                onMapArrayReceived?(dataArray, len)
             }
         case .binary(let data):
             self.logger.info("Received binary data: \(data)")
@@ -191,6 +216,12 @@ class SocketManager: NSObject, WebSocketDelegate {
         }
     }
     
+}
+
+
+enum SocketConnectionMode {
+    case withRegistration(token: String)
+    case plain
 }
 
 

@@ -20,4 +20,9 @@ struct OccupancyGridMap: Codable, Equatable {
     }
 }
 
+struct MapMessage: Codable {
+    let type: String
+    let data: [Int]
+    let len: Double
+}
 

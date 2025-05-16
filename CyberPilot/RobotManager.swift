@@ -17,7 +17,6 @@ class RobotManager: ObservableObject {
     func logout() {
         isAuthenticated = false
         userLogin = ""
-        //token = nil
     }
 }
 //    @Published var isAuthenticated = false {

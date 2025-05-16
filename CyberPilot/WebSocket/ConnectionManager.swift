@@ -8,17 +8,18 @@ import SwiftUI
 import Combine
 
 
-final class ConnectionManager: ObservableObject {
-    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    private let socketManager: SocketManager
-    private var cancellables = Set<AnyCancellable>()
-    
+final class ConnectionManager: ObservableObject, TokenUpdatable {
     @Published var isConnected = false
     @Published var host = "robot3.local"
     @Published var remoteURL = "ws://selekpann.tech:2000"
+    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    var cancellables = Set<AnyCancellable>()
+    var token: String?
+    private let socketManager: SocketManager
     
-    init(socketManager: SocketManager) {
-        self.socketManager = socketManager
+    init(robotManager: RobotManager, socketManager: SocketManager) {
+        self.socketManager = SocketManager(robotManager: robotManager, connectionMode: .withRegistration(token: robotManager.token ?? ""))
+        setupTokenBinding(from: robotManager)
         setupSocketObservers()
     }
     
