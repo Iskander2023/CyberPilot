@@ -59,7 +59,7 @@ class LoginManager: ObservableObject {
         if email == "newuser@example.com" && password == "DiMeKo2025" {
             await MainActor.run {
                 self.stateManager?.isAuthenticated = true
-                //self.stateManager?.userLogin = emeil
+//                self.stateManager?.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ld3VzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IkFsZXg3NzciLCJpYXQiOjE3NDY0NTQzMjQsImV4cCI6MTc0NjQ1NzkyNH0.Gz6xofMF6D3etHAFhGOlFefQFDaS12pUtmHw2TRv__o"
             }
             return "mock_token_for_testuser"
         }

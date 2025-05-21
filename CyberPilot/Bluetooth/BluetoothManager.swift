@@ -43,7 +43,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             print("Bluetooth выключен.")
             connectionStatus = "Bluetooth выключен"
         case .unsupported:
-            print("Устройство не поддерживает Bluetooth.")
+            //print("Устройство не поддерживает Bluetooth.")
             connectionStatus = "Bluetooth не поддерживается"
         default:
             print("Неизвестное состояние Bluetooth.")

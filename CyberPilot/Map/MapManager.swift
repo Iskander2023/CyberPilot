@@ -14,7 +14,7 @@ final class MapManager: ObservableObject {
     private var socketManager: SocketManager?
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let cacheFilename = "cached_map.json"
-    private let mapUpdateTime: TimeInterval = 2
+    private let mapUpdateTime: TimeInterval = 10
     private var timerCancellable: AnyCancellable?
     var localIp: String = "http://127.0.0.1:8000/map.yaml"
     var socketIp: String = "ws://172.16.17.79:8765"
@@ -27,12 +27,10 @@ final class MapManager: ObservableObject {
         self.robotManager = robotManager
         map = loadMapFromCache()
         socketManager = SocketManager(robotManager: robotManager)
-        //setupSocket() // загрузка с лидара через сокет
-        setupFromLocalFile() // загрузка с файла yaml на локальной машине
     }
     
-    // метод для загрузки карты с сокета
-    func updateMap(with dataArray: [Int], len: Int) {
+
+    func updateMap(with dataArray: [Int], len: Int,  completion: ((Bool) -> Void)? = nil) {
         let width = len
         let height = len
         let resolution = 0.1 // можно вынести в переменную или параметр
@@ -40,24 +38,31 @@ final class MapManager: ObservableObject {
             logger.info("❌ Размер массива не совпадает с размерами карты.")
             return
         }
-
         let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: dataArray)
         DispatchQueue.main.async {
-            self.map = newMap
-            self.saveToCache()
+            if self.map != newMap {
+                //self.logger.info("🔄 Карта изменилась — сохраняем в кэш")
+                self.map = newMap
+                self.saveToCache()
+                completion?(true)
+            } else {
+                //self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
+                completion?(false)
+            }
         }
     }
     
-    private func setupFromLocalFile() {
+    func setupFromLocalFile() {
         logger.info("✅ setupFromLocalFile вызван")
         downloadMapFromLocalFile(from: localIp)
         setupRefreshTimer()
     }
     
     
-    private func setupRefreshTimer() {
+    func setupRefreshTimer() {
         timerCancellable?.cancel()
-        timerCancellable = Timer.publish(every: mapApdateTime, on: .main, in: .common)
+        timerCancellable = Timer
+            .publish(every: mapApdateTime, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -66,14 +71,35 @@ final class MapManager: ObservableObject {
     }
     
     
-    // запуск сокета
-    private func setupSocket() {
-        socketManager?.connectSocket(urlString: socketIp)
-        socketManager?.onMapArrayReceived = { [weak self] array, len in
+    func startLoadingMap() {
+        guard let socketManager = socketManager else { return }
+        socketManager.connectSocket(urlString: socketIp)
+        socketManager.onMapArrayReceived = { [weak self] array, len in
             self?.updateMap(with: array, len: len)
         }
+        // Проверка соединения через 2 секунд
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            guard let self = self else { return }
+            
+            if !socketManager.isConnected {
+                socketManager.disconnectSocket()
+                self.logger.error("Сокет не подключён через 5 секунд — соединение прервано")
+            } else {
+                self.logger.info("Сокет успешно подключён")
+            }
+        }
     }
- 
+    
+    func stopLoadingMap() {
+        timerCancellable?.cancel()
+        if let socketManager = socketManager, socketManager.isConnected {
+                socketManager.disconnectSocket()
+                logger.info("Загрузка карты остановлена и сокет отключён")
+            } else {
+                logger.info("Загрузка карты остановлена (сокет уже был отключён)")
+            }
+        }
+    
     
     // Загрузка из локальной сети(из файла yaml)
     func downloadMapFromLocalFile(from urlString: String, completion: ((Bool) -> Void)? = nil) {
@@ -100,12 +126,12 @@ final class MapManager: ObservableObject {
                 let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: data)
                 DispatchQueue.main.async {
                     if self.map != newMap {
-                        //self.logger.info("🔄 Карта изменилась — сохраняем в кэш")
+                        self.logger.info("🔄 Карта изменилась — сохраняем в кэш")
                         self.map = newMap
                         self.saveToCache()
                         completion?(true)
                     } else {
-                        //self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
+                        self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
                         completion?(false)
                     }
                 }

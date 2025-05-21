@@ -24,7 +24,6 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
     }
     
     func connect(isLocal: Bool) {
-        print("\(isLocal)")
         if isLocal {
             connectToLocalRobot()
         } else {
@@ -45,7 +44,6 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
     }
     
     private func connectToLocalRobot() {
-        print("connectToLocalRobot")
         socketManager.startResolvingIP(for: host)
         let port = getPort(from: host)
         let urlString = "ws://\(host):\(port)"

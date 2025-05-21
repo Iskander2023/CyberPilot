@@ -17,7 +17,6 @@ protocol TokenUpdatable: AnyObject {
 }
 
 extension TokenUpdatable {
-    
     func setupTokenBinding(from robotManager: RobotManager) {
         robotManager.$token
             .sink { [weak self] newToken in

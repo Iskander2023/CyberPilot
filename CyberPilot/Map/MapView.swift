@@ -9,14 +9,12 @@ import SwiftUI
 
 
 struct MapView: View {
-    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    let map: OccupancyGridMap?
-    // Состояние для масштаба
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
-    // Состояние для смещения
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    let map: OccupancyGridMap?
     
     var body: some View {
         GeometryReader { geometry in
@@ -25,38 +23,26 @@ struct MapView: View {
                 ZStack {
                     Canvas { context, size in
                         logger.info("🔁 MapView updated")
-                        // Рассчитываем соотношения сторон
                         let mapAspect = CGFloat(map.width) / CGFloat(map.height)
                         let viewAspect = size.width / size.height
-                        
-                        // Выбираем базовый размер ячейки
                         let cellSize: CGFloat
                         let totalWidth: CGFloat
                         let totalHeight: CGFloat
-                        
                         if mapAspect > viewAspect {
-                            // Ориентируемся по ширине
                             cellSize = size.width / CGFloat(map.width) * scale
                             totalWidth = size.width * scale
                             totalHeight = CGFloat(map.height) * cellSize
                         } else {
-                            // Ориентируемся по высоте
                             cellSize = size.height / CGFloat(map.height) * scale
                             totalHeight = size.height * scale
                             totalWidth = CGFloat(map.width) * cellSize
                         }
-                        
-                        // Центрируем с учетом текущего смещения
                         let offsetX = (size.width - totalWidth) / 2 + offset.width
                         let offsetY = (size.height - totalHeight) / 2 + offset.height
-                        
-                        // Рисуем ячейки
                         for y in 0..<map.height {
                             for x in 0..<map.width {
                                 let index = y * map.width + x
                                 let value = map.data[index]
-                                
-                                // Исправленный вариант выбора цвета
                                 let color: Color
                                 switch value {
                                 case -1: color = .gray
@@ -64,46 +50,14 @@ struct MapView: View {
                                 case 100: color = .black
                                 case 500: 
                                     color = .indigo
-                                    // Основной круг
-//                                    let robotColor = Color.indigo
-//                                    let center = CGPoint(
-//                                                        x: CGFloat(x) * cellSize + offsetX + cellSize/2,
-//                                                        y: CGFloat(map.height - y - 1) * cellSize + offsetY + cellSize/2
-//                                                    )
-//                                    let radius = cellSize / 2 * 0.9
-//                                    
-//                                    // Внешний контур
-//                                    let outlinePath = Path(ellipseIn: CGRect(
-//                                        x: center.x - radius,
-//                                        y: center.y - radius,
-//                                        width: radius * 2,
-//                                        height: radius * 2
-//                                    ))
-//                                    context.stroke(outlinePath, with: .color(.white), lineWidth: 2)
-//                                    
-//                                    // Заливка
-//                                    context.fill(outlinePath, with: .color(robotColor))
-//                                    
-//                                    // Точка-ориентир спереди
-//                                    let frontMarker = Path(ellipseIn: CGRect(
-//                                        x: center.x + radius * 0.5 - 2,
-//                                        y: center.y - 2,
-//                                        width: 4,
-//                                        height: 4
-//                                    ))
-//                                    context.fill(frontMarker, with: .color(.yellow))
-//                                    
-//                                    continue
                                 default: color = .red
                                 }
-                                
                                 let rect = CGRect(
                                     x: CGFloat(x) * cellSize + offsetX,
                                     y: CGFloat(map.height - y - 1) * cellSize + offsetY,
                                     width: cellSize,
                                     height: cellSize
                                 )
-                                
                                 context.fill(Path(rect), with: .color(color))
                             }
                         }

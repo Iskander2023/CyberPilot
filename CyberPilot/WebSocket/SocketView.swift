@@ -44,7 +44,7 @@ struct SocketView: View {
             Text(controller.errorManager.errorMessage)
         }
         .sheet(isPresented: $showVideoView) {
-            FullScreenVideoView(
+            VideoView(
                 videoURL: controller.videoStreamManager.videoURL,
                 commandSender: controller.commandSender
             )
@@ -65,7 +65,7 @@ struct SocketView: View {
             Spacer()
             
             if controller.connectionManager.isConnected {
-                WebViewRepresentable(urlString: controller.videoStreamManager.videoURL)
+                WebView(urlString: controller.videoStreamManager.videoURL)
                     .frame(height: 350)
                     .padding(.horizontal, 20)
             }

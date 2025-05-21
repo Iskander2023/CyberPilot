@@ -1,8 +1,8 @@
 //
-//  WebVideoViewRepresentable.swift
+//  WebVideoView.swift
 //  CyberPilot
 //
-//  Created by Admin on 23/04/25.
+//  Created by Aleksandr Chumakov on 23/04/25.
 //
 
 import SwiftUI
@@ -10,7 +10,7 @@ import WebKit
 
 
 
-struct WebViewRepresentable: UIViewRepresentable {
+struct WebView: UIViewRepresentable {
     let urlString: String
 
     func makeUIView(context: Context) -> WKWebView {
