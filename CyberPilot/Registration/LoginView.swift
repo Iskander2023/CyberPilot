@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @ObservedObject var stateManager: RobotManager
+    @ObservedObject var authService: AuthService
     @StateObject private var loginManager: LoginManager
     @StateObject var registrationManager: UserRegistrationManager
     @State private var isLoginSuccessful = false
@@ -16,10 +16,10 @@ struct LoginView: View {
     @State private var errorMessage = ""
     
     
-    init(stateManager: RobotManager) {
-        self.stateManager = stateManager
-        _loginManager = StateObject(wrappedValue: LoginManager(stateManager: stateManager))
-        _registrationManager = StateObject(wrappedValue: UserRegistrationManager(stateManager: stateManager))
+    init(authService: AuthService) {
+        self.authService = authService
+        _loginManager = StateObject(wrappedValue: LoginManager(authService: authService))
+        _registrationManager = StateObject(wrappedValue: UserRegistrationManager(stateManager: authService))
     }
     
     
@@ -79,7 +79,7 @@ struct LoginView: View {
                         .font(.system(.body, design: .rounded))
                         .bold()
                     
-                    NavigationLink(destination: RegistrationFlowView(stateManager: stateManager, userRegistrationManager: registrationManager)) {
+                    NavigationLink(destination: RegistrationFlowView(stateManager: authService, userRegistrationManager: registrationManager)) {
                         Text("Зарегистрироваться")
                             .font(.system(.body, design: .rounded))
                             .bold()

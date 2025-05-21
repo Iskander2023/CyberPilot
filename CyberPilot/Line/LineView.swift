@@ -9,9 +9,9 @@ import SwiftUI
 
 
 struct LineView: View {
-    var robotManager: RobotManager
-    @ObservedObject var lineStore: LineStore
-    //@ObservedObject var controller: TouchController
+    @EnvironmentObject private var robotManager: AuthService
+    @EnvironmentObject private var lineStore: LineStore
+    @EnvironmentObject private var touchController: TouchController
     @State private var scale: CGFloat = 2.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
@@ -47,31 +47,9 @@ struct LineView: View {
                     }
                     
                 }
-//                .gesture(
-//                    MagnificationGesture()
-//                        .onChanged { value in
-//                            let delta = value / lastScale
-//                            lastScale = value
-//                            scale *= delta
-//                            scale = max(0.5, min(scale, 5.0))
-//                        }
-//                        .onEnded { _ in
-//                            lastScale = 1.0
-//                        }
-//                        .simultaneously(with:
-//                                            DragGesture()
-//                            .onChanged { gesture in
-//                                offset = CGSize(
-//                                    width: lastOffset.width + gesture.translation.width,
-//                                    height: lastOffset.height + gesture.translation.height
-//                                )
-//                            }
-//                            .onEnded { _ in
-//                                lastOffset = offset
-//                            }
-//                                       )
-//                )
-                //TouchPadGestureView(controller: controller)
+
+                TouchPadGestureView(controller: touchController) // управление тачпадом
+                
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
                 // Кнопки масштабирования и сброса

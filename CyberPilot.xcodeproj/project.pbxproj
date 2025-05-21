@@ -23,6 +23,7 @@
 		846AA3FF2DDCC49C0000FDFD /* DirectionArrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FE2DDCC49C0000FDFD /* DirectionArrow.swift */; };
 		846AA4012DDCC4FF0000FDFD /* DirectionLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4002DDCC4FF0000FDFD /* DirectionLabels.swift */; };
 		846AA4042DDCCAFB0000FDFD /* TouchPadGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4032DDCCAFB0000FDFD /* TouchPadGestureView.swift */; };
+		846AA40A2DDDE2C50000FDFD /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4092DDDE2C50000FDFD /* AppContainer.swift */; };
 		8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */; };
 		8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */; };
 		8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */; };
@@ -47,7 +48,7 @@
 		84AE14752DA147D30094A792 /* PhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14742DA147D30094A792 /* PhoneView.swift */; };
 		84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14762DA147F40094A792 /* UserRegistrationManager.swift */; };
 		84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */; };
-		84AE147B2DA148590094A792 /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* RobotManager.swift */; };
+		84AE147B2DA148590094A792 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* AuthService.swift */; };
 		84C9262F2DAFCC4F009B1FFA /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9262E2DAFCC4F009B1FFA /* VideoView.swift */; };
 		84E5F1962DB8CC9100D41A4F /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1952DB8CC9100D41A4F /* WebView.swift */; };
 		84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */; };
@@ -77,6 +78,7 @@
 		846AA3FE2DDCC49C0000FDFD /* DirectionArrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionArrow.swift; sourceTree = "<group>"; };
 		846AA4002DDCC4FF0000FDFD /* DirectionLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionLabels.swift; sourceTree = "<group>"; };
 		846AA4032DDCCAFB0000FDFD /* TouchPadGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadGestureView.swift; sourceTree = "<group>"; };
+		846AA4092DDDE2C50000FDFD /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
 		8480B6F12DA17B9600BF884F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCaptchaView.swift; sourceTree = "<group>"; };
 		8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationCodeView.swift; sourceTree = "<group>"; };
@@ -104,7 +106,7 @@
 		84AE14742DA147D30094A792 /* PhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneView.swift; sourceTree = "<group>"; };
 		84AE14762DA147F40094A792 /* UserRegistrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRegistrationManager.swift; sourceTree = "<group>"; };
 		84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationFlowView.swift; sourceTree = "<group>"; };
-		84AE147A2DA148590094A792 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
+		84AE147A2DA148590094A792 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		84C9262E2DAFCC4F009B1FFA /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		84E5F1952DB8CC9100D41A4F /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perspective.swift; sourceTree = "<group>"; };
@@ -173,6 +175,13 @@
 			path = TouchPad;
 			sourceTree = "<group>";
 		};
+		846AA4052DDDAF3F0000FDFD /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		8480B7032DA6B74700BF884F /* UserMessage */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +212,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				846AA4052DDDAF3F0000FDFD /* Services */,
 				846AA4022DDCC7A50000FDFD /* TouchPad */,
 				846AA3E62DD76E8C0000FDFD /* Line */,
 				84E5F1D22DCB8A0A00D41A4F /* Map */,
@@ -216,11 +226,12 @@
 				84AE145D2DA145A70094A792 /* Video */,
 				84AE144A2DA144C20094A792 /* CyberPilotApp.swift */,
 				84AE144C2DA144C20094A792 /* ContentView.swift */,
-				84AE147A2DA148590094A792 /* RobotManager.swift */,
+				84AE147A2DA148590094A792 /* AuthService.swift */,
 				84AE144E2DA144C50094A792 /* Assets.xcassets */,
 				84AE14532DA144C50094A792 /* Persistence.swift */,
 				84AE14552DA144C50094A792 /* CyberPilot.xcdatamodeld */,
 				84AE14502DA144C50094A792 /* Preview Content */,
+				846AA4092DDDE2C50000FDFD /* AppContainer.swift */,
 			);
 			path = CyberPilot;
 			sourceTree = "<group>";
@@ -448,11 +459,12 @@
 				846AA3E52DD769E40000FDFD /* LineView.swift in Sources */,
 				846AA3FD2DDCC4340000FDFD /* TouchIndicatorView.swift in Sources */,
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
-				84AE147B2DA148590094A792 /* RobotManager.swift in Sources */,
+				84AE147B2DA148590094A792 /* AuthService.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,
 				846AA4042DDCCAFB0000FDFD /* TouchPadGestureView.swift in Sources */,
 				8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */,
+				846AA40A2DDDE2C50000FDFD /* AppContainer.swift in Sources */,
 				84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */,
 				846AA3FB2DDCB3DA0000FDFD /* TouchController.swift in Sources */,
 				84AE14542DA144C50094A792 /* Persistence.swift in Sources */,

@@ -9,19 +9,11 @@ import WebKit
 
 
 struct SocketView: View {
-    @ObservedObject var stateManager: RobotManager
-    @StateObject private var controller: SocketController
-    
-    // Локальные состояния представления
+    @EnvironmentObject var controller: SocketController
     @State private var showVideoView = false
     @State private var selectedConnectionType = 0
     @State private var webView: WKWebView? = nil
     
-    init(stateManager: RobotManager) {
-        self._stateManager = ObservedObject(initialValue: stateManager)
-        self._controller = StateObject(wrappedValue: SocketController(robotManager: stateManager))
-    }
-
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
@@ -58,7 +50,6 @@ struct SocketView: View {
         }
     }
     
-    // MARK: - Subviews
     
     private var mainContent: some View {
         VStack(spacing: 20) {

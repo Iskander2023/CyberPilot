@@ -10,7 +10,7 @@ import Combine
 
 final class MapManager: ObservableObject {
     @Published var map: OccupancyGridMap?
-    var robotManager: RobotManager
+    var authService: AuthService
     private var socketManager: SocketManager?
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let cacheFilename = "cached_map.json"
@@ -23,10 +23,10 @@ final class MapManager: ObservableObject {
     
     
 
-    init(robotManager: RobotManager) {
-        self.robotManager = robotManager
+    init(authService: AuthService) {
+        self.authService = authService
         map = loadMapFromCache()
-        socketManager = SocketManager(robotManager: robotManager)
+        socketManager = SocketManager(authService: authService)
     }
     
 
@@ -149,7 +149,7 @@ final class MapManager: ObservableObject {
             let data = try encoder.encode(map)
             let url = getDocumentsDirectory().appendingPathComponent(cacheFilename)
             try data.write(to: url)
-            //logger.info("✅ Карта сохранена в кэш по пути: \(url)")
+            logger.debug("✅ Карта сохранена в кэш по пути: \(url)")
         } catch {
             logger.info("❌ Ошибка при сохранении карты: \(error)")
         }

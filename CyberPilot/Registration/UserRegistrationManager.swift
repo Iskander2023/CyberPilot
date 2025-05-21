@@ -12,7 +12,7 @@ class UserRegistrationManager: ObservableObject {
     
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
-    private weak var stateManager: RobotManager?
+    private weak var stateManager: AuthService?
     
     @Published var email = "newuser@example.com"
     @Published var userName = "Alex777"
@@ -63,7 +63,7 @@ class UserRegistrationManager: ObservableObject {
 
     private var cancellableSet: Set<AnyCancellable> = []
 
-    init(stateManager: RobotManager) {
+    init(stateManager: AuthService) {
         self.stateManager = stateManager
         
         $email

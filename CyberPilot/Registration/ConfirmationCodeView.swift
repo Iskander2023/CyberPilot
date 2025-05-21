@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ConfirmationCodeView: View {
     
-    @ObservedObject var stateManager: RobotManager
+    @ObservedObject var stateManager: AuthService
     @ObservedObject var userRegistrationManager: UserRegistrationManager
     @EnvironmentObject var alertManager: AlertManager
     

@@ -8,7 +8,6 @@
 import SwiftUI
 
 
-
 struct Perspective {
     let horizontalPixels: CGFloat
     let verticalPixels: CGFloat

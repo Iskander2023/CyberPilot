@@ -13,7 +13,7 @@ final class VideoStreamManager: ObservableObject, TokenUpdatable {
     var token: String?
     var cancellables = Set<AnyCancellable>()
     
-    init(robotManager: RobotManager) {
+    init(robotManager: AuthService) {
         setupTokenBinding(from: robotManager)
     }
     

@@ -18,11 +18,11 @@ final class SocketController: ObservableObject {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private var cancellables = Set<AnyCancellable>()
     
-    init(robotManager: RobotManager) {
-        let socketManager = SocketManager(robotManager: robotManager)
-        self.connectionManager = ConnectionManager(robotManager: robotManager, socketManager: socketManager)
+    init(authService: AuthService) {
+        let socketManager = SocketManager(authService: authService)
+        self.connectionManager = ConnectionManager(authService: authService, socketManager: socketManager)
         self.robotListManager = RobotListManager(socketManager: socketManager)
-        self.videoStreamManager = VideoStreamManager(robotManager: robotManager)
+        self.videoStreamManager = VideoStreamManager(robotManager: authService)
         self.errorManager = ErrorManager()
         self.commandSender = CommandSender(socketManager: socketManager)
         

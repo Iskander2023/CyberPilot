@@ -9,8 +9,8 @@ import SwiftUI
 import CoreData
 
 struct BluetoothView: View {
-    @ObservedObject var stateManager: RobotManager
-    @ObservedObject var bluetoothManager = BluetoothManager()
+    @EnvironmentObject private var robotManager: AuthService
+    @EnvironmentObject var bluetoothManager: BluetoothManager
     
     @State private var selectedNetwork: String?
     @State private var isShowingPasswordPrompt = false

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UserRegistarationView: View {
     
-    @ObservedObject var stateManager: RobotManager
+    @ObservedObject var stateManager: AuthService
     @ObservedObject var userRegistrationManager: UserRegistrationManager
     
     @State private var registrationStatus: String = ""

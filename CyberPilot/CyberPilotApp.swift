@@ -8,13 +8,21 @@ import SwiftUI
 
 @main
 struct Robot_ControllerApp: App {
-    @StateObject private var stateManager = RobotManager()
-    @StateObject private var alertManager = AlertManager()
+    @StateObject private var container = AppContainer()
+
 
     var body: some Scene {
         WindowGroup {
-            ContentView(stateManager: stateManager)
-                .environmentObject(alertManager) 
+            ContentView()
+                .environmentObject(container.authService)
+                .environmentObject(container.alertManager)
+                .environmentObject(container.mapManager)
+                .environmentObject(container.lineStore)
+                .environmentObject(container.socketController)
+                .environmentObject(container.socketManager)
+                .environmentObject(container.touchController)
+                .environmentObject(container.bluetoothManager)
+                
         }
     }
 }

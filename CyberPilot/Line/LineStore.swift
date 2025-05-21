@@ -11,7 +11,7 @@ import Combine
 class LineStore: ObservableObject {
     @Published var lines: [Line] = []
     @Published var robotPosition: CGPoint? = nil
-    var robotManager: RobotManager
+    var authServise: AuthService
     private var socketManager: SocketManager?
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let cacheFilename = "cached_lines.json"
@@ -21,9 +21,9 @@ class LineStore: ObservableObject {
     var mapApdateTime: Double = 5
     
     
-    init(robotManager: RobotManager) {
-        self.robotManager = robotManager
-        socketManager = SocketManager(robotManager: robotManager)
+    init(authServise: AuthService) {
+        self.authServise = authServise
+        socketManager = SocketManager(authService: authServise)
         loadFromCache()
     }
     
@@ -77,10 +77,10 @@ class LineStore: ObservableObject {
                 if self.robotPosition != center {
                     self.robotPosition = center
                 }
-                //self.logger.info("✅ Линии обновлены")
+                self.logger.debug("✅ Линии обновлены")
                 completion?(true)
             } else {
-                //self.logger.info("ℹ️ Линии не изменились — обновление не требуется")
+                self.logger.debug("ℹ️ Линии не изменились — обновление не требуется")
                 completion?(false)
             }
         }

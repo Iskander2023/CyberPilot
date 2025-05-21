@@ -14,15 +14,13 @@ struct MapView: View {
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    let map: OccupancyGridMap?
-    
+    @EnvironmentObject private var mapManager: MapManager
     var body: some View {
         GeometryReader { geometry in
             
-            if let map = map {
+            if let map = mapManager.map {
                 ZStack {
                     Canvas { context, size in
-                        logger.info("🔁 MapView updated")
                         let mapAspect = CGFloat(map.width) / CGFloat(map.height)
                         let viewAspect = size.width / size.height
                         let cellSize: CGFloat

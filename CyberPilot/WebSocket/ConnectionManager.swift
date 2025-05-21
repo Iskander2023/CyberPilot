@@ -17,9 +17,9 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
     var token: String?
     private let socketManager: SocketManager
     
-    init(robotManager: RobotManager, socketManager: SocketManager) {
-        self.socketManager = SocketManager(robotManager: robotManager, connectionMode: .withRegistration(token: robotManager.token ?? ""))
-        setupTokenBinding(from: robotManager)
+    init(authService: AuthService, socketManager: SocketManager) {
+        self.socketManager = SocketManager(authService: authService, connectionMode: .withRegistration(token: authService.token ?? ""))
+        setupTokenBinding(from: authService)
         setupSocketObservers()
     }
     

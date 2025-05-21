@@ -8,7 +8,7 @@
 import Foundation
 
 
-class RobotManager: ObservableObject {
+class AuthService: ObservableObject {
     @Published var userLogin: String = ""
     @Published var isAuthenticated = false
     @Published var isPhoneNumber = false
@@ -17,6 +17,7 @@ class RobotManager: ObservableObject {
     func logout() {
         isAuthenticated = false
         userLogin = ""
+
     }
 }
 //    @Published var isAuthenticated = false {

@@ -8,7 +8,7 @@ import SwiftUI
 
 
 struct RegistrationFlowView: View {
-    @ObservedObject var stateManager: RobotManager
+    @ObservedObject var stateManager: AuthService
     @ObservedObject var userRegistrationManager: UserRegistrationManager
     @State private var currentStep: RegistrationStep = .phoneInput
     
@@ -52,7 +52,6 @@ struct RegistrationFlowView: View {
     
     private var phoneView: some View {
         PhoneView(
-            stateManager: stateManager,
             userRegistrationManager: userRegistrationManager,
             onPhoneStep: {
                 withAnimation {

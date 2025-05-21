@@ -8,12 +8,8 @@ import SwiftUI
 
 
 struct PhoneView: View {
-    @ObservedObject var stateManager: RobotManager
     @ObservedObject var userRegistrationManager: UserRegistrationManager
-    
     var onPhoneStep: () -> Void
-    
-    
     var body: some View {
         VStack {
             Text("Введите номер телефона")
