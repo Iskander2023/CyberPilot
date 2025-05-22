@@ -129,7 +129,8 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
             self.logger.debug("Отправка команды: \(command)")
             socket.write(string: command)
         } else {
-            self.logger.info("Ошибка отправки команды: соединение не установлено.")
+            //self.logger.info("Ошибка отправки команды: соединение не установлено.")
+            return
         }
     }
     

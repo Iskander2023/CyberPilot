@@ -26,6 +26,5 @@ final class AppContainer: ObservableObject {
         self.socketManager = SocketManager(authService: authService)
         self.touchController = TouchController(commandSender: socketController.commandSender)
         self.bluetoothManager = BluetoothManager()
-        
     }
 }

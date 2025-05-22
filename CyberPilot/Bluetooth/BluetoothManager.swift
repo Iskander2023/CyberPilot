@@ -10,7 +10,7 @@ import CoreBluetooth
 
 
 class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
-    // MARK: - Published Properties
+ 
     @Published var discoveredDevices: [PeripheralDevice] = []
     @Published var connectedPeripheral: CBPeripheral?
     @Published var characteristicValue: String = ""
@@ -19,7 +19,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     @Published var receivedData: [String] = []
     @Published var wifiConnectionStatus: String = ""
 
-    // Private Propertie
+   
     private var centralManager: CBCentralManager!
     private var targetCharacteristic: CBCharacteristic?
     private var readCharacteristics: [CBCharacteristic] = []

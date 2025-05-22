@@ -48,7 +48,7 @@ struct LineView: View {
                     
                 }
 
-                TouchPadGestureView(controller: touchController) // управление тачпадом
+                TouchPadGestureView() // управление тачпадом
                 
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()

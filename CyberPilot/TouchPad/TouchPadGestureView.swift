@@ -8,8 +8,8 @@ import SwiftUI
 
 
 struct TouchPadGestureView: View {
-    @ObservedObject var controller: TouchController
-
+    @EnvironmentObject private var controller: TouchController
+    
     var body: some View {
         Color.clear
             .contentShape(Rectangle())

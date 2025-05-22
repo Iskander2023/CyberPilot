@@ -34,7 +34,7 @@ struct VideoView: View {
                     .animation(.linear(duration: 0.2), value: touchPadController.currentAngle)
 
                 // Управление тачпадом
-                TouchPadGestureView(controller: touchPadController)
+                TouchPadGestureView()
 
                 // Индикатор тачпада
                 if touchPadController.touchIndicatorVisible {

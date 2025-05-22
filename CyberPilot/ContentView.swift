@@ -14,6 +14,7 @@ struct ContentView: View {
     @EnvironmentObject private var mapManager: MapManager
     @EnvironmentObject private var lineStore: LineStore
     @State private var selectedTab = 0
+    @State private var scale: CGFloat = 1.0
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
     var body: some View {
@@ -66,12 +67,15 @@ struct ContentView: View {
                     .tabItem {
                         Label("Map", systemImage: "map")
                     }
+                    //.withMagnification()
                     .tag(2)
+                    
                 
                 LineView()
                     .tabItem {
                         Label("Line", systemImage: "point.bottomleft.forward.to.point.topright.scurvepath.fill")
                     }
+                    .withMagnification()
                     .tag(3)
             }
             .padding(.top, 10)

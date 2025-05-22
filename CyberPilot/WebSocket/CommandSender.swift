@@ -36,7 +36,6 @@ final class CommandSender {
         if key != "e" {
             currentKeysState["e"] = false
         }
-        
         currentKeysState[key] = isPressed
         
         if key == "e" && isPressed {
@@ -49,7 +48,7 @@ final class CommandSender {
         sendCurrentState()
         
         guard server_robot_available else {
-            logger.info("⛔️ Робот недоступен, команды не отправляются")
+            //logger.info("⛔️ Робот недоступен, команды не отправляются")
             return
         }
         // Если ни одна кнопка не нажата, запускаем таймер для отправки состояния с false
