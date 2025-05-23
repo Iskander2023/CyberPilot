@@ -26,6 +26,7 @@
 		846AA40A2DDDE2C50000FDFD /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4092DDDE2C50000FDFD /* AppContainer.swift */; };
 		846AA40D2DDF1F180000FDFD /* MagnificationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA40C2DDF1F180000FDFD /* MagnificationModifier.swift */; };
 		846AA40F2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA40E2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift */; };
+		846AA4112DE09B3D0000FDFD /* WebSocketStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4102DE09B3D0000FDFD /* WebSocketStructs.swift */; };
 		8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */; };
 		8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */; };
 		8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */; };
@@ -83,6 +84,7 @@
 		846AA4092DDDE2C50000FDFD /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
 		846AA40C2DDF1F180000FDFD /* MagnificationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnificationModifier.swift; sourceTree = "<group>"; };
 		846AA40E2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomOnTwoFingerTouchView.swift; sourceTree = "<group>"; };
+		846AA4102DE09B3D0000FDFD /* WebSocketStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketStructs.swift; sourceTree = "<group>"; };
 		8480B6F12DA17B9600BF884F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCaptchaView.swift; sourceTree = "<group>"; };
 		8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationCodeView.swift; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 				84E5F1CE2DCB781400D41A4F /* RobotListManager.swift */,
 				84E5F1D02DCB787700D41A4F /* ConnectionManager.swift */,
 				846AA3E22DD627F30000FDFD /* TokenProtocol.swift */,
+				846AA4102DE09B3D0000FDFD /* WebSocketStructs.swift */,
 			);
 			path = WebSocket;
 			sourceTree = "<group>";
@@ -468,6 +471,7 @@
 				84AE147B2DA148590094A792 /* AuthService.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,
+				846AA4112DE09B3D0000FDFD /* WebSocketStructs.swift in Sources */,
 				846AA4042DDCCAFB0000FDFD /* TouchPadGestureView.swift in Sources */,
 				846AA40F2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift in Sources */,
 				8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */,

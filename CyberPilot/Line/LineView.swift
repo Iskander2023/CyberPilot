@@ -12,7 +12,7 @@ struct LineView: View {
     @EnvironmentObject private var robotManager: AuthService
     @EnvironmentObject private var lineStore: LineStore
     @EnvironmentObject private var touchController: TouchController
-    @State private var scale: CGFloat = 2.0
+    @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
@@ -21,23 +21,43 @@ struct LineView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            if lineStore.lines.isEmpty {
-                Text("Линии не загружены")
+            if lineStore.segments.isEmpty {
+                Text("Сегменты не загружены")
                     .frame(width: geometry.size.width, height: geometry.size.height)
             } else {
                 ZStack {
-                    ForEach(lineStore.lines) { line in
-                        Path { path in
-                            guard let first = line.points.first else { return }
-                            let firstPoint = transformPoint(first.cgPoint, in: geometry)
-                            path.move(to: firstPoint)
-                            
-                            line.points.dropFirst().forEach { point in
-                                path.addLine(to: transformPoint(point.cgPoint, in: geometry))
+                    Path { path in
+                        for segment in lineStore.segments {
+                            switch segment {
+                            case let .line(start, end):
+                                let p1 = transformPoint(start.cgPoint, in: geometry)
+                                let p2 = transformPoint(end.cgPoint, in: geometry)
+                                path.move(to: p1)
+                                path.addLine(to: p2)
+
+                            case let .arc(start, end, radius):
+                                let p1 = transformPoint(start.cgPoint, in: geometry)
+                                let p2 = transformPoint(end.cgPoint, in: geometry)
+
+                                if let (center, clockwise) = ShapeSegment.arcCenter(from: p1,to: p2, radius: radius) {
+                                    let startAngle = Angle(radians: atan2(p1.y - center.y, p1.x - center.x))
+                                    let endAngle = Angle(radians: atan2(p2.y - center.y, p2.x - center.x))
+
+                                    path.move(to: p1)
+                                    path.addArc(
+                                        center: center,
+                                        radius: abs(radius),
+                                        startAngle: startAngle,
+                                        endAngle: endAngle,
+                                        clockwise: clockwise
+                                    )
+                                }
                             }
                         }
-                        .stroke(Color.blue, lineWidth: 2)
                     }
+
+                    .stroke(Color.blue, lineWidth: 2)
+
                     if let robotPos = lineStore.robotPosition {
                         let transformed = transformPoint(robotPos, in: geometry)
                         Circle()
@@ -45,7 +65,6 @@ struct LineView: View {
                             .frame(width: 10, height: 10)
                             .position(transformed)
                     }
-                    
                 }
 
                 TouchPadGestureView() // управление тачпадом
@@ -101,11 +120,16 @@ struct LineView: View {
     }
     
     
-    private func transformPoint(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
-        let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+    func transformPoint(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
+        guard let robot = lineStore.robotPosition else { return point }
+        let screenCenter = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+        // Смещение, чтобы робот был в центре
+        let dx = screenCenter.x - robot.x * scale
+        let dy = screenCenter.y - robot.y * scale
+        // Применение масштаба и ручного смещения offset
         return CGPoint(
-            x: center.x + (point.x * scale) + offset.width,
-            y: center.y + (point.y * scale) + offset.height
+            x: point.x * scale + dx + offset.width,
+            y: point.y * scale + dy + offset.height
         )
     }
 

@@ -41,12 +41,12 @@ final class MapManager: ObservableObject {
         let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: dataArray)
         DispatchQueue.main.async {
             if self.map != newMap {
-                //self.logger.info("🔄 Карта изменилась — сохраняем в кэш")
+                self.logger.debug("🔄 Карта изменилась — сохраняем в кэш")
                 self.map = newMap
                 self.saveToCache()
                 completion?(true)
             } else {
-                //self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
+                self.logger.debug("✅ Карта не изменилась — пропускаем кэширование")
                 completion?(false)
             }
         }
