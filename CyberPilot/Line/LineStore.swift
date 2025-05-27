@@ -9,26 +9,47 @@ import SwiftUI
 import Combine
 
 class LineStore: ObservableObject {
-    private let dataManager = LineDataManager()
-    private let cacheManager = LineCacheManager()
     private let socketService: LineSocketService
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    
-    
-    var segments: [ShapeSegment] { dataManager.segments }
-    var robotPosition: CGPoint? { dataManager.robotPosition }
+    private let segmentsCacheManager = GenericCacheManager<CachedSegments>(filename: "cached_segments.json")
+    @Published var segments: [ShapeSegment] = []
+    @Published var robotPosition: CGPoint? = nil
     
     init (authService: AuthService) {
-        self.socketService = LineSocketService(authServise: authService)
-        loadInitialData()
+        self.socketService = LineSocketService(authService: authService)
+        loadInitialData() // тестовый режим
     }
     
+    
     func setupSocketHandlers() {
+        startLoadingLines()
         socketService.onLineMessageReceived = { [weak self] segments, center in
             guard let self = self else { return }
-            let newSegments = dataManager.parseSegments(from: segments)
-            self.updateIfChanged(newSegments: newSegments, center: center)
+            let newSegments = parseSegments(from: segments)
+            DispatchQueue.main.async {
+                self.updateIfChanged(newSegments: newSegments, center: center)
+            }
         }
+    }
+    
+    
+    func parseSegments(from raw: [[[Double]]]) -> [ShapeSegment] {
+        var segments: [ShapeSegment] = []
+        
+        for segmentData in raw {
+            if segmentData.count == 2 {
+                let start = CodablePoint(x: CGFloat(segmentData[0][0]), y: CGFloat(segmentData[0][1]))
+                let end = CodablePoint(x: CGFloat(segmentData[1][0]), y: CGFloat(segmentData[1][1]))
+                segments.append(.line(start: start, end: end))
+            }
+            if segmentData.count == 3 {
+                let start = CodablePoint(x: CGFloat(segmentData[0][0]), y: CGFloat(segmentData[0][1]))
+                let end = CodablePoint(x: CGFloat(segmentData[1][0]), y: CGFloat(segmentData[1][1]))
+                let radius = CGFloat(segmentData[2][0])
+                segments.append(.arc(start: start, end: end, radius: radius))
+            }
+        }
+        return segments
     }
     
     
@@ -52,6 +73,16 @@ class LineStore: ObservableObject {
         
     }
     
+    func updateLines(_ newSegments: [ShapeSegment]) {
+        segments = newSegments
+    }
+    
+    
+    
+    func updateRobotPosition(_ newPosition: CGPoint?) {
+        robotPosition = newPosition
+    }
+    
     
     func updateIfChanged(newSegments: [ShapeSegment],
                          center: CGPoint,
@@ -59,14 +90,14 @@ class LineStore: ObservableObject {
         DispatchQueue.main.async {
             var didUpdate = false
             if newSegments != self.segments {
-                self.dataManager.updateLines(newSegments)
+                self.updateLines(newSegments)
                 didUpdate = true
                 self.logger.debug("✅ Линии обновлены")
             } else {
                 self.logger.debug("ℹ️ Линии не изменились — обновление не требуется")
             }
-            if self.dataManager.robotPosition != center {
-                self.dataManager.updateRobotPosition(center)
+            if self.robotPosition != center {
+                self.updateRobotPosition(center)
                 didUpdate = true
                 self.logger.debug("✅ Позиция робота обновлена")
             }
@@ -111,24 +142,16 @@ class LineStore: ObservableObject {
             )
         ]
         let testRobotPosition = CGPoint(x: 100, y: 150)
-        
         let testData = CachedSegments(segments: testSegments, robotPosition: testRobotPosition)
+        segmentsCacheManager.save(testData)
+        logger.info("✅ Тестовые сегменты успешно записаны в кэш")
+        if let cached = segmentsCacheManager.load() {
+                updateLines(cached.segments)
+                updateRobotPosition(cached.robotPosition)
+            }
         
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        do {
-            let data = try encoder.encode(testData)
-            let url = cacheManager.getDocumentsDirectory().appendingPathComponent(cacheManager.cacheFilename)
-            try data.write(to: url)
-            logger.info("✅ Тестовые сегменты успешно записаны в кэш")
-            if let cached = cacheManager.loadFromCache() {
-                    dataManager.updateLines(cached.segments)
-                    dataManager.updateRobotPosition(cached.robotPosition)
-                }
-        } catch {
-            logger.error("❌ Ошибка при сохранении тестовых сегментов: \(error)")
-        }
     }
     #endif
 }
+
 

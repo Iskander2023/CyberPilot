@@ -109,6 +109,7 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         if let socket = socket{
             socket.disconnect()
         }
+        onLineMessageReceived = nil
     }
     
     

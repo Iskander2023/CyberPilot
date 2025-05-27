@@ -8,23 +8,24 @@
 import Foundation
 
 class LineSocketService: ObservableObject {
-    var authServise: AuthService
-    private var socketManager: SocketManager?
+    var authService: AuthService
+    var socketManager: SocketManager?
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private var socketIp: String = "ws://172.16.17.79:8765"
     var onLineMessageReceived: (([[[Double]]], CGPoint) -> Void)?
     
-    init(authServise: AuthService) {
-        self.authServise = authServise
-        socketManager = SocketManager(authService: authServise)
+    init(authService: AuthService) {
+        self.authService = authService
+        socketManager = SocketManager(authService: authService)
     }
     
     func startSocket() {
         guard let socketManager = socketManager else { return }
         socketManager.connectSocket(urlString: socketIp)
         socketManager.onLineMessageReceived = { [weak self] segments, center in
-            guard self != nil else { return }
+            self?.onLineMessageReceived?(segments, center)
         }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             guard let self = self else { return }
             if !socketManager.isConnected {
