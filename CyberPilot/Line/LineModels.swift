@@ -91,3 +91,44 @@ enum ShapeSegment: Codable, Equatable {
 }
 
 
+extension ShapeSegment {
+    static func == (lhs: ShapeSegment, rhs: ShapeSegment) -> Bool {
+        switch (lhs, rhs) {
+        case let (.line(start1, end1), .line(start2, end2)):
+            return start1 == start2 && end1 == end2
+        case let (.arc(start1, end1, radius1), .arc(start2, end2, radius2)):
+            return start1 == start2 && end1 == end2 && abs(radius1 - radius2) < 0.001
+        default:
+            return false
+        }
+    }
+    
+    static func arcCenter(from p1: CGPoint, to p2: CGPoint, radius: CGFloat) -> (center: CGPoint, clockwise: Bool)? {
+        let mid = CGPoint(x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2)
+        let dx = p2.x - p1.x
+        let dy = p2.y - p1.y
+        let d = hypot(dx, dy)
+        
+        if d > 2 * abs(radius) { return nil }
+
+        let h = sqrt(radius * radius - (d / 2) * (d / 2))
+        let perpendicular = CGPoint(x: -dy / d, y: dx / d)
+        let direction = radius > 0 ? 1.0 : -1.0
+
+        let center = CGPoint(
+            x: mid.x + direction * h * perpendicular.x,
+            y: mid.y + direction * h * perpendicular.y
+        )
+
+        let clockwise = radius < 0
+        return (center, clockwise)
+    }
+}
+
+
+
+extension CodablePoint: Equatable {
+    static func == (lhs: CodablePoint, rhs: CodablePoint) -> Bool {
+        abs(lhs.x - rhs.x) < 0.001 && abs(lhs.y - rhs.y) < 0.001
+    }
+}

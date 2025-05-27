@@ -1,8 +1,8 @@
 //
 //  BluetoothView.swift
-//  Robot_Controller
+//  CyberPilot
 //
-//  Created by AleksandrChumakov on 20/01/25.
+//  Created by Aleksandr Chumakov on 20/01/25.
 //
 
 import SwiftUI

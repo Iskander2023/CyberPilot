@@ -12,13 +12,13 @@ class LoginManager: ObservableObject {
     private weak var authService: AuthService?
     let login_url = "http://selekpann.tech:3000/login"
     @Published var email = "newuser@example.com"
-    //    @Published var password = "Sssssssss"
     @Published var password = "DiMeKo2025"
     @Published var isMailValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
     var token: String?
     var userName: String?
+    var defaultUserName = "user"
     
 
     
@@ -54,10 +54,11 @@ class LoginManager: ObservableObject {
     
     func login(email: String, password: String) async throws -> String {
         
-        // Заглушка: если тестовый пользователь
+        // Заглушка: тестовый пользователь
         if email == "newuser@example.com" && password == "DiMeKo2025" {
             await MainActor.run {
                 self.authService?.isAuthenticated = true
+                self.authService?.userLogin = "Alex"
                 //                socketManager.loginToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ld3VzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IkFsZXg3NzciLCJpYXQiOjE3NDY0NTQzMjQsImV4cCI6MTc0NjQ1NzkyNH0.Gz6xofMF6D3etHAFhGOlFefQFDaS12pUtmHw2TRv__o"
             }
                 return "mock_token_for_testuser"
@@ -94,7 +95,7 @@ class LoginManager: ObservableObject {
             await MainActor.run {
                 self.logger.info("User login successfully!")
                 self.authService?.token = token
-                self.authService?.userLogin = userName ?? ""
+                self.authService?.userLogin = userName ?? defaultUserName
                 self.authService?.isAuthenticated = true
                 
             }

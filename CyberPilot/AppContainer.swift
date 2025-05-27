@@ -21,7 +21,7 @@ final class AppContainer: ObservableObject {
         self.authService = AuthService()
         self.alertManager = AlertManager()
         self.mapManager = MapManager(authService: authService)
-        self.lineStore = LineStore(authServise: authService)
+        self.lineStore = LineStore(authService: authService)
         self.socketController = SocketController(authService: authService)
         self.socketManager = SocketManager(authService: authService)
         self.touchController = TouchController(commandSender: socketController.commandSender)

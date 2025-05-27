@@ -1,6 +1,6 @@
 //
-//  RegManager.swift
-//  Robot_Controller
+//  UserRegistrationManager.swift
+//  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 2/04/25.
 //
@@ -179,7 +179,7 @@ class UserRegistrationManager: ObservableObject {
             "password": password
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        self.logger.info("body: \(body)")
+        //self.logger.info("body: \(body)")
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -283,7 +283,7 @@ class UserRegistrationManager: ObservableObject {
             }
         }.resume()
     }
-    }
+}
     
 
 

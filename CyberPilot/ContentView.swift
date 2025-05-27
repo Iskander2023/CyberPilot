@@ -1,6 +1,6 @@
 //
 //  ContetntView.swift
-//  Robot_Controller
+//  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 20/01/25.
 //
@@ -90,7 +90,7 @@ struct ContentView: View {
             mapManager.startLoadingMap()
             lineStore.stopLoadingLines()
         } else if tab == 3 {
-            lineStore.startLoadingLines()
+            lineStore.setupSocketHandlers()
             mapManager.stopLoadingMap()
         } else {
             mapManager.stopLoadingMap()
