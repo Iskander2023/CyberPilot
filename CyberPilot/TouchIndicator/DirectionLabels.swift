@@ -11,6 +11,8 @@ import SwiftUI
 struct DirectionLabels: View {
     let touchIndicatorSize: CGFloat
     let position: CGPoint
+    let labelsColor: Color
+    let labelsOpasity: Double
 
     var body: some View {
         ZStack {
@@ -23,7 +25,7 @@ struct DirectionLabels: View {
 
                 Circle()
                     .frame(width: 6, height: 6)
-                    .foregroundColor(.green)
+                    .foregroundColor(labelsColor.opacity(labelsOpasity))
                     .position(x: x, y: y)
             }
         }

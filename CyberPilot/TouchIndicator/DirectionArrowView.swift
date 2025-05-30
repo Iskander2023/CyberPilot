@@ -6,11 +6,13 @@
 //
 import SwiftUI
 
-struct DirectionArrow: View {
+struct DirectionArrowView: View {
     let arrowLength: CGFloat
     let currentAngle: CGFloat
     let touchIndicatorSize: CGFloat
     let position: CGPoint
+    let arrowColor: Color
+    let arrowOpacity: Double
 
     var body: some View {
         Path { path in
@@ -39,7 +41,7 @@ struct DirectionArrow: View {
                 y: endPoint.y + arrowHeadLength * sin(angle2)
             ))
         }
-        .stroke(Color.blue, lineWidth: 4)
+        .stroke(arrowColor.opacity(arrowOpacity), lineWidth: 4)
         .frame(width: touchIndicatorSize, height: touchIndicatorSize)
         .position(position)
     }

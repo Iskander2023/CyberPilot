@@ -1,6 +1,6 @@
 //
 //  LoggerFormatter.swift
-//  Robot_Controller
+//  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 13/03/25.
 //
@@ -24,7 +24,6 @@ class CustomLogger: Logger {
         self.includeMetadata = includeMetadata
     }
 
-    // Реализация методов протокола Logger
     func debug(_ message: String, file: String = #file, line: Int = #line, function: String = #function) {
         log(message, level: .debug, file: file, line: line, function: function)
     }

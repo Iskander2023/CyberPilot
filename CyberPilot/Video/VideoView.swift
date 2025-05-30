@@ -10,12 +10,11 @@ import WebKit
 
 struct VideoView: View {
     var videoURL: String?
-    @StateObject private var touchPadController: TouchController
+    @EnvironmentObject private var touchPadController: TouchController
     @Environment(\.presentationMode) var presentationMode
     
     init(videoURL: String?, commandSender: CommandSender) {
         self.videoURL = videoURL
-        _touchPadController = StateObject(wrappedValue: TouchController(commandSender: commandSender))
     }
 
     var body: some View {

@@ -1,5 +1,5 @@
 //
-//  ContetntView.swift
+//  ContentView.swift
 //  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 20/01/25.
@@ -12,7 +12,8 @@ import CoreData
 struct ContentView: View {
     @EnvironmentObject private var authService: AuthService
     @EnvironmentObject private var mapManager: MapManager
-    @EnvironmentObject private var lineStore: LineStore
+    @EnvironmentObject private var lineStore: LineManager
+
     @State private var selectedTab = 0
     @State private var scale: CGFloat = 1.0
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
@@ -75,7 +76,12 @@ struct ContentView: View {
                     .tabItem {
                         Label("Line", systemImage: "point.bottomleft.forward.to.point.topright.scurvepath.fill")
                     }
-                    .withMagnification()
+                    .modifier(
+                            CombinedTouchModifier(
+                                minScale: 0.5,
+                                maxScale: 3.0
+                            )
+                        )
                     .tag(3)
             }
             .padding(.top, 10)
@@ -90,7 +96,7 @@ struct ContentView: View {
             mapManager.startLoadingMap()
             lineStore.stopLoadingLines()
         } else if tab == 3 {
-            lineStore.setupSocketHandlers()
+            lineStore.startLoadingLines()
             mapManager.stopLoadingMap()
         } else {
             mapManager.stopLoadingMap()

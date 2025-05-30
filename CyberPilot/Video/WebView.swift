@@ -1,5 +1,5 @@
 //
-//  WebVideoView.swift
+//  WebView.swift
 //  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 23/04/25.

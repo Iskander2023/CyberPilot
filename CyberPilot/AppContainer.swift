@@ -11,7 +11,7 @@ final class AppContainer: ObservableObject {
     let authService: AuthService
     let alertManager: AlertManager
     let mapManager: MapManager
-    let lineStore: LineStore
+    let lineStore: LineManager
     let socketController: SocketController
     let socketManager: SocketManager
     let touchController: TouchController
@@ -21,10 +21,10 @@ final class AppContainer: ObservableObject {
         self.authService = AuthService()
         self.alertManager = AlertManager()
         self.mapManager = MapManager(authService: authService)
-        self.lineStore = LineStore(authService: authService)
+        self.lineStore = LineManager(authService: authService)
         self.socketController = SocketController(authService: authService)
         self.socketManager = SocketManager(authService: authService)
-        self.touchController = TouchController(commandSender: socketController.commandSender)
+        self.touchController = TouchController(commandSender: socketController.commandSender, timerDelay: 0.2)
         self.bluetoothManager = BluetoothManager()
     }
 }

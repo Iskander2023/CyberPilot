@@ -9,35 +9,64 @@ import SwiftUI
 
 
 class TouchController: ObservableObject {
-    private let commandSender: CommandSender
-    var currentAngle: CGFloat = 0.0
+    let commandSender: CommandSender
     private var previousAngle: CGFloat?
     private var accumulatedRotation: CGFloat = 0
     private var lastUpdateTime: Date?
+    private var tapDelayTimer: Timer?
+    private var hasActivated = false
+    private var timerDelay: Double
+    private var angleUpdateTimer: Timer?
+    private var isWaitingForTapDelay = false
     let maxSizeTach: CGFloat = 125
     let maxSize: CGFloat = 250
     let minSize: CGFloat = 100
-
-    @Published var touchIndicatorVisible = false
+    var currentAngle: CGFloat = 0.0
+    
+    
+    @Published var anchorPoint: UnitPoint = .zero
+    @Published var touchIndicatorVisible: Bool = false
     @Published var touchIndicatorPosition: CGPoint = .zero
     @Published var touchIndicatorSize: CGFloat = 100
     @Published var arrowLength: CGFloat = 0
     @Published var perspectiveLength: Int = 3
     
-    private var angleUpdateTimer: Timer?
     
-    init(commandSender: CommandSender) {
+    
+    init(commandSender: CommandSender, timerDelay: Double) {
         self.commandSender = commandSender
+        self.timerDelay = timerDelay
     }
-
+    
+ 
+    
     func handleTouchChanged(_ value: DragGesture.Value) {
+        guard !isWaitingForTapDelay else { return }
         if !touchIndicatorVisible {
-            initializeTouchIndicator(value: value)
+            //logger.info("handleTouchChanged")
+            isWaitingForTapDelay = true
+            tapDelayTimer?.invalidate()
+            tapDelayTimer = Timer.scheduledTimer(withTimeInterval: timerDelay, repeats: false) { [weak self] _ in
+                guard let self = self else { return }
+                self.isWaitingForTapDelay = false
+                self.initializeTouchIndicator(value: value)
+                self.updateTouchIndicatorSize(currentPoint: value.location)
+                self.updateAngle(for: value.location)
+            }
+            return
         }
         updateTouchIndicatorSize(currentPoint: value.location)
         updateAngle(for: value.location)
     }
 
+    
+    func updateAnchorPoint(from location: CGPoint, in size: CGSize) {
+            let unitX = location.x / size.width
+            let unitY = location.y / size.height
+            anchorPoint = UnitPoint(x: unitX, y: unitY)
+        }
+
+    
     private func initializeTouchIndicator(value: DragGesture.Value) {
         touchIndicatorPosition = value.startLocation
         touchIndicatorSize = 100
@@ -58,6 +87,7 @@ class TouchController: ObservableObject {
             touchIndicatorSize = min(max(minSize, distance * 2), maxSize)
         }
 
+    
     private func updateLenghtPerspective(distance: CGFloat) {
         if distance > 50 && distance <= 80 {
             perspectiveLength = 4
@@ -69,6 +99,7 @@ class TouchController: ObservableObject {
     }
 
     private func updateAngle(for touchLocation: CGPoint) {
+        guard !touchLocation.x.isNaN, !touchLocation.y.isNaN else { return }
         let dx = touchLocation.x - touchIndicatorPosition.x
         let dy = touchLocation.y - touchIndicatorPosition.y
         var angle = atan2(dy, dx)
@@ -108,13 +139,18 @@ class TouchController: ObservableObject {
     }
 
     func resetTouchPad() {
+        if tapDelayTimer != nil {
+            tapDelayTimer?.invalidate()
+            tapDelayTimer = nil
+        } else {
+            isWaitingForTapDelay = false
+        }
         stopAngleUpdateTimer()
         previousAngle = nil
         accumulatedRotation = 0
         lastUpdateTime = nil
         perspectiveLength = 3
         currentAngle = 1.5 * .pi
-        
         withAnimation(.easeOut(duration: 0.3)) {
             touchIndicatorVisible = false
         }
@@ -194,3 +230,16 @@ class TouchController: ObservableObject {
         stopAllCommands()
     }
 }
+
+
+
+
+
+
+//    func handleTouchChanged(_ value: DragGesture.Value) {
+//        if !touchIndicatorVisible {
+//            initializeTouchIndicator(value: value)
+//        }
+//        updateTouchIndicatorSize(currentPoint: value.location)
+//        updateAngle(for: value.location)
+//    }

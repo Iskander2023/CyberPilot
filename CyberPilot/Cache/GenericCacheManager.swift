@@ -2,7 +2,7 @@
 //  GenericCacheManager.swift
 //  CyberPilot
 //
-//  Created by Admin on 27/05/25.
+//  Created by Aleksandr Chumakov on 27/05/25.
 //
 
 import Foundation
@@ -47,5 +47,15 @@ final class GenericCacheManager<T: Codable> {
     private func getDocumentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
+    
+//    func updateIfChanged(current: inout T?, newValue: T, completion: ((Bool) -> Void)? = nil) {
+//        if current != newValue {
+//            current = newValue
+//            save(newValue)
+//            completion?(true)
+//        } else {
+//            completion?(false)
+//        }
+//    }
 }
 

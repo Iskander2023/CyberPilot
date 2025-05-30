@@ -1,6 +1,6 @@
 //
-//  RobotStateManager.swift
-//  Robot_Controller
+//  AuthService.swift
+//  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 20/01/25.
 //

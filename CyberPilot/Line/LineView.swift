@@ -10,8 +10,9 @@ import SwiftUI
 
 struct LineView: View {
     @EnvironmentObject private var robotManager: AuthService
-    @EnvironmentObject private var lineStore: LineStore
+    @EnvironmentObject private var lineStore: LineManager
     @EnvironmentObject private var touchController: TouchController
+    
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
@@ -67,53 +68,9 @@ struct LineView: View {
                     }
                 }
 
-                TouchPadGestureView() // управление тачпадом
-                
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .clipped()
-                // Кнопки масштабирования и сброса
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        VStack {
-                            Button(action: {
-                                withAnimation {
-                                    scale = min(scale + 0.5, 5.0)
-                                }
-                            }) {
-                                Image(systemName: "plus.magnifyingglass")
-                                    .padding()
-                                    .background(Color.white.opacity(0.8))
-                                    .clipShape(Circle())
-                            }
-                            
-                            Button(action: {
-                                withAnimation {
-                                    scale = max(scale - 0.5, 0.5)
-                                }
-                            }) {
-                                Image(systemName: "minus.magnifyingglass")
-                                    .padding()
-                                    .background(Color.white.opacity(0.8))
-                                    .clipShape(Circle())
-                            }
-                            
-                            Button(action: {
-                                withAnimation {
-                                    scale = 1.0
-                                    offset = .zero
-                                    lastOffset = .zero
-                                }
-                            }) {
-                                Image(systemName: "arrow.uturn.backward.circle")
-                                    .padding()
-                                    .background(Color.white.opacity(0.8))
-                                    .clipShape(Circle())
-                            }
-                        }
-                        .padding()
-                    }
+                // Индикатор тачпада
+                if touchController.touchIndicatorVisible {
+                    TouchIndicatorView(controller: touchController)
                 }
             }
         }

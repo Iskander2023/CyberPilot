@@ -1,5 +1,5 @@
 //
-//  LineStore.swift
+//  LineManager.swift
 //  CyberPilot
 //
 //  Created by Aleksandr Chumakov on 16/05/25.
@@ -8,22 +8,23 @@
 import SwiftUI
 import Combine
 
-class LineStore: ObservableObject {
-    private let socketService: LineSocketService
+class LineManager: ObservableObject {
+    private let socketListener: SocketListener
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let segmentsCacheManager = GenericCacheManager<CachedSegments>(filename: "cached_segments.json")
     @Published var segments: [ShapeSegment] = []
     @Published var robotPosition: CGPoint? = nil
-    
+
     init (authService: AuthService) {
-        self.socketService = LineSocketService(authService: authService)
+        socketListener = SocketListener(authService: authService, socketIp: "ws://172.16.17.79:8765")
         loadInitialData() // тестовый режим
     }
     
+
     
-    func setupSocketHandlers() {
-        startLoadingLines()
-        socketService.onLineMessageReceived = { [weak self] segments, center in
+    func startLoadingLines() {
+        socketListener.startListening(for: .lines)
+        socketListener.onLinesReceived = { [weak self] segments, center in
             guard let self = self else { return }
             let newSegments = parseSegments(from: segments)
             DispatchQueue.main.async {
@@ -31,7 +32,6 @@ class LineStore: ObservableObject {
             }
         }
     }
-    
     
     func parseSegments(from raw: [[[Double]]]) -> [ShapeSegment] {
         var segments: [ShapeSegment] = []
@@ -64,14 +64,13 @@ class LineStore: ObservableObject {
         #endif
     }
     
-    func startLoadingLines() {
-        socketService.startSocket()
-    }
+    
     
     func stopLoadingLines() {
-        socketService.stopSocket()
+        socketListener.stopListening()
         
     }
+    
     
     func updateLines(_ newSegments: [ShapeSegment]) {
         segments = newSegments

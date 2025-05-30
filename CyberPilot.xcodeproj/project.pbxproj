@@ -13,28 +13,28 @@
 		840634622DD4A9B1007E0E1F /* MapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634612DD4A9B1007E0E1F /* MapModels.swift */; };
 		840634642DD4B00E007E0E1F /* BluetoothStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634632DD4B00E007E0E1F /* BluetoothStructs.swift */; };
 		840634662DD4B071007E0E1F /* RegistrationStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634652DD4B071007E0E1F /* RegistrationStructs.swift */; };
+		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
+		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E22DD627F30000FDFD /* TokenProtocol.swift */; };
 		846AA3E52DD769E40000FDFD /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E42DD769E40000FDFD /* LineView.swift */; };
 		846AA3EA2DD771B30000FDFD /* LineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E92DD771B30000FDFD /* LineModels.swift */; };
-		846AA3EC2DD772D60000FDFD /* LineStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3EB2DD772D60000FDFD /* LineStore.swift */; };
+		846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3EB2DD772D60000FDFD /* LineManager.swift */; };
 		846AA3F52DDCABBA0000FDFD /* CloseButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3F42DDCABBA0000FDFD /* CloseButtons.swift */; };
 		846AA3FB2DDCB3DA0000FDFD /* TouchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FA2DDCB3DA0000FDFD /* TouchController.swift */; };
 		846AA3FD2DDCC4340000FDFD /* TouchIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FC2DDCC4340000FDFD /* TouchIndicatorView.swift */; };
-		846AA3FF2DDCC49C0000FDFD /* DirectionArrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FE2DDCC49C0000FDFD /* DirectionArrow.swift */; };
+		846AA3FF2DDCC49C0000FDFD /* DirectionArrowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FE2DDCC49C0000FDFD /* DirectionArrowView.swift */; };
 		846AA4012DDCC4FF0000FDFD /* DirectionLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4002DDCC4FF0000FDFD /* DirectionLabels.swift */; };
 		846AA4042DDCCAFB0000FDFD /* TouchPadGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4032DDCCAFB0000FDFD /* TouchPadGestureView.swift */; };
 		846AA40A2DDDE2C50000FDFD /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4092DDDE2C50000FDFD /* AppContainer.swift */; };
-		846AA40D2DDF1F180000FDFD /* MagnificationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA40C2DDF1F180000FDFD /* MagnificationModifier.swift */; };
-		846AA40F2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA40E2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift */; };
+		846AA40D2DDF1F180000FDFD /* CombinedTouchModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA40C2DDF1F180000FDFD /* CombinedTouchModifier.swift */; };
 		846AA4112DE09B3D0000FDFD /* WebSocketStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4102DE09B3D0000FDFD /* WebSocketStructs.swift */; };
-		846AA4192DE5D53B0000FDFD /* LineSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4182DE5D53B0000FDFD /* LineSocketService.swift */; };
 		846AA41C2DE6009F0000FDFD /* GenericCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA41B2DE6009F0000FDFD /* GenericCacheManager.swift */; };
+		846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA41E2DE6E5A40000FDFD /* SocketListener.swift */; };
 		8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */; };
 		8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */; };
 		8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */; };
 		8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FD2DA6830C00BF884F /* LoginManager.swift */; };
 		8480B7002DA6B29300BF884F /* FormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FF2DA6B29300BF884F /* FormField.swift */; };
-		8480B7022DA6B73B00BF884F /* UserMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B7012DA6B73B00BF884F /* UserMessage.swift */; };
 		8480B7052DA7AE0A00BF884F /* AllertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B7042DA7AE0A00BF884F /* AllertManager.swift */; };
 		84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE144A2DA144C20094A792 /* CyberPilotApp.swift */; };
 		84AE144D2DA144C20094A792 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE144C2DA144C20094A792 /* ContentView.swift */; };
@@ -73,29 +73,29 @@
 		840634612DD4A9B1007E0E1F /* MapModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModels.swift; sourceTree = "<group>"; };
 		840634632DD4B00E007E0E1F /* BluetoothStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothStructs.swift; sourceTree = "<group>"; };
 		840634652DD4B071007E0E1F /* RegistrationStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStructs.swift; sourceTree = "<group>"; };
+		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
+		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		846AA3E22DD627F30000FDFD /* TokenProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenProtocol.swift; sourceTree = "<group>"; };
 		846AA3E42DD769E40000FDFD /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		846AA3E92DD771B30000FDFD /* LineModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineModels.swift; sourceTree = "<group>"; };
-		846AA3EB2DD772D60000FDFD /* LineStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineStore.swift; sourceTree = "<group>"; };
+		846AA3EB2DD772D60000FDFD /* LineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineManager.swift; sourceTree = "<group>"; };
 		846AA3F42DDCABBA0000FDFD /* CloseButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButtons.swift; sourceTree = "<group>"; };
 		846AA3FA2DDCB3DA0000FDFD /* TouchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchController.swift; sourceTree = "<group>"; };
 		846AA3FC2DDCC4340000FDFD /* TouchIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchIndicatorView.swift; sourceTree = "<group>"; };
-		846AA3FE2DDCC49C0000FDFD /* DirectionArrow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionArrow.swift; sourceTree = "<group>"; };
+		846AA3FE2DDCC49C0000FDFD /* DirectionArrowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionArrowView.swift; sourceTree = "<group>"; };
 		846AA4002DDCC4FF0000FDFD /* DirectionLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionLabels.swift; sourceTree = "<group>"; };
 		846AA4032DDCCAFB0000FDFD /* TouchPadGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchPadGestureView.swift; sourceTree = "<group>"; };
 		846AA4092DDDE2C50000FDFD /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
-		846AA40C2DDF1F180000FDFD /* MagnificationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagnificationModifier.swift; sourceTree = "<group>"; };
-		846AA40E2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomOnTwoFingerTouchView.swift; sourceTree = "<group>"; };
+		846AA40C2DDF1F180000FDFD /* CombinedTouchModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinedTouchModifier.swift; sourceTree = "<group>"; };
 		846AA4102DE09B3D0000FDFD /* WebSocketStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketStructs.swift; sourceTree = "<group>"; };
-		846AA4182DE5D53B0000FDFD /* LineSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineSocketService.swift; sourceTree = "<group>"; };
 		846AA41B2DE6009F0000FDFD /* GenericCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericCacheManager.swift; sourceTree = "<group>"; };
+		846AA41E2DE6E5A40000FDFD /* SocketListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketListener.swift; sourceTree = "<group>"; };
 		8480B6F12DA17B9600BF884F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCaptchaView.swift; sourceTree = "<group>"; };
 		8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationCodeView.swift; sourceTree = "<group>"; };
 		8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRegistrationView.swift; sourceTree = "<group>"; };
 		8480B6FD2DA6830C00BF884F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		8480B6FF2DA6B29300BF884F /* FormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormField.swift; sourceTree = "<group>"; };
-		8480B7012DA6B73B00BF884F /* UserMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMessage.swift; sourceTree = "<group>"; };
 		8480B7042DA7AE0A00BF884F /* AllertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllertManager.swift; sourceTree = "<group>"; };
 		8480B7062DA94A9200BF884F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		84AE14472DA144C20094A792 /* CyberPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CyberPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,8 +168,7 @@
 			children = (
 				846AA3E42DD769E40000FDFD /* LineView.swift */,
 				846AA3E92DD771B30000FDFD /* LineModels.swift */,
-				846AA3EB2DD772D60000FDFD /* LineStore.swift */,
-				846AA4182DE5D53B0000FDFD /* LineSocketService.swift */,
+				846AA3EB2DD772D60000FDFD /* LineManager.swift */,
 			);
 			path = Line;
 			sourceTree = "<group>";
@@ -177,22 +176,20 @@
 		846AA4022DDCC7A50000FDFD /* TouchPad */ = {
 			isa = PBXGroup;
 			children = (
-				846AA3FE2DDCC49C0000FDFD /* DirectionArrow.swift */,
-				846AA4002DDCC4FF0000FDFD /* DirectionLabels.swift */,
-				846AA3FC2DDCC4340000FDFD /* TouchIndicatorView.swift */,
 				846AA3FA2DDCB3DA0000FDFD /* TouchController.swift */,
 				846AA4032DDCCAFB0000FDFD /* TouchPadGestureView.swift */,
 			);
 			path = TouchPad;
 			sourceTree = "<group>";
 		};
-		846AA40B2DDF1EF00000FDFD /* Scaling */ = {
+		846AA40B2DDF1EF00000FDFD /* ZoomAndTouch */ = {
 			isa = PBXGroup;
 			children = (
-				846AA40C2DDF1F180000FDFD /* MagnificationModifier.swift */,
-				846AA40E2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift */,
+				846AA40C2DDF1F180000FDFD /* CombinedTouchModifier.swift */,
+				842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */,
+				842F8E182DE9B6B600A0B028 /* TouchTracker.swift */,
 			);
-			path = Scaling;
+			path = ZoomAndTouch;
 			sourceTree = "<group>";
 		};
 		846AA41A2DE600870000FDFD /* Cache */ = {
@@ -203,10 +200,27 @@
 			path = Cache;
 			sourceTree = "<group>";
 		};
+		846AA41D2DE6E55E0000FDFD /* SocketListener */ = {
+			isa = PBXGroup;
+			children = (
+				846AA41E2DE6E5A40000FDFD /* SocketListener.swift */,
+			);
+			path = SocketListener;
+			sourceTree = "<group>";
+		};
+		846AA4622DE7493D0000FDFD /* TouchIndicator */ = {
+			isa = PBXGroup;
+			children = (
+				846AA3FC2DDCC4340000FDFD /* TouchIndicatorView.swift */,
+				846AA4002DDCC4FF0000FDFD /* DirectionLabels.swift */,
+				846AA3FE2DDCC49C0000FDFD /* DirectionArrowView.swift */,
+			);
+			path = TouchIndicator;
+			sourceTree = "<group>";
+		};
 		8480B7032DA6B74700BF884F /* UserMessage */ = {
 			isa = PBXGroup;
 			children = (
-				8480B7012DA6B73B00BF884F /* UserMessage.swift */,
 				8480B7042DA7AE0A00BF884F /* AllertManager.swift */,
 			);
 			path = UserMessage;
@@ -233,8 +247,11 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				846AA4622DE7493D0000FDFD /* TouchIndicator */,
+				846AA4092DDDE2C50000FDFD /* AppContainer.swift */,
+				846AA41D2DE6E55E0000FDFD /* SocketListener */,
 				846AA41A2DE600870000FDFD /* Cache */,
-				846AA40B2DDF1EF00000FDFD /* Scaling */,
+				846AA40B2DDF1EF00000FDFD /* ZoomAndTouch */,
 				846AA4022DDCC7A50000FDFD /* TouchPad */,
 				846AA3E62DD76E8C0000FDFD /* Line */,
 				84E5F1D22DCB8A0A00D41A4F /* Map */,
@@ -253,7 +270,6 @@
 				84AE14532DA144C50094A792 /* Persistence.swift */,
 				84AE14552DA144C50094A792 /* CyberPilot.xcdatamodeld */,
 				84AE14502DA144C50094A792 /* Preview Content */,
-				846AA4092DDDE2C50000FDFD /* AppContainer.swift */,
 			);
 			path = CyberPilot;
 			sourceTree = "<group>";
@@ -470,14 +486,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */,
 				8480B7052DA7AE0A00BF884F /* AllertManager.swift in Sources */,
-				8480B7022DA6B73B00BF884F /* UserMessage.swift in Sources */,
 				84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */,
 				8480B7002DA6B29300BF884F /* FormField.swift in Sources */,
 				84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */,
 				846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
-				846AA3EC2DD772D60000FDFD /* LineStore.swift in Sources */,
+				846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */,
 				84E5F1C52DCA186000D41A4F /* RobotSelectionView.swift in Sources */,
 				846AA3E52DD769E40000FDFD /* LineView.swift in Sources */,
 				846AA3FD2DDCC4340000FDFD /* TouchIndicatorView.swift in Sources */,
@@ -485,16 +501,16 @@
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				84AE147B2DA148590094A792 /* AuthService.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
+				846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,
 				846AA4112DE09B3D0000FDFD /* WebSocketStructs.swift in Sources */,
+				842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */,
 				846AA4042DDCCAFB0000FDFD /* TouchPadGestureView.swift in Sources */,
-				846AA40F2DDF4C340000FDFD /* ZoomOnTwoFingerTouchView.swift in Sources */,
 				8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */,
 				846AA40A2DDDE2C50000FDFD /* AppContainer.swift in Sources */,
 				84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */,
 				846AA3FB2DDCB3DA0000FDFD /* TouchController.swift in Sources */,
-				846AA40D2DDF1F180000FDFD /* MagnificationModifier.swift in Sources */,
-				846AA4192DE5D53B0000FDFD /* LineSocketService.swift in Sources */,
+				846AA40D2DDF1F180000FDFD /* CombinedTouchModifier.swift in Sources */,
 				84AE14542DA144C50094A792 /* Persistence.swift in Sources */,
 				84E5F1962DB8CC9100D41A4F /* WebView.swift in Sources */,
 				84E5F1CF2DCB781400D41A4F /* RobotListManager.swift in Sources */,
@@ -520,7 +536,7 @@
 				84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */,
 				84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */,
 				846AA4012DDCC4FF0000FDFD /* DirectionLabels.swift in Sources */,
-				846AA3FF2DDCC49C0000FDFD /* DirectionArrow.swift in Sources */,
+				846AA3FF2DDCC49C0000FDFD /* DirectionArrowView.swift in Sources */,
 				840634662DD4B071007E0E1F /* RegistrationStructs.swift in Sources */,
 				846AA3EA2DD771B30000FDFD /* LineModels.swift in Sources */,
 			);
