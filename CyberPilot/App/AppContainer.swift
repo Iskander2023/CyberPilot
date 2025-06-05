@@ -2,7 +2,7 @@
 //  AppContainer.swift
 //  CyberPilot
 //
-//  Created by Admin on 21/05/25.
+//  Created by Aleksandr Chumakov on 21/05/25.
 //
 import SwiftUI
 

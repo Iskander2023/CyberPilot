@@ -230,16 +230,16 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         isConnected = false
         logger.info("Connection canceled.")
         self.receivedResponses.send("Connection canceled.")
-        self.connectionStatus.send(false) // заглушка для тестов
-//        self.connectionStatus.send(true)
+        self.connectionStatus.send(false)
+//        self.connectionStatus.send(true) // заглушка для тестов
     }
     
     
     func handlePeerClosed() {
         isConnected = false
         logger.info("Connection closed")
-//        self.connectionStatus.send(true)
-        self.connectionStatus.send(false) // заглушка для тестов
+//        self.connectionStatus.send(true) // заглушка для тестов
+        self.connectionStatus.send(false)
         self.receivedResponses.send("Connection closed.")
     }
     
