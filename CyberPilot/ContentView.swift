@@ -93,7 +93,8 @@ struct ContentView: View {
     
     private func handleTabChange(to tab: Int) {
         if tab == 2 {
-            mapManager.startLoadingMap()
+//            mapManager.setupFromLocalFile() // загрузка с локального файла
+            mapManager.startLoadingMap() // загрузка через сокет
             lineStore.stopLoadingLines()
         } else if tab == 3 {
             lineStore.startLoadingLines()

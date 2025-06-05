@@ -15,15 +15,14 @@ final class MapManager: ObservableObject {
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let mapUpdateTime: TimeInterval = 10
     private var timerCancellable: AnyCancellable?
-    var localIp: String = "http://127.0.0.1:8000/map.yaml"
     var socketIp: String = "ws://172.16.17.79:8765"
-    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml"
+    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
 
     
     
     init(authService: AuthService) {
         map = mapCacheManager.load()
-        socketListener = SocketListener(authService: authService, socketIp: "ws://172.16.17.79:8765")
+        socketListener = SocketListener(authService: authService, socketIp: socketIp)
     }
     
     
@@ -51,7 +50,7 @@ final class MapManager: ObservableObject {
     
     func setupFromLocalFile() {
         logger.info("✅ setupFromLocalFile вызван")
-        downloadMapFromLocalFile(from: localIp)
+        downloadMapFromLocalFile(from: noLocalIp)
         setupRefreshTimer()
     }
     
@@ -63,7 +62,7 @@ final class MapManager: ObservableObject {
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                self.downloadMapFromLocalFile(from: self.localIp)
+                self.downloadMapFromLocalFile(from: self.noLocalIp)
             }
     }
     
@@ -113,7 +112,7 @@ final class MapManager: ObservableObject {
                     self.mapCacheManager.save(newMap)
                     completion?(true)
                 } else {
-                    self.logger.info("✅ Карта не изменилась — пропускаем кэширование")
+                    self.logger.info("✅ Карта не изменилась")
                     completion?(false)
                 }
             }

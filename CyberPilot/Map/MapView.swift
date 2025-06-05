@@ -18,27 +18,76 @@ struct MapView: View {
     @State private var secondTouch: CGPoint? = nil
     @State private var borderLines: [BorderLine] = []
     @State var isAddingBorder = false
+    @State private var currentDragLocation: CGPoint? = nil
+    
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    
-    
-    
+
     var body: some View {
         GeometryReader { geometry in
             if let map = mapManager.map {
                 ZStack {
                     MapCanvasView(map: map, scale: scale, offset: offset)
+                        .gesture(
+                            MagnificationGesture()
+                                .onChanged { value in
+                                    let delta = value / lastScale
+                                    lastScale = value
+                                    scale *= delta
+                                    scale = max(0.5, min(scale, 5.0))
+                                }
+                                .onEnded { _ in
+                                    lastScale = 1.0
+                                }
+                            )
                         .simultaneousGesture(
                             DragGesture(minimumDistance: 0)
-                                .onEnded { gesture in
+                                .onChanged { gesture in
+                                    
+                                    if isAddingBorder == false {
+                                        offset = CGSize(
+                                            width: lastOffset.width + gesture.translation.width,
+                                            height: lastOffset.height + gesture.translation.height
+                                        )
+                                    }
+                                    
                                     if isAddingBorder {
-                                        handleTap(at: gesture.location)
+                                        if firstTouch == nil {
+                                            firstTouch = gesture.location
+                                        } else {
+                                            currentDragLocation = gesture.location
+                                        }
+                                    }
+                                }
+                                .onEnded { gesture in
+                                    if isAddingBorder == false {
+                                        lastOffset = offset
+                                    }
+                                    if isAddingBorder {
+                                        handleTap(at: gesture.location, in: geometry)
+                                        currentDragLocation = nil
                                     }
                                 }
                         )
 
+                    // Постоянные линии
                     ForEach(borderLines) { line in
-                        BorderLineView(start: line.start, end: line.end)
-                            .allowsHitTesting(false)
+                        BorderLineView(
+                            start: convertToScreenCoordinates(line.start, in: geometry),
+                            end: convertToScreenCoordinates(line.end, in: geometry)
+                        )
+                        .allowsHitTesting(false)
+                    }
+
+                    // Временная линия (тянется от первой точки к курсору)
+                    if isAddingBorder, let start = firstTouch, let current = currentDragLocation {
+                        BorderLineView(
+                            start: start,
+                            end: current,
+                            color: .red,
+                            lineWidth: 2,
+                            dash: [5]
+                        )
+                        .allowsHitTesting(false)
                     }
 
                     BorderPointsView(first: firstTouch, second: secondTouch)
@@ -59,27 +108,46 @@ struct MapView: View {
         }
     }
 
-    
-    func handleTap(at location: CGPoint) {
+    // Преобразование: экран → карта
+    func convertToMapCoordinates(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
+        let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+        let translatedX = (point.x - center.x - offset.width) / scale
+        let translatedY = (point.y - center.y - offset.height) / scale
+        return CGPoint(x: translatedX, y: translatedY)
+    }
+
+    // Преобразование: карта → экран
+    func convertToScreenCoordinates(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
+        let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+        let screenX = point.x * scale + center.x + offset.width
+        let screenY = point.y * scale + center.y + offset.height
+        return CGPoint(x: screenX, y: screenY)
+    }
+
+    // Обработка касания
+    func handleTap(at location: CGPoint, in geometry: GeometryProxy) {
         if firstTouch == nil && secondTouch == nil {
             firstTouch = location
-            
-        } else if firstTouch != nil && secondTouch == nil{
+        } else if firstTouch != nil && secondTouch == nil {
             secondTouch = location
             if let first = firstTouch, let second = secondTouch {
-                let newLine = BorderLine(start: first, end: second)
+                let firstMapCoord = convertToMapCoordinates(first, in: geometry)
+                let secondMapCoord = convertToMapCoordinates(second, in: geometry)
+                let newLine = BorderLine(start: firstMapCoord, end: secondMapCoord)
                 borderLines.append(newLine)
                 isAddingBorder = false
                 firstTouch = nil
                 secondTouch = nil
             }
         } else {
-            firstTouch = nil
-            secondTouch = nil
             firstTouch = location
+            secondTouch = nil
         }
     }
 }
+
+
+
 
 
 //    .gesture(
