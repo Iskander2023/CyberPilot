@@ -20,28 +20,7 @@ struct MapControlsView: View {
             HStack {
                 Spacer()
                 HStack(spacing: 10) {
-                    Button(action: {
-                        withAnimation {
-                            scale = min(scale + 0.5, 5.0)
-                        }
-                    }) {
-                        Image(systemName: "plus.magnifyingglass")
-                            .padding()
-                            .background(Color.white.opacity(0.8))
-                            .clipShape(Circle())
-                    }
-
-                    Button(action: {
-                        withAnimation {
-                            scale = max(scale - 0.5, 0.5)
-                        }
-                    }) {
-                        Image(systemName: "minus.magnifyingglass")
-                            .padding()
-                            .background(Color.white.opacity(0.8))
-                            .clipShape(Circle())
-                    }
-
+                    
                     Button(action: {
                         withAnimation {
                             scale = 1.0

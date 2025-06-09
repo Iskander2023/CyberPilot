@@ -16,8 +16,8 @@ final class MapManager: ObservableObject {
     private let mapUpdateTime: TimeInterval = 10
     private var timerCancellable: AnyCancellable?
     var socketIp: String = "ws://172.16.17.79:8765"
-    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
-
+//    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
+    var noLocalIp: String = "http://127.0.0.1:8000/map.yaml"
     
     
     init(authService: AuthService) {
@@ -51,7 +51,7 @@ final class MapManager: ObservableObject {
     func setupFromLocalFile() {
         logger.info("✅ setupFromLocalFile вызван")
         downloadMapFromLocalFile(from: noLocalIp)
-        setupRefreshTimer()
+        //setupRefreshTimer() // закомичено для тестов
     }
     
     
@@ -78,9 +78,128 @@ final class MapManager: ObservableObject {
     func stopLoadingMap() {
         socketListener.stopListening()
         timerCancellable?.cancel()
-
     }
     
+    
+    
+    func setValue(_ value: Int, forCells cells: [CGPoint]) {
+        guard var currentMap = map else {
+            print("Карта не загружена")
+            return
+        }
+        for cell in cells {
+            let x = Int(cell.x)
+            let y = Int(cell.y)
+            guard x >= 0, x < currentMap.width,
+                  y >= 0, y < currentMap.height else {
+                continue
+            }
+            let index = y * currentMap.width + x
+            currentMap.data[index] = value
+        }
+        self.map = currentMap 
+        self.mapCacheManager.save(currentMap)
+    }
+    
+    
+    
+    func calculateCellSize(in size: CGSize, map: OccupancyGridMap, scale: CGFloat, offset: CGSize) -> (cellSize: CGFloat, offsetX: CGFloat, offsetY: CGFloat) {
+        let mapAspect = CGFloat(map.width) / CGFloat(map.height)
+        let viewAspect = size.width / size.height
+        let cellSize: CGFloat
+        let totalWidth: CGFloat
+        let totalHeight: CGFloat
+        
+        if mapAspect > viewAspect {
+            cellSize = size.width / CGFloat(map.width) * scale
+            totalWidth = size.width * scale
+            totalHeight = CGFloat(map.height) * cellSize
+        } else {
+            cellSize = size.height / CGFloat(map.height) * scale
+            totalHeight = size.height * scale
+            totalWidth = CGFloat(map.width) * cellSize
+        }
+        
+        let offsetX = (size.width - totalWidth) / 2 + offset.width
+        let offsetY = (size.height - totalHeight) / 2 + offset.height
+        
+        return (cellSize, offsetX, offsetY)
+    }
+    
+    
+    func convertPointToCell(point: CGPoint, in size: CGSize, map: OccupancyGridMap, scale: CGFloat, offset: CGSize) -> CGPoint? {
+        let (cellSize, offsetX, offsetY) = calculateCellSize(
+                in: size,
+                map: map,
+                scale: scale,
+                offset: offset
+            )
+
+        let x = Int((point.x - offsetX) / cellSize)
+        let y = Int((point.y - offsetY) / cellSize)
+
+        guard x >= 0, x < map.width, y >= 0, y < map.height else {
+            return nil
+        }
+        return CGPoint(x: x, y: y)
+    }
+    
+    
+    // Преобразование: экран → карта
+    func convertToMapCoordinates(_ point: CGPoint, offset: CGSize, scale: CGFloat, in geometry: CGSize) -> CGPoint {
+        let center = CGPoint(x: geometry.width / 2, y: geometry.height / 2)
+        let translatedX = (point.x - center.x - offset.width) / scale
+        let translatedY = (point.y - center.y - offset.height) / scale
+        return CGPoint(x: translatedX, y: translatedY)
+    }
+    
+    
+    // Преобразование: карта → экран
+    func convertToScreenCoordinates(_ point: CGPoint, offset: CGSize, scale: CGFloat, in geometry: CGSize) -> CGPoint {
+        let center = CGPoint(x: geometry.width / 2, y: geometry.height / 2)
+        let screenX = point.x * scale + center.x + offset.width
+        let screenY = point.y * scale + center.y + offset.height
+        return CGPoint(x: screenX, y: screenY)
+    }
+
+    func getCellsAlongLineBetweenCells(
+        from start: (Int, Int),
+        to end: (Int, Int)
+    ) -> [CGPoint] {
+        let (x0, y0) = start
+        let (x1, y1) = end
+        
+        var points = [CGPoint]()
+        
+        let dx = abs(x1 - x0)
+        let dy = abs(y1 - y0)
+        let sx = x0 < x1 ? 1 : -1
+        let sy = y0 < y1 ? 1 : -1
+        var err = dx - dy
+        var currentX = x0
+        var currentY = y0
+        
+        while true {
+            points.append(CGPoint(x: currentX, y: currentY))
+            
+            if currentX == x1 && currentY == y1 {
+                break
+            }
+            
+            let e2 = 2 * err
+            if e2 > -dy {
+                err -= dy
+                currentX += sx
+            }
+            if e2 < dx {
+                err += dx
+                currentY += sy
+            }
+        }
+        
+        return points
+    }
+
     
     // Загрузка из локальной сети(из файла yaml)
     func downloadMapFromLocalFile(from urlString: String, completion: ((Bool) -> Void)? = nil) {

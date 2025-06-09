@@ -19,6 +19,10 @@ struct MapView: View {
     @State private var borderLines: [BorderLine] = []
     @State var isAddingBorder = false
     @State private var currentDragLocation: CGPoint? = nil
+    @State private var colorCellValue: Int = 0
+    @State private var affectedCells: [CGPoint] = []
+    @State private var firstCell: (Int, Int)? = nil
+
     
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
 
@@ -26,7 +30,7 @@ struct MapView: View {
         GeometryReader { geometry in
             if let map = mapManager.map {
                 ZStack {
-                    MapCanvasView(map: map, scale: scale, offset: offset)
+                    MapCanvasView(map: map, scale: scale, offset: offset, affectedCells: $affectedCells)
                         .gesture(
                             MagnificationGesture()
                                 .onChanged { value in
@@ -42,15 +46,30 @@ struct MapView: View {
                         .simultaneousGesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { gesture in
-                                    
+                                    // если режим установки границ не активен
                                     if isAddingBorder == false {
                                         offset = CGSize(
                                             width: lastOffset.width + gesture.translation.width,
                                             height: lastOffset.height + gesture.translation.height
                                         )
                                     }
-                                    
+                                    // если режим установки границ активен
                                     if isAddingBorder {
+                                        let location = gesture.location
+                                        let startCell = mapManager.convertPointToCell(point: location,
+                                                                         in: geometry.size,
+                                                                         map: map,
+                                                                         scale: scale,
+                                                                         offset: offset)
+                                        if firstCell == nil, let cell = startCell {
+                                            firstCell = (Int(cell.x), Int(cell.y))
+                                        }
+                                        if let from = firstCell, let to = startCell {
+                                            let toInt = (Int(to.x), Int(to.y))
+                                            affectedCells = mapManager.getCellsAlongLineBetweenCells(from: from, to: toInt)
+                                        }
+                           
+                                        
                                         if firstTouch == nil {
                                             firstTouch = gesture.location
                                         } else {
@@ -61,22 +80,27 @@ struct MapView: View {
                                 .onEnded { gesture in
                                     if isAddingBorder == false {
                                         lastOffset = offset
+                                        firstCell = nil
+                                        affectedCells = []
                                     }
                                     if isAddingBorder {
                                         handleTap(at: gesture.location, in: geometry)
                                         currentDragLocation = nil
+                                        firstCell = nil
+                                        affectedCells = []
                                     }
                                 }
                         )
 
                     // Постоянные линии
-                    ForEach(borderLines) { line in
-                        BorderLineView(
-                            start: convertToScreenCoordinates(line.start, in: geometry),
-                            end: convertToScreenCoordinates(line.end, in: geometry)
-                        )
-                        .allowsHitTesting(false)
-                    }
+//                    ForEach(borderLines) { line in
+//                        BorderLineView(
+//                            start: mapManager.convertToScreenCoordinates(line.start, offset: offset, scale: scale, in: geometry.size),
+//                            end: mapManager.convertToScreenCoordinates(line.end, offset: offset, scale: scale, in: geometry.size)
+//                        )
+//                        .drawingGroup()
+//                        .allowsHitTesting(false)
+//                    }
 
                     // Временная линия (тянется от первой точки к курсору)
                     if isAddingBorder, let start = firstTouch, let current = currentDragLocation {
@@ -107,37 +131,24 @@ struct MapView: View {
             }
         }
     }
-
-    // Преобразование: экран → карта
-    func convertToMapCoordinates(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
-        let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-        let translatedX = (point.x - center.x - offset.width) / scale
-        let translatedY = (point.y - center.y - offset.height) / scale
-        return CGPoint(x: translatedX, y: translatedY)
-    }
-
-    // Преобразование: карта → экран
-    func convertToScreenCoordinates(_ point: CGPoint, in geometry: GeometryProxy) -> CGPoint {
-        let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-        let screenX = point.x * scale + center.x + offset.width
-        let screenY = point.y * scale + center.y + offset.height
-        return CGPoint(x: screenX, y: screenY)
-    }
+    
 
     // Обработка касания
     func handleTap(at location: CGPoint, in geometry: GeometryProxy) {
+        guard mapManager.map != nil else { return }
         if firstTouch == nil && secondTouch == nil {
             firstTouch = location
         } else if firstTouch != nil && secondTouch == nil {
             secondTouch = location
-            if let first = firstTouch, let second = secondTouch {
-                let firstMapCoord = convertToMapCoordinates(first, in: geometry)
-                let secondMapCoord = convertToMapCoordinates(second, in: geometry)
-                let newLine = BorderLine(start: firstMapCoord, end: secondMapCoord)
-                borderLines.append(newLine)
+            if let first = firstTouch {
+                mapManager.setValue(colorCellValue, forCells: affectedCells)
+                let firstMapCoord = mapManager.convertToMapCoordinates(first, offset: offset, scale: scale, in: geometry.size)
+                let secondMapCoord = mapManager.convertToMapCoordinates(first, offset: offset, scale: scale, in: geometry.size)
+                borderLines.append(BorderLine(start: firstMapCoord, end: secondMapCoord))
                 isAddingBorder = false
                 firstTouch = nil
                 secondTouch = nil
+                affectedCells = []
             }
         } else {
             firstTouch = location
@@ -145,32 +156,3 @@ struct MapView: View {
         }
     }
 }
-
-
-
-
-
-//    .gesture(
-//        MagnificationGesture()
-//            .onChanged { value in
-//                let delta = value / lastScale
-//                lastScale = value
-//                scale *= delta
-//                scale = max(0.5, min(scale, 5.0))
-//            }
-//            .onEnded { _ in
-//                lastScale = 1.0
-//            }
-//            .simultaneously(with:
-//                                DragGesture()
-//                .onChanged { gesture in
-//                    offset = CGSize(
-//                        width: lastOffset.width + gesture.translation.width,
-//                        height: lastOffset.height + gesture.translation.height
-//                    )
-//                }
-//                .onEnded { _ in
-//                    lastOffset = offset
-//                }
-//                           )
-//    )
