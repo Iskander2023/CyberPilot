@@ -13,7 +13,8 @@ struct MapCanvasView: View {
     let map: OccupancyGridMap
     let scale: CGFloat
     let offset: CGSize
-    @Binding var affectedCells: [CGPoint]
+    var cellColors: MapCellColors = MapCellColors()
+    
 
     var body: some View {
         Canvas { context, size in
@@ -28,16 +29,7 @@ struct MapCanvasView: View {
                 for x in 0..<map.width {
                     let index = y * map.width + x
                     let value = map.data[index]
-                    let color: Color
-                    
-                    switch value {
-                    case -1: color = .gray
-                    case 0: color = .white
-                    case 50: color = .green
-                    case 100: color = .black
-                    case 500: color = .indigo
-                    default: color = .red
-                    }
+                    let color = cellColors.color(for: value)
                     
                     let rect = CGRect(
                         x: CGFloat(x) * cellSize + offsetX,

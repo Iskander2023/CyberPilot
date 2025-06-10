@@ -81,7 +81,7 @@ final class MapManager: ObservableObject {
     }
     
     
-    
+    // метод установки новых значений ячейкам карты
     func setValue(_ value: Int, forCells cells: [CGPoint]) {
         guard var currentMap = map else {
             print("Карта не загружена")
@@ -95,9 +95,11 @@ final class MapManager: ObservableObject {
                 continue
             }
             let index = y * currentMap.width + x
-            currentMap.data[index] = value
+            if currentMap.data[index] == 100 {
+                currentMap.data[index] = value
+            }
         }
-        self.map = currentMap 
+        self.map = currentMap
         self.mapCacheManager.save(currentMap)
     }
     
@@ -109,7 +111,6 @@ final class MapManager: ObservableObject {
         let cellSize: CGFloat
         let totalWidth: CGFloat
         let totalHeight: CGFloat
-        
         if mapAspect > viewAspect {
             cellSize = size.width / CGFloat(map.width) * scale
             totalWidth = size.width * scale
@@ -119,10 +120,8 @@ final class MapManager: ObservableObject {
             totalHeight = size.height * scale
             totalWidth = CGFloat(map.width) * cellSize
         }
-        
         let offsetX = (size.width - totalWidth) / 2 + offset.width
         let offsetY = (size.height - totalHeight) / 2 + offset.height
-        
         return (cellSize, offsetX, offsetY)
     }
     
@@ -134,10 +133,8 @@ final class MapManager: ObservableObject {
                 scale: scale,
                 offset: offset
             )
-
         let x = Int((point.x - offsetX) / cellSize)
         let y = Int((point.y - offsetY) / cellSize)
-
         guard x >= 0, x < map.width, y >= 0, y < map.height else {
             return nil
         }
@@ -162,6 +159,7 @@ final class MapManager: ObservableObject {
         return CGPoint(x: screenX, y: screenY)
     }
 
+    
     func getCellsAlongLineBetweenCells(
         from start: (Int, Int),
         to end: (Int, Int)

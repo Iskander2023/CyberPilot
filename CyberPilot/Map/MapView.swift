@@ -19,7 +19,7 @@ struct MapView: View {
     @State private var borderLines: [BorderLine] = []
     @State var isAddingBorder = false
     @State private var currentDragLocation: CGPoint? = nil
-    @State private var colorCellValue: Int = 0
+    @State private var colorCellValue: Int = 300
     @State private var affectedCells: [CGPoint] = []
     @State private var firstCell: (Int, Int)? = nil
 
@@ -30,7 +30,7 @@ struct MapView: View {
         GeometryReader { geometry in
             if let map = mapManager.map {
                 ZStack {
-                    MapCanvasView(map: map, scale: scale, offset: offset, affectedCells: $affectedCells)
+                    MapCanvasView(map: map, scale: scale, offset: offset)
                         .gesture(
                             MagnificationGesture()
                                 .onChanged { value in
@@ -92,16 +92,6 @@ struct MapView: View {
                                 }
                         )
 
-                    // Постоянные линии
-//                    ForEach(borderLines) { line in
-//                        BorderLineView(
-//                            start: mapManager.convertToScreenCoordinates(line.start, offset: offset, scale: scale, in: geometry.size),
-//                            end: mapManager.convertToScreenCoordinates(line.end, offset: offset, scale: scale, in: geometry.size)
-//                        )
-//                        .drawingGroup()
-//                        .allowsHitTesting(false)
-//                    }
-
                     // Временная линия (тянется от первой точки к курсору)
                     if isAddingBorder, let start = firstTouch, let current = currentDragLocation {
                         BorderLineView(
@@ -140,16 +130,11 @@ struct MapView: View {
             firstTouch = location
         } else if firstTouch != nil && secondTouch == nil {
             secondTouch = location
-            if let first = firstTouch {
                 mapManager.setValue(colorCellValue, forCells: affectedCells)
-                let firstMapCoord = mapManager.convertToMapCoordinates(first, offset: offset, scale: scale, in: geometry.size)
-                let secondMapCoord = mapManager.convertToMapCoordinates(first, offset: offset, scale: scale, in: geometry.size)
-                borderLines.append(BorderLine(start: firstMapCoord, end: secondMapCoord))
                 isAddingBorder = false
                 firstTouch = nil
                 secondTouch = nil
                 affectedCells = []
-            }
         } else {
             firstTouch = location
             secondTouch = nil
