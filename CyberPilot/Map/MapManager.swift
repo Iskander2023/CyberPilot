@@ -10,6 +10,7 @@ import Combine
 
 final class MapManager: ObservableObject {
     @Published var map: OccupancyGridMap?
+    @Published var zones: [ZoneInfo] = []
     let mapCacheManager = GenericCacheManager<OccupancyGridMap>(filename: "cached_map.json")
     private let socketListener: SocketListener
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
@@ -18,6 +19,7 @@ final class MapManager: ObservableObject {
     var socketIp: String = "ws://172.16.17.79:8765"
 //    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
     var noLocalIp: String = "http://127.0.0.1:8000/map.yaml"
+    var centerZoneList: [CGPoint] = []
     
     
     init(authService: AuthService) {
@@ -48,10 +50,12 @@ final class MapManager: ObservableObject {
         }
     }
     
+    
     func setupFromLocalFile() {
-        logger.info("✅ setupFromLocalFile вызван")
+        logger.info("✅ загрузка с локального файла")
         downloadMapFromLocalFile(from: noLocalIp)
         //setupRefreshTimer() // закомичено для тестов
+        
     }
     
     
@@ -81,27 +85,83 @@ final class MapManager: ObservableObject {
     }
     
     
+    // заливка зон карты
+    func mapZoneFills() {
+        zones = []
+        let zeroContours = findIsolatedRegions(in: map?.data ?? [], width: map?.width ?? 30, valueRange: 31...100)
+        for (i, contour) in zeroContours.enumerated() {
+            let center = getCenterZone(cells: contour)
+            centerZoneList.append(center) // добавлено для визуализации
+            setValue(31 + i, forCells: contour)
+            let zone = ZoneInfo(id: 31 + i, name: "Зона \(i+1)", center: center)
+            zones.append(zone)
+        }
+        //print("\(zones)")
+        setValue(50, forCells: centerZoneList) // добавлено для визуализации
+    }
+    
+    
+    // получение точки координат центра зоны
+    func getCenterZone(cells: [CGPoint]) -> CGPoint {
+        var sumX = 0.0
+        var sumY = 0.0
+        let count = Double(cells.count)
+
+        for cell in cells {
+            sumX += Double(cell.x)
+            sumY += Double(cell.y)
+        }
+
+        let avgX = sumX / count
+        let avgY = sumY / count
+
+        return CGPoint(x: avgX, y: avgY)
+    }
+
+    
+    //метод получения индексов массива по точкам
+    private func validIndices(for cells: [CGPoint], in map: OccupancyGridMap) -> [Int] {
+        var indices = [Int]()
+        for cell in cells {
+            let x = Int(cell.x)
+            let y = Int(cell.y)
+            guard x >= 0, x < map.width,
+                  y >= 0, y < map.height else {
+                continue
+            }
+            let index = y * map.width + x
+            indices.append(index)
+        }
+        return indices
+    }
+    
+    
     // метод установки новых значений ячейкам карты
     func setValue(_ value: Int, forCells cells: [CGPoint]) {
         guard var currentMap = map else {
             print("Карта не загружена")
             return
         }
-        for cell in cells {
-            let x = Int(cell.x)
-            let y = Int(cell.y)
-            guard x >= 0, x < currentMap.width,
-                  y >= 0, y < currentMap.height else {
-                continue
-            }
-            let index = y * currentMap.width + x
-            if currentMap.data[index] == 100 {
+        let indices = validIndices(for: cells, in: currentMap)
+        for index in indices {
+            if currentMap.data[index] != 0 {
                 currentMap.data[index] = value
             }
         }
         self.map = currentMap
         self.mapCacheManager.save(currentMap)
     }
+    
+    
+    // перевод CGPoint в позицию на Canvas
+    func convertMapPointToScreen(_ point: CGPoint, map: OccupancyGridMap, in size: CGSize, scale: CGFloat, offset: CGSize) -> CGPoint {
+        let (cellSize, offsetX, offsetY) = calculateCellSize(in: size, map: map, scale: scale, offset: offset)
+
+        let screenX = point.x * cellSize + offsetX + cellSize / 2
+        let screenY = point.y * cellSize + offsetY + cellSize / 2
+        return CGPoint(x: screenX, y: screenY)
+    }
+
     
     
     
@@ -235,4 +295,99 @@ final class MapManager: ObservableObject {
             }
         }.resume()
     }
+    
+    func findIsolatedRegions(in data: [Int], width: Int, valueRange: ClosedRange<Int>) -> [[CGPoint]] {
+        let height = data.count / width
+        var visited = Array(repeating: false, count: data.count)
+        var result = [[CGPoint]]()
+        
+        func isInside(_ r: Int, _ c: Int) -> Bool {
+            return r >= 0 && c >= 0 && r < height && c < width
+        }
+        
+        let directions = [(0,1), (1,0), (0,-1), (-1,0)]
+        
+        for row in 0..<height {
+            for col in 0..<width {
+                let idx = row * width + col
+                // Проверяем, входит ли значение в диапазон и не посещено ли
+                guard valueRange.contains(data[idx]) && !visited[idx] else { continue }
+                
+                var region = [CGPoint]()
+                var queue = [(row, col)]
+                var isTouchingBorder = false
+                
+                while !queue.isEmpty {
+                    let (r, c) = queue.removeFirst()
+                    let i = r * width + c
+                    
+                    guard isInside(r, c), valueRange.contains(data[i]), !visited[i] else { continue }
+                    visited[i] = true
+                    region.append(CGPoint(x: c, y: r))
+                    
+                    if r == 0 || r == height - 1 || c == 0 || c == width - 1 {
+                        isTouchingBorder = true
+                    }
+                    
+                    for (dr, dc) in directions {
+                        let nr = r + dr
+                        let nc = c + dc
+                        if isInside(nr, nc), valueRange.contains(data[nr * width + nc]), !visited[nr * width + nc] {
+                            queue.append((nr, nc))
+                        }
+                    }
+                }
+                
+                if !region.isEmpty && !isTouchingBorder {
+                    result.append(region)
+                }
+            }
+        }
+        
+        return result
+    }
+
+    
+//    func findIsolatedRegions(of targetValue: Int, in data: [Int], width: Int) -> [[CGPoint]] {
+//        let height = data.count / width
+//        var visited = Array(repeating: false, count: data.count)
+//        var result = [[CGPoint]]()
+//        func isInside(_ r: Int, _ c: Int) -> Bool {
+//            return r >= 0 && c >= 0 && r < height && c < width
+//        }
+//        let directions = [(0,1), (1,0), (0,-1), (-1,0)]
+//        for row in 0..<height {
+//            for col in 0..<width {
+//                let idx = row * width + col
+//                guard data[idx] == targetValue && !visited[idx] else { continue }
+//                var region = [CGPoint]()
+//                var queue = [(row, col)]
+//                var isTouchingBorder = false
+//                while !queue.isEmpty {
+//                    let (r, c) = queue.removeFirst()
+//                    let i = r * width + c
+//                    guard isInside(r, c), data[i] == targetValue, !visited[i] else { continue }
+//                    visited[i] = true
+//                    region.append(CGPoint(x: c, y: r))
+//                    if r == 0 || r == height - 1 || c == 0 || c == width - 1 {
+//                        isTouchingBorder = true
+//                    }
+//                    for (dr, dc) in directions {
+//                        let nr = r + dr
+//                        let nc = c + dc
+//                        if isInside(nr, nc) && data[nr * width + nc] == targetValue && !visited[nr * width + nc] {
+//                            queue.append((nr, nc))
+//                        }
+//                    }
+//                }
+//                if !region.isEmpty && !isTouchingBorder {
+//                    result.append(region)
+//                }
+//            }
+//        }
+//
+//        return result
+//    }
+    
+    
 }

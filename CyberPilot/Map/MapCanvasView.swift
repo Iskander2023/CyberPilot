@@ -2,7 +2,7 @@
 //  MapCanvasView.swift
 //  CyberPilot
 //
-//  Created by Admin on 5/06/25.
+//  Created by Aleksandr Chumakov on 5/06/25.
 //
 import SwiftUI
 

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MapControlsView: View {
+    @EnvironmentObject private var mapManager: MapManager
     @Binding var scale: CGFloat
     @Binding var offset: CGSize
     @Binding var lastOffset: CGSize
@@ -45,22 +46,9 @@ struct MapControlsView: View {
                         }
                     
                     Button(action: {
-                        if !borderLines.isEmpty {
-                            borderLines.removeAll()
-                        }
+                        mapManager.mapZoneFills()
                         }) {
-                            Image(systemName: "eraser")
-                                .padding()
-                                .background(Color.white.opacity(0.8))
-                                .clipShape(Circle())
-                        }
-                    
-                    Button(action: {
-                        if !borderLines.isEmpty {
-                            borderLines.removeLast()
-                            }
-                        }) {
-                            Image(systemName: "arrowshape.turn.up.backward")
+                            Image(systemName: "rectangle.and.paperclip")
                                 .padding()
                                 .background(Color.white.opacity(0.8))
                                 .clipShape(Circle())

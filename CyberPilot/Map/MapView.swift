@@ -19,9 +19,11 @@ struct MapView: View {
     @State private var borderLines: [BorderLine] = []
     @State var isAddingBorder = false
     @State private var currentDragLocation: CGPoint? = nil
-    @State private var colorCellValue: Int = 300
+    @State private var borderFillColor: Int = 30
     @State private var affectedCells: [CGPoint] = []
     @State private var firstCell: (Int, Int)? = nil
+    @State var zones: [ZoneInfo] = []
+
 
     
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
@@ -91,7 +93,8 @@ struct MapView: View {
                                     }
                                 }
                         )
-
+                    
+                    
                     // Временная линия (тянется от первой точки к курсору)
                     if isAddingBorder, let start = firstTouch, let current = currentDragLocation {
                         BorderLineView(
@@ -102,6 +105,13 @@ struct MapView: View {
                             dash: [5]
                         )
                         .allowsHitTesting(false)
+                    }
+                    
+                    ForEach(mapManager.zones) { zone in
+                        
+                        let center = mapManager.convertMapPointToScreen(zone.center, map: map, in: geometry.size, scale: scale, offset: offset)
+                        Text(zone.name)
+                            .position(x: center.x, y: center.y)
                     }
 
                     BorderPointsView(first: firstTouch, second: secondTouch)
@@ -130,11 +140,11 @@ struct MapView: View {
             firstTouch = location
         } else if firstTouch != nil && secondTouch == nil {
             secondTouch = location
-                mapManager.setValue(colorCellValue, forCells: affectedCells)
-                isAddingBorder = false
-                firstTouch = nil
-                secondTouch = nil
-                affectedCells = []
+            mapManager.setValue(borderFillColor, forCells: affectedCells)
+            isAddingBorder = false
+            firstTouch = nil
+            secondTouch = nil
+            affectedCells = []
         } else {
             firstTouch = location
             secondTouch = nil
