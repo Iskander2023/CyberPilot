@@ -20,6 +20,7 @@ final class MapManager: ObservableObject {
 //    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
     var noLocalIp: String = "http://127.0.0.1:8000/map.yaml"
     var centerZoneList: [CGPoint] = []
+    var currentRobotIndex: Int?
     
     
     init(authService: AuthService) {
@@ -87,34 +88,54 @@ final class MapManager: ObservableObject {
     
     // заливка зон карты
     func mapZoneFills() {
+        var existingNames = [Int: String]() // сохрани старые названия по id
+        for zone in zones {
+            existingNames[zone.id] = zone.name
+        }
         zones = []
+        centerZoneList = []
         let zeroContours = findIsolatedRegions(in: map?.data ?? [], width: map?.width ?? 30, valueRange: 31...100)
         for (i, contour) in zeroContours.enumerated() {
             let center = getCenterZone(cells: contour)
-            centerZoneList.append(center) // добавлено для визуализации
-            setValue(31 + i, forCells: contour)
-            let zone = ZoneInfo(id: 31 + i, name: "Зона \(i+1)", center: center)
+            centerZoneList.append(center) //
+            let id = 31 + i
+            let name: String
+            if let existing = existingNames[id], !existing.starts(with: "Зона ") {
+                name = existing
+            } else {
+                name = "Зона \(i+1)"
+            }
+            setValue(id, forCells: contour, fillPoints: 0, robotPoint: 50)
+            putARobotPoint()
+            let zone = ZoneInfo(id: id, name: name, center: center)
             zones.append(zone)
         }
-        //print("\(zones)")
-        setValue(50, forCells: centerZoneList) // добавлено для визуализации
+        setValue(60, forCells: centerZoneList, fillPoints: 0, robotPoint: 50) // добавлено для визуализации
     }
     
+    
+    func putARobotPoint() {
+        guard var currentMap = map else {
+            print("Карта не загружена")
+            return
+        }
+        currentMap.data[currentRobotIndex ?? 0] = 50
+        self.map = currentMap
+        self.mapCacheManager.save(currentMap)
+    }
+
     
     // получение точки координат центра зоны
     func getCenterZone(cells: [CGPoint]) -> CGPoint {
         var sumX = 0.0
         var sumY = 0.0
         let count = Double(cells.count)
-
         for cell in cells {
             sumX += Double(cell.x)
             sumY += Double(cell.y)
         }
-
         let avgX = sumX / count
         let avgY = sumY / count
-
         return CGPoint(x: avgX, y: avgY)
     }
 
@@ -135,16 +156,25 @@ final class MapManager: ObservableObject {
         return indices
     }
     
+    // сохранение индекса робота на карте
+    func saveRobotPoint(index: Int) {
+        currentRobotIndex = index
+    }
+    
     
     // метод установки новых значений ячейкам карты
-    func setValue(_ value: Int, forCells cells: [CGPoint]) {
+    func setValue(_ value: Int, forCells cells: [CGPoint], fillPoints: Int, robotPoint: Int) {
         guard var currentMap = map else {
             print("Карта не загружена")
             return
         }
         let indices = validIndices(for: cells, in: currentMap)
         for index in indices {
-            if currentMap.data[index] != 0 {
+            if currentMap.data[index] == robotPoint {
+                saveRobotPoint(index: index)
+                currentMap.data[index] = value
+            }
+            else if currentMap.data[index] != fillPoints {
                 currentMap.data[index] = value
             }
         }
@@ -156,15 +186,21 @@ final class MapManager: ObservableObject {
     // перевод CGPoint в позицию на Canvas
     func convertMapPointToScreen(_ point: CGPoint, map: OccupancyGridMap, in size: CGSize, scale: CGFloat, offset: CGSize) -> CGPoint {
         let (cellSize, offsetX, offsetY) = calculateCellSize(in: size, map: map, scale: scale, offset: offset)
-
         let screenX = point.x * cellSize + offsetX + cellSize / 2
         let screenY = point.y * cellSize + offsetY + cellSize / 2
         return CGPoint(x: screenX, y: screenY)
     }
+    
+    
+    // Метод для изменения названия зоны по id
+    func renameZone(id: Int, newName: String) {
+        if let index = zones.firstIndex(where: { $0.id == id }) {
+            zones[index].name = newName
+        }
+    }
 
-    
-    
-    
+
+    // расчет положения текущей на карте
     func calculateCellSize(in size: CGSize, map: OccupancyGridMap, scale: CGFloat, offset: CGSize) -> (cellSize: CGFloat, offsetX: CGFloat, offsetY: CGFloat) {
         let mapAspect = CGFloat(map.width) / CGFloat(map.height)
         let viewAspect = size.width / size.height
@@ -201,29 +237,8 @@ final class MapManager: ObservableObject {
         return CGPoint(x: x, y: y)
     }
     
-    
-    // Преобразование: экран → карта
-    func convertToMapCoordinates(_ point: CGPoint, offset: CGSize, scale: CGFloat, in geometry: CGSize) -> CGPoint {
-        let center = CGPoint(x: geometry.width / 2, y: geometry.height / 2)
-        let translatedX = (point.x - center.x - offset.width) / scale
-        let translatedY = (point.y - center.y - offset.height) / scale
-        return CGPoint(x: translatedX, y: translatedY)
-    }
-    
-    
-    // Преобразование: карта → экран
-    func convertToScreenCoordinates(_ point: CGPoint, offset: CGSize, scale: CGFloat, in geometry: CGSize) -> CGPoint {
-        let center = CGPoint(x: geometry.width / 2, y: geometry.height / 2)
-        let screenX = point.x * scale + center.x + offset.width
-        let screenY = point.y * scale + center.y + offset.height
-        return CGPoint(x: screenX, y: screenY)
-    }
-
-    
-    func getCellsAlongLineBetweenCells(
-        from start: (Int, Int),
-        to end: (Int, Int)
-    ) -> [CGPoint] {
+    // вычисляет координаты массива точек с помощью алгоритма Брезенхема(от начальной точки до конечной)
+    func getCellsAlongLineBetweenCells(from start: (Int, Int), to end: (Int, Int)) -> [CGPoint] {
         let (x0, y0) = start
         let (x1, y1) = end
         
@@ -236,14 +251,11 @@ final class MapManager: ObservableObject {
         var err = dx - dy
         var currentX = x0
         var currentY = y0
-        
         while true {
             points.append(CGPoint(x: currentX, y: currentY))
-            
             if currentX == x1 && currentY == y1 {
                 break
             }
-            
             let e2 = 2 * err
             if e2 > -dy {
                 err -= dy
@@ -254,7 +266,6 @@ final class MapManager: ObservableObject {
                 currentY += sy
             }
         }
-        
         return points
     }
 
@@ -295,6 +306,8 @@ final class MapManager: ObservableObject {
             }
         }.resume()
     }
+    
+    
     
     func findIsolatedRegions(in data: [Int], width: Int, valueRange: ClosedRange<Int>) -> [[CGPoint]] {
         let height = data.count / width
@@ -347,47 +360,5 @@ final class MapManager: ObservableObject {
         return result
     }
 
-    
-//    func findIsolatedRegions(of targetValue: Int, in data: [Int], width: Int) -> [[CGPoint]] {
-//        let height = data.count / width
-//        var visited = Array(repeating: false, count: data.count)
-//        var result = [[CGPoint]]()
-//        func isInside(_ r: Int, _ c: Int) -> Bool {
-//            return r >= 0 && c >= 0 && r < height && c < width
-//        }
-//        let directions = [(0,1), (1,0), (0,-1), (-1,0)]
-//        for row in 0..<height {
-//            for col in 0..<width {
-//                let idx = row * width + col
-//                guard data[idx] == targetValue && !visited[idx] else { continue }
-//                var region = [CGPoint]()
-//                var queue = [(row, col)]
-//                var isTouchingBorder = false
-//                while !queue.isEmpty {
-//                    let (r, c) = queue.removeFirst()
-//                    let i = r * width + c
-//                    guard isInside(r, c), data[i] == targetValue, !visited[i] else { continue }
-//                    visited[i] = true
-//                    region.append(CGPoint(x: c, y: r))
-//                    if r == 0 || r == height - 1 || c == 0 || c == width - 1 {
-//                        isTouchingBorder = true
-//                    }
-//                    for (dr, dc) in directions {
-//                        let nr = r + dr
-//                        let nc = c + dc
-//                        if isInside(nr, nc) && data[nr * width + nc] == targetValue && !visited[nr * width + nc] {
-//                            queue.append((nr, nc))
-//                        }
-//                    }
-//                }
-//                if !region.isEmpty && !isTouchingBorder {
-//                    result.append(region)
-//                }
-//            }
-//        }
-//
-//        return result
-//    }
-    
     
 }

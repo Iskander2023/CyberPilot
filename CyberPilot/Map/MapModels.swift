@@ -33,7 +33,8 @@ struct MapCellColors {
     var free: Color = .white          // 100
     var zoningBorder: Color = .gray   // 30
     var robot: Color = .orange        // 50
-    var other: Color = .red           // fallback
+    var other: Color = .clear          // fallback
+    var center: Color = .red
 
     // Предопределённые цвета для зон
     var zoningColors: [Color] = [.blue, .cyan, .pink, .green, .mint, .indigo, .yellow, .purple, .brown]
@@ -45,6 +46,7 @@ struct MapCellColors {
         case 100: return free
         case 30: return zoningBorder
         case 50: return robot
+        case 60: return center
         case 31...:
             let index = value - 31
             if index < zoningColors.count {
@@ -62,6 +64,6 @@ struct MapCellColors {
 
 struct ZoneInfo: Identifiable {
     let id: Int         
-    let name: String
+    var name: String
     let center: CGPoint
 }

@@ -23,6 +23,9 @@ struct MapView: View {
     @State private var affectedCells: [CGPoint] = []
     @State private var firstCell: (Int, Int)? = nil
     @State var zones: [ZoneInfo] = []
+    @State var zoneToEdit: ZoneInfo?
+    @State private var newZoneName: String = ""
+    @State private var isEditing = false
 
 
     
@@ -108,10 +111,34 @@ struct MapView: View {
                     }
                     
                     ForEach(mapManager.zones) { zone in
-                        
                         let center = mapManager.convertMapPointToScreen(zone.center, map: map, in: geometry.size, scale: scale, offset: offset)
                         Text(zone.name)
-                            .position(x: center.x, y: center.y)
+                            .position(x: center.x, y: center.y - 3)
+                            .onTapGesture {
+                                    zoneToEdit = zone
+                                    newZoneName = zone.name
+                                    isEditing = true
+                                }
+                            .sheet(isPresented: $isEditing) {
+                                        VStack {
+                                            Text("Введите название")
+                                            TextField("Новое название", text: $newZoneName)
+                                                .textFieldStyle(RoundedBorderTextFieldStyle())
+
+                                            Button("Сохранить") {
+                                                if let zone = zoneToEdit {
+                                                    mapManager.renameZone(id: zone.id, newName: newZoneName)
+                                                }
+                                                isEditing = false
+                                            }
+
+                                            Button("Отмена") {
+                                                isEditing = false
+                                            }
+                                        }
+                                        .padding()
+                                    }
+                                
                     }
 
                     BorderPointsView(first: firstTouch, second: secondTouch)
@@ -140,7 +167,7 @@ struct MapView: View {
             firstTouch = location
         } else if firstTouch != nil && secondTouch == nil {
             secondTouch = location
-            mapManager.setValue(borderFillColor, forCells: affectedCells)
+            mapManager.setValue(borderFillColor, forCells: affectedCells, fillPoints: 0, robotPoint: 50)
             isAddingBorder = false
             firstTouch = nil
             secondTouch = nil
