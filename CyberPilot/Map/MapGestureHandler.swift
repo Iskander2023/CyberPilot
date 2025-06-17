@@ -15,7 +15,6 @@ class MapGestureHandler: ObservableObject {
     
     @Published var offset: CGSize = .zero
     var lastOffset: CGSize = .zero
-    var isAddingBorder: Bool = false
     
     
     func onMagnificationChanged(_ value: CGFloat) {
@@ -37,6 +36,13 @@ class MapGestureHandler: ObservableObject {
                 width: lastOffset.width + gesture.width,
                 height: lastOffset.height + gesture.height
             )
+        }
+    }
+    
+    func onDragGestureEnded(isAddingBorder: Bool) {
+        if !isAddingBorder {
+            lastOffset = offset
+            
         }
     }
     

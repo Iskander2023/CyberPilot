@@ -18,6 +18,7 @@
 		8409CC732E0190B400DA0BFC /* BorderDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC722E0190B400DA0BFC /* BorderDrawingView.swift */; };
 		8409CC752E01937100DA0BFC /* MapGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC742E01937100DA0BFC /* MapGestureHandler.swift */; };
 		8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */; };
+		8409CC792E01A99900DA0BFC /* MapTouchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC782E01A99900DA0BFC /* MapTouchHandler.swift */; };
 		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
 		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
@@ -88,6 +89,7 @@
 		8409CC722E0190B400DA0BFC /* BorderDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderDrawingView.swift; sourceTree = "<group>"; };
 		8409CC742E01937100DA0BFC /* MapGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGestureHandler.swift; sourceTree = "<group>"; };
 		8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZonesOverlayView.swift; sourceTree = "<group>"; };
+		8409CC782E01A99900DA0BFC /* MapTouchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTouchHandler.swift; sourceTree = "<group>"; };
 		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 				8409CC722E0190B400DA0BFC /* BorderDrawingView.swift */,
 				8409CC742E01937100DA0BFC /* MapGestureHandler.swift */,
 				8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */,
+				8409CC782E01A99900DA0BFC /* MapTouchHandler.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -547,6 +550,7 @@
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				8409CC6D2E017CE100DA0BFC /* MapPointCalculator.swift in Sources */,
 				84AE147B2DA148590094A792 /* AuthService.swift in Sources */,
+				8409CC792E01A99900DA0BFC /* MapTouchHandler.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,

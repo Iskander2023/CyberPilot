@@ -13,7 +13,6 @@ struct MapButtonsView: View {
     @Binding var scale: CGFloat
     @Binding var offset: CGSize
     @Binding var lastOffset: CGSize
-    @Binding var borderLines: [BorderLine]
     @Binding var isAddingBorder: Bool
 
     var body: some View {

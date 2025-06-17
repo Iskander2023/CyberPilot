@@ -11,19 +11,9 @@ import SwiftUI
 struct MapView: View {
     @EnvironmentObject private var mapManager: MapManager
     @EnvironmentObject private var mapZoneHandler: MapZoneHandler
-    @State private var firstTouch: CGPoint? = nil
-    @State private var secondTouch: CGPoint? = nil
-    @State private var borderLines: [BorderLine] = []
     @State var isAddingBorder = false
-    @State private var currentDragLocation: CGPoint? = nil
-    @State private var borderFillColor: Int = 30
-    @State private var affectedCells: [CGPoint] = []
-    @State private var firstCell: (Int, Int)? = nil
-    @State var zones: [ZoneInfo] = []
-    @State var zoneToEdit: ZoneInfo?
-    @State private var newZoneName: String = ""
-    @State private var isEditing = false
     @StateObject private var gestureHandler = MapGestureHandler()
+    @StateObject private var touchHandler = MapTouchHandler()
     let calculator = MapPointCalculator()
 
     
@@ -52,42 +42,25 @@ struct MapView: View {
                                     gestureHandler.onDragGestureChanged(gesture: gesture.translation, isAddingBorder: isAddingBorder)
                                     
                                     // если режим установки границ активен
-                                    if isAddingBorder {
-                                        let location = gesture.location
-                                        let startCell = calculator.convertPointToCell(point: location,
-                                                                                      in: geometry.size,
-                                                                                      map: map,
-                                                                                      scale: gestureHandler.scale,
-                                                                                      offset: gestureHandler.offset)
-                                        if firstCell == nil,
-                                           let cell = startCell {
-                                            firstCell = (Int(cell.x), Int(cell.y))
-                                        }
-                                        if let from = firstCell,
-                                           let to = startCell {
-                                            let toInt = (Int(to.x), Int(to.y))
-                                            affectedCells = calculator.getCellsAlongLineBetweenCells(from: from, to: toInt)
-                                        }
-                           
-                                        
-                                        if firstTouch == nil {
-                                            firstTouch = gesture.location
-                                        } else {
-                                            currentDragLocation = gesture.location
-                                        }
-                                    }
+                                    touchHandler.onDragGestureChanged(location: gesture.location,
+                                                                      isAddingBorder: isAddingBorder,
+                                                                      size: geometry.size,
+                                                                      scale: gestureHandler.scale,
+                                                                      offset: gestureHandler.offset,
+                                                                      map: mapManager.map)
+                                  
                                 }
                                 .onEnded { gesture in
                                     if isAddingBorder == false {
-                                        gestureHandler.lastOffset = gestureHandler.offset
-                                        firstCell = nil
-                                        affectedCells = []
+                                        gestureHandler.onDragGestureEnded(isAddingBorder: isAddingBorder)
+                                        touchHandler.onDragGestureEnded()
+
                                     }
                                     if isAddingBorder {
                                         handleTap(at: gesture.location, in: geometry)
-                                        currentDragLocation = nil
-                                        firstCell = nil
-                                        affectedCells = []
+                                        touchHandler.currentDragLocation = nil
+                                        touchHandler.onDragGestureEnded()
+
                                     }
                                 }
                         )
@@ -96,8 +69,8 @@ struct MapView: View {
                     // Временная линия (тянется от первой точки к курсору)
                         BorderDrawingView(
                             isAddingBorder: isAddingBorder,
-                            firstTouch: firstTouch,
-                            currentDragLocation: currentDragLocation
+                            firstTouch: touchHandler.firstTouch,
+                            currentDragLocation: touchHandler.currentDragLocation
                         )
                     
                         .allowsHitTesting(false)
@@ -112,14 +85,13 @@ struct MapView: View {
                     )
                    
 
-                    BorderPointsView(first: firstTouch, second: secondTouch)
+                    BorderPointsView(first: touchHandler.firstTouch, second: touchHandler.secondTouch)
 
                     
                     MapButtonsView(
                         scale: $gestureHandler.scale,
                         offset: $gestureHandler.offset,
                         lastOffset: $gestureHandler.lastOffset,
-                        borderLines: $borderLines,
                         isAddingBorder: $isAddingBorder
                     )
                 }
@@ -135,18 +107,18 @@ struct MapView: View {
     // Обработка касания
     func handleTap(at location: CGPoint, in geometry: GeometryProxy) {
         guard mapManager.map != nil else { return }
-        if firstTouch == nil && secondTouch == nil {
-            firstTouch = location
-        } else if firstTouch != nil && secondTouch == nil {
-            secondTouch = location
-            mapZoneHandler.setValue(borderFillColor, forCells: affectedCells, fillPoints: 0, robotPoint: 50)
+        if touchHandler.firstTouch == nil && touchHandler.secondTouch == nil {
+            touchHandler.firstTouch = location
+        } else if touchHandler.firstTouch != nil && touchHandler.secondTouch == nil {
+            touchHandler.secondTouch = location
+            mapZoneHandler.setValue(touchHandler.borderFillColor, forCells: touchHandler.affectedCells, fillPoints: 0, robotPoint: 50)
             isAddingBorder = false
-            firstTouch = nil
-            secondTouch = nil
-            affectedCells = []
+            touchHandler.firstTouch = nil
+            touchHandler.secondTouch = nil
+            touchHandler.affectedCells = []
         } else {
-            firstTouch = location
-            secondTouch = nil
+            touchHandler.firstTouch = location
+            touchHandler.secondTouch = nil
         }
     }
 }
