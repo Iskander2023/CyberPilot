@@ -10,10 +10,7 @@ import SwiftUI
 
 struct MapView: View {
     @EnvironmentObject private var mapManager: MapManager
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
-    @State private var offset: CGSize = .zero
-    @State private var lastOffset: CGSize = .zero
+    @EnvironmentObject private var mapZoneHandler: MapZoneHandler
     @State private var firstTouch: CGPoint? = nil
     @State private var secondTouch: CGPoint? = nil
     @State private var borderLines: [BorderLine] = []
@@ -26,7 +23,8 @@ struct MapView: View {
     @State var zoneToEdit: ZoneInfo?
     @State private var newZoneName: String = ""
     @State private var isEditing = false
-
+    @StateObject private var gestureHandler = MapGestureHandler()
+    let calculator = MapPointCalculator()
 
     
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
@@ -35,43 +33,40 @@ struct MapView: View {
         GeometryReader { geometry in
             if let map = mapManager.map {
                 ZStack {
-                    MapCanvasView(map: map, scale: scale, offset: offset)
+                    MapCanvasView(map: map, scale: gestureHandler.scale, offset: gestureHandler.offset)
                         .gesture(
                             MagnificationGesture()
                                 .onChanged { value in
-                                    let delta = value / lastScale
-                                    lastScale = value
-                                    scale *= delta
-                                    scale = max(0.5, min(scale, 5.0))
+                                    gestureHandler.onMagnificationChanged(value)
                                 }
                                 .onEnded { _ in
-                                    lastScale = 1.0
+                                    gestureHandler.onMagnificationEnded()
                                 }
                             )
                         .simultaneousGesture(
                             DragGesture(minimumDistance: 0)
-                                .onChanged { gesture in
+                                .onChanged {
+                                    gesture in
+                                    
                                     // если режим установки границ не активен
-                                    if isAddingBorder == false {
-                                        offset = CGSize(
-                                            width: lastOffset.width + gesture.translation.width,
-                                            height: lastOffset.height + gesture.translation.height
-                                        )
-                                    }
+                                    gestureHandler.onDragGestureChanged(gesture: gesture.translation, isAddingBorder: isAddingBorder)
+                                    
                                     // если режим установки границ активен
                                     if isAddingBorder {
                                         let location = gesture.location
-                                        let startCell = mapManager.convertPointToCell(point: location,
-                                                                         in: geometry.size,
-                                                                         map: map,
-                                                                         scale: scale,
-                                                                         offset: offset)
-                                        if firstCell == nil, let cell = startCell {
+                                        let startCell = calculator.convertPointToCell(point: location,
+                                                                                      in: geometry.size,
+                                                                                      map: map,
+                                                                                      scale: gestureHandler.scale,
+                                                                                      offset: gestureHandler.offset)
+                                        if firstCell == nil,
+                                           let cell = startCell {
                                             firstCell = (Int(cell.x), Int(cell.y))
                                         }
-                                        if let from = firstCell, let to = startCell {
+                                        if let from = firstCell,
+                                           let to = startCell {
                                             let toInt = (Int(to.x), Int(to.y))
-                                            affectedCells = mapManager.getCellsAlongLineBetweenCells(from: from, to: toInt)
+                                            affectedCells = calculator.getCellsAlongLineBetweenCells(from: from, to: toInt)
                                         }
                            
                                         
@@ -84,7 +79,7 @@ struct MapView: View {
                                 }
                                 .onEnded { gesture in
                                     if isAddingBorder == false {
-                                        lastOffset = offset
+                                        gestureHandler.lastOffset = gestureHandler.offset
                                         firstCell = nil
                                         affectedCells = []
                                     }
@@ -99,54 +94,31 @@ struct MapView: View {
                     
                     
                     // Временная линия (тянется от первой точки к курсору)
-                    if isAddingBorder, let start = firstTouch, let current = currentDragLocation {
-                        BorderLineView(
-                            start: start,
-                            end: current,
-                            color: .red,
-                            lineWidth: 2,
-                            dash: [5]
+                        BorderDrawingView(
+                            isAddingBorder: isAddingBorder,
+                            firstTouch: firstTouch,
+                            currentDragLocation: currentDragLocation
                         )
-                        .allowsHitTesting(false)
-                    }
                     
-                    ForEach(mapManager.zones) { zone in
-                        let center = mapManager.convertMapPointToScreen(zone.center, map: map, in: geometry.size, scale: scale, offset: offset)
-                        Text(zone.name)
-                            .position(x: center.x, y: center.y - 3)
-                            .onTapGesture {
-                                    zoneToEdit = zone
-                                    newZoneName = zone.name
-                                    isEditing = true
-                                }
-                            .sheet(isPresented: $isEditing) {
-                                        VStack {
-                                            Text("Введите название")
-                                            TextField("Новое название", text: $newZoneName)
-                                                .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                                            Button("Сохранить") {
-                                                if let zone = zoneToEdit {
-                                                    mapManager.renameZone(id: zone.id, newName: newZoneName)
-                                                }
-                                                isEditing = false
-                                            }
-
-                                            Button("Отмена") {
-                                                isEditing = false
-                                            }
-                                        }
-                                        .padding()
-                                    }
-                                
-                    }
+                        .allowsHitTesting(false)
+                    
+                    
+                    ZonesOverlayView(
+                        calculator: calculator,
+                        map: map,
+                        scale: gestureHandler.scale,
+                        offset: gestureHandler.offset,
+                        geometrySize: geometry.size
+                    )
+                   
 
                     BorderPointsView(first: firstTouch, second: secondTouch)
 
-                    MapControlsView(
-                        scale: $scale,
-                        offset: $offset,
-                        lastOffset: $lastOffset,
+                    
+                    MapButtonsView(
+                        scale: $gestureHandler.scale,
+                        offset: $gestureHandler.offset,
+                        lastOffset: $gestureHandler.lastOffset,
                         borderLines: $borderLines,
                         isAddingBorder: $isAddingBorder
                     )
@@ -167,7 +139,7 @@ struct MapView: View {
             firstTouch = location
         } else if firstTouch != nil && secondTouch == nil {
             secondTouch = location
-            mapManager.setValue(borderFillColor, forCells: affectedCells, fillPoints: 0, robotPoint: 50)
+            mapZoneHandler.setValue(borderFillColor, forCells: affectedCells, fillPoints: 0, robotPoint: 50)
             isAddingBorder = false
             firstTouch = nil
             secondTouch = nil
@@ -178,3 +150,7 @@ struct MapView: View {
         }
     }
 }
+
+
+
+

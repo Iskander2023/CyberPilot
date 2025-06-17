@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct MapControlsView: View {
+struct MapButtonsView: View {
     @EnvironmentObject private var mapManager: MapManager
+    @EnvironmentObject private var mapZoneHandler: MapZoneHandler
     @Binding var scale: CGFloat
     @Binding var offset: CGSize
     @Binding var lastOffset: CGSize
@@ -39,16 +40,24 @@ struct MapControlsView: View {
                         isAddingBorder = true
                         
                         }) {
-                            Image(systemName: "pencil.and.scribble")
+                            Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath")
                                 .padding()
                                 .background(Color.white.opacity(0.8))
                                 .clipShape(Circle())
                         }
                     
                     Button(action: {
-                        mapManager.mapZoneFills()
+                        mapZoneHandler.mapZoneFills()
                         }) {
-                            Image(systemName: "rectangle.and.paperclip")
+                            Image(systemName: "square.on.square")
+                                .padding()
+                                .background(Color.white.opacity(0.8))
+                                .clipShape(Circle())
+                        }
+                    
+                    Button(action: {
+                        }) {
+                            Image(systemName: "eraser.line.dashed")
                                 .padding()
                                 .background(Color.white.opacity(0.8))
                                 .clipShape(Circle())

@@ -9,8 +9,8 @@ import SwiftUI
 
 
 struct MapCanvasView: View {
-    @EnvironmentObject private var mapManager: MapManager
     let map: OccupancyGridMap
+    let calculator = MapPointCalculator()
     let scale: CGFloat
     let offset: CGSize
     var cellColors: MapCellColors = MapCellColors()
@@ -18,7 +18,7 @@ struct MapCanvasView: View {
 
     var body: some View {
         Canvas { context, size in
-            let (cellSize, offsetX, offsetY) = mapManager.calculateCellSize(
+            let (cellSize, offsetX, offsetY) = calculator.calculateCellSize(
                 in: size,
                 map: map,
                 scale: scale,
