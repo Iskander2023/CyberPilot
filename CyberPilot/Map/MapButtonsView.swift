@@ -13,7 +13,7 @@ struct MapButtonsView: View {
     @Binding var scale: CGFloat
     @Binding var offset: CGSize
     @Binding var lastOffset: CGSize
-    @Binding var isAddingBorder: Bool
+    @Binding var mapMode: MapMode
 
     var body: some View {
         VStack {
@@ -36,7 +36,7 @@ struct MapButtonsView: View {
                     }
                     
                     Button(action: {
-                        isAddingBorder = true
+                        mapMode = .addingBorder
                         
                         }) {
                             Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath")
@@ -55,6 +55,7 @@ struct MapButtonsView: View {
                         }
                     
                     Button(action: {
+                        mapMode = .deletingBorder
                         }) {
                             Image(systemName: "eraser.line.dashed")
                                 .padding()

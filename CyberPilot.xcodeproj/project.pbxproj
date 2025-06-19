@@ -19,10 +19,14 @@
 		8409CC752E01937100DA0BFC /* MapGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC742E01937100DA0BFC /* MapGestureHandler.swift */; };
 		8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */; };
 		8409CC792E01A99900DA0BFC /* MapTouchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC782E01A99900DA0BFC /* MapTouchHandler.swift */; };
+		8409CC7B2E02ABF700DA0BFC /* MapBorderDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC7A2E02ABF700DA0BFC /* MapBorderDelete.swift */; };
+		8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC7C2E03023500DA0BFC /* DrawningPointsView.swift */; };
+		8409CC7F2E03E28E00DA0BFC /* DeletePointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */; };
+		8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */; };
 		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
 		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
-		8454CF892DF17EEB00D8341F /* BorderPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF882DF17EEB00D8341F /* BorderPointsView.swift */; };
+		8454CF892DF17EEB00D8341F /* PointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF882DF17EEB00D8341F /* PointsView.swift */; };
 		846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E22DD627F30000FDFD /* TokenProtocol.swift */; };
 		846AA3E52DD769E40000FDFD /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E42DD769E40000FDFD /* LineView.swift */; };
 		846AA3EA2DD771B30000FDFD /* LineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E92DD771B30000FDFD /* LineModels.swift */; };
@@ -90,10 +94,14 @@
 		8409CC742E01937100DA0BFC /* MapGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGestureHandler.swift; sourceTree = "<group>"; };
 		8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZonesOverlayView.swift; sourceTree = "<group>"; };
 		8409CC782E01A99900DA0BFC /* MapTouchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapTouchHandler.swift; sourceTree = "<group>"; };
+		8409CC7A2E02ABF700DA0BFC /* MapBorderDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapBorderDelete.swift; sourceTree = "<group>"; };
+		8409CC7C2E03023500DA0BFC /* DrawningPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawningPointsView.swift; sourceTree = "<group>"; };
+		8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletePointView.swift; sourceTree = "<group>"; };
+		8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawningDeletePoinView.swift; sourceTree = "<group>"; };
 		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
-		8454CF882DF17EEB00D8341F /* BorderPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderPointsView.swift; sourceTree = "<group>"; };
+		8454CF882DF17EEB00D8341F /* PointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointsView.swift; sourceTree = "<group>"; };
 		846AA3E22DD627F30000FDFD /* TokenProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenProtocol.swift; sourceTree = "<group>"; };
 		846AA3E42DD769E40000FDFD /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		846AA3E92DD771B30000FDFD /* LineModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineModels.swift; sourceTree = "<group>"; };
@@ -396,10 +404,10 @@
 				8454CF862DF17DE400D8341F /* MapCanvasView.swift */,
 				8409CC6A2E015E3200DA0BFC /* MapZoneHandler.swift */,
 				8409CC6C2E017CE100DA0BFC /* MapPointCalculator.swift */,
-				8409CC722E0190B400DA0BFC /* BorderDrawingView.swift */,
 				8409CC742E01937100DA0BFC /* MapGestureHandler.swift */,
-				8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */,
 				8409CC782E01A99900DA0BFC /* MapTouchHandler.swift */,
+				8409CC762E019BC800DA0BFC /* ZonesOverlayView.swift */,
+				8409CC7A2E02ABF700DA0BFC /* MapBorderDelete.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -408,8 +416,12 @@
 			isa = PBXGroup;
 			children = (
 				84EF32DD2DF0350E005F3FF6 /* BorderLineView.swift */,
+				8409CC722E0190B400DA0BFC /* BorderDrawingView.swift */,
 				84EF32DF2DF08E7D005F3FF6 /* BorderLine.swift */,
-				8454CF882DF17EEB00D8341F /* BorderPointsView.swift */,
+				8454CF882DF17EEB00D8341F /* PointsView.swift */,
+				8409CC7C2E03023500DA0BFC /* DrawningPointsView.swift */,
+				8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */,
+				8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */,
 			);
 			path = BorderLine;
 			sourceTree = "<group>";
@@ -564,15 +576,18 @@
 				846AA40A2DDDE2C50000FDFD /* AppContainer.swift in Sources */,
 				84AE14622DA1463E0094A792 /* CustomLogger.swift in Sources */,
 				846AA3FB2DDCB3DA0000FDFD /* TouchController.swift in Sources */,
+				8409CC7B2E02ABF700DA0BFC /* MapBorderDelete.swift in Sources */,
 				846AA40D2DDF1F180000FDFD /* CombinedTouchModifier.swift in Sources */,
 				84AE14542DA144C50094A792 /* Persistence.swift in Sources */,
 				84E5F1962DB8CC9100D41A4F /* WebView.swift in Sources */,
 				84E5F1CF2DCB781400D41A4F /* RobotListManager.swift in Sources */,
+				8409CC7F2E03E28E00DA0BFC /* DeletePointView.swift in Sources */,
 				8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */,
 				84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */,
 				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
 				8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */,
 				8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */,
+				8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */,
 				8409CC6B2E015E3200DA0BFC /* MapZoneHandler.swift in Sources */,
 				84AE144D2DA144C20094A792 /* ContentView.swift in Sources */,
 				84C9262F2DAFCC4F009B1FFA /* VideoView.swift in Sources */,
@@ -593,8 +608,9 @@
 				846AA3F52DDCABBA0000FDFD /* CloseButtons.swift in Sources */,
 				84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */,
 				84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */,
+				8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */,
 				84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */,
-				8454CF892DF17EEB00D8341F /* BorderPointsView.swift in Sources */,
+				8454CF892DF17EEB00D8341F /* PointsView.swift in Sources */,
 				846AA4012DDCC4FF0000FDFD /* DirectionLabels.swift in Sources */,
 				846AA3FF2DDCC49C0000FDFD /* DirectionArrowView.swift in Sources */,
 				840634662DD4B071007E0E1F /* RegistrationStructs.swift in Sources */,

@@ -23,7 +23,7 @@ struct Robot_ControllerApp: App {
                 .environmentObject(container.touchController)
                 .environmentObject(container.bluetoothManager)
                 .environmentObject(container.mapZoneHandler)
-               
+        
         }
     }
 }

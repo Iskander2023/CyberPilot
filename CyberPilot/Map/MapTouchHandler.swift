@@ -13,37 +13,36 @@ class MapTouchHandler: ObservableObject {
     @Published var secondTouch: CGPoint? = nil
     @Published var currentDragLocation: CGPoint? = nil
     @Published var borderFillColor: Int = 30
+    @Published var deleteFillColor: Int = 100
     @Published var affectedCells: [CGPoint] = []
     @Published var firstCell: (Int, Int)? = nil
     var map: OccupancyGridMap?
     let calculator = MapPointCalculator()
     
     
-    func onDragGestureChanged(location: CGPoint, isAddingBorder: Bool, size: CGSize, scale: CGFloat, offset: CGSize, map: OccupancyGridMap?) {
+    func onDragGestureChanged(location: CGPoint, size: CGSize, scale: CGFloat, offset: CGSize, map: OccupancyGridMap?) {
         guard let map = map else { return }
         
-        if isAddingBorder {
-            let startCell = calculator.convertPointToCell(point: location,
-                                                          in: size,
-                                                          map: map,
-                                                          scale: scale,
-                                                          offset: offset)
-            if firstCell == nil,
-               let cell = startCell {
-                firstCell = (Int(cell.x), Int(cell.y))
-            }
-            if let from = firstCell,
-               let to = startCell {
-                let toInt = (Int(to.x), Int(to.y))
-                affectedCells = calculator.getCellsAlongLineBetweenCells(from: from, to: toInt)
-            }
+        let startCell = calculator.convertPointToCell(point: location,
+                                                      in: size,
+                                                      map: map,
+                                                      scale: scale,
+                                                      offset: offset)
+        if firstCell == nil,
+           let cell = startCell {
+            firstCell = (Int(cell.x), Int(cell.y))
+        }
+        if let from = firstCell,
+           let to = startCell {
+            let toInt = (Int(to.x), Int(to.y))
+            affectedCells = calculator.getCellsAlongLineBetweenCells(from: from, to: toInt)
+        }
 
-            
-            if firstTouch == nil {
-                firstTouch = location
-            } else {
-                currentDragLocation = location
-            }
+        
+        if firstTouch == nil {
+            firstTouch = location
+        } else {
+            currentDragLocation = location
         }
     }
     
@@ -51,6 +50,7 @@ class MapTouchHandler: ObservableObject {
     func onDragGestureEnded() {
         firstCell = nil
         affectedCells = []
+        
     }
     
     

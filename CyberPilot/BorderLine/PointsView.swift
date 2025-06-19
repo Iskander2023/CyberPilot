@@ -8,12 +8,12 @@
 import SwiftUI
 
 
-struct BorderPointsView: View {
+struct PointsView: View {
     let first: CGPoint?
     let second: CGPoint?
 
     var body: some View {
-        Group {
+        ZStack {
             if let point = first {
                 Circle()
                     .fill(Color.red)

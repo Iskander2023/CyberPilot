@@ -32,7 +32,7 @@ struct MapCellColors {
     var occupied: Color = .black      // 0
     var free: Color = .white          // 100
     var zoningBorder: Color = .gray   // 30
-    var robot: Color = .orange        // 50
+    var robot: Color = .orange        // 20
     var other: Color = .clear          // fallback
     var center: Color = .red
 
@@ -45,7 +45,7 @@ struct MapCellColors {
         case 0: return occupied
         case 100: return free
         case 30: return zoningBorder
-        case 50: return robot
+        case 20: return robot
         case 60: return center
         case 31...:
             let index = value - 31
@@ -66,4 +66,12 @@ struct ZoneInfo: Identifiable {
     let id: Int         
     var name: String
     let center: CGPoint
+}
+
+
+enum MapMode {
+    case normal // режим перетаскивания
+    case addingBorder // режим добавления границ
+    case deletingBorder // режим удаления границ
+    
 }

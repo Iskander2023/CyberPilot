@@ -50,31 +50,33 @@ class MapZoneHandler: ObservableObject {
             print("Карта не загружена")
             return
         }
-        currentMap.data[currentRobotIndex ?? 0] = 50
+        currentMap.data[currentRobotIndex ?? 0] = 20
         self.mapManager.map = currentMap
         self.mapCacheManager.save(currentMap)
     }
     
+
     
-    // метод установки новых значений ячейкам карты
-    func setValue(_ value: Int, forCells cells: [CGPoint], fillPoints: Int, robotPoint: Int) {
+    func setValue(_ value: Int, forCells cells: [CGPoint], allowedOldValues: [Int], fillPoints: Int, robotPoint: Int) {
         guard var currentMap = mapManager.map else {
             print("Карта не загружена")
             return
         }
         let indices = validIndices(for: cells, in: currentMap)
         for index in indices {
-            if currentMap.data[index] == robotPoint {
+            let currentValue = currentMap.data[index]
+            
+            if currentValue == robotPoint {
                 saveRobotPoint(index: index)
                 currentMap.data[index] = value
-            }
-            else if currentMap.data[index] != fillPoints {
+            } else if allowedOldValues.contains(currentValue) {
                 currentMap.data[index] = value
             }
         }
         self.mapManager.map = currentMap
         self.mapCacheManager.save(currentMap)
     }
+
     
     
     
@@ -84,7 +86,6 @@ class MapZoneHandler: ObservableObject {
             zones[index].name = newName
         }
     }
-    
     
     
     // получение точки координат центра зоны
@@ -101,8 +102,9 @@ class MapZoneHandler: ObservableObject {
         return CGPoint(x: avgX, y: avgY)
     }
     
+    
     // заливка зон карты
-    func mapZoneFills() {
+    func mapZoneFills(){
         var existingNames = [Int: String]() // сохраняем старые названия по id
         for zone in zones {
             existingNames[zone.id] = zone.name
@@ -112,7 +114,7 @@ class MapZoneHandler: ObservableObject {
         let zeroContours = findIsolatedRegions(in: mapManager.map?.data ?? [], width: mapManager.map?.width ?? 30, valueRange: 31...100)
         for (i, contour) in zeroContours.enumerated() {
             let center = getCenterZone(cells: contour)
-            centerZoneList.append(center) //
+            centerZoneList.append(center)
             let id = 31 + i
             let name: String
             if let existing = existingNames[id], !existing.starts(with: "Зона ") {
@@ -120,12 +122,12 @@ class MapZoneHandler: ObservableObject {
             } else {
                 name = "Зона \(i+1)"
             }
-            setValue(id, forCells: contour, fillPoints: 0, robotPoint: 50)
+            setValue(id, forCells: contour, allowedOldValues: Array(31...100), fillPoints: 0, robotPoint: 20)
             putARobotPoint()
             let zone = ZoneInfo(id: id, name: name, center: center)
             zones.append(zone)
         }
-        setValue(60, forCells: centerZoneList, fillPoints: 0, robotPoint: 50) // добавлено для визуализации
+        setValue(60, forCells: centerZoneList, allowedOldValues: [100], fillPoints: 0, robotPoint: 20)
     }
     
     

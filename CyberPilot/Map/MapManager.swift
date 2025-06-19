@@ -18,8 +18,8 @@ class MapManager: ObservableObject {
     private let mapUpdateTime: TimeInterval = 10
     private var timerCancellable: AnyCancellable?
     var socketIp: String = "ws://172.16.17.79:8765"
-//    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
-    var noLocalIp: String = "http://127.0.0.1:8000/map.yaml"
+    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
+//    var noLocalIp: String = "http://127.0.0.1:8000/map.yaml"
     
     
     init(authService: AuthService) {
@@ -49,6 +49,7 @@ class MapManager: ObservableObject {
         //setupRefreshTimer() // закомичено для тестов
         
     }
+    
     
     func setupRefreshTimer() {
         timerCancellable?.cancel()

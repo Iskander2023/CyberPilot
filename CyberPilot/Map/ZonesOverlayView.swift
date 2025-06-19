@@ -10,7 +10,7 @@ import SwiftUI
 struct ZonesOverlayView: View {
     @EnvironmentObject var mapZoneHandler: MapZoneHandler
     let calculator: MapPointCalculator
-    let map: OccupancyGridMap // ваш тип карты
+    let map: OccupancyGridMap 
     let scale: CGFloat
     let offset: CGSize
     let geometrySize: CGSize

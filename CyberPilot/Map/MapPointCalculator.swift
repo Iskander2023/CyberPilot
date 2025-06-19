@@ -44,7 +44,7 @@ struct MapPointCalculator {
     }
     
     
-    
+    // преобразует координату касания на экране (CGPoint) в координаты ячейки карты (OccupancyGridMap), с учётом масштаба, смещения, и размера экрана.
     func convertPointToCell(point: CGPoint, in size: CGSize, map: OccupancyGridMap, scale: CGFloat, offset: CGSize) -> CGPoint? {
         let (cellSize, offsetX, offsetY) = calculateCellSize(
                 in: size,
