@@ -20,18 +20,18 @@ struct MapButtonsView: View {
             Spacer()
             HStack {
                 Spacer()
-                HStack(spacing: 10) {
+                HStack(spacing: AppConfig.MapButtons.spacing) {
                     
                     Button(action: {
                         withAnimation {
-                            scale = 1.0
+                            scale = AppConfig.MapButtons.scale
                             offset = .zero
                             lastOffset = .zero
                         }
                     }) {
-                        Image(systemName: "arrow.uturn.backward.circle")
+                        Image(systemName: AppConfig.MapButtons.initialScaleButton)
                             .padding()
-                            .background(Color.white.opacity(0.8))
+                            .background(Color.white.opacity(AppConfig.MapButtons.opacity))
                             .clipShape(Circle())
                     }
                     
@@ -39,32 +39,32 @@ struct MapButtonsView: View {
                         mapMode = .addingBorder
                         
                         }) {
-                            Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath")
+                            Image(systemName: AppConfig.MapButtons.borderButton)
                                 .padding()
-                                .background(Color.white.opacity(0.8))
+                                .background(Color.white.opacity(AppConfig.MapButtons.opacity))
                                 .clipShape(Circle())
                         }
                     
                     Button(action: {
                         mapZoneHandler.mapZoneFills()
                         }) {
-                            Image(systemName: "square.on.square")
+                            Image(systemName: AppConfig.MapButtons.zoneButton)
                                 .padding()
-                                .background(Color.white.opacity(0.8))
+                                .background(Color.white.opacity(AppConfig.MapButtons.opacity))
                                 .clipShape(Circle())
                         }
                     
                     Button(action: {
                         mapMode = .deletingBorder
                         }) {
-                            Image(systemName: "eraser.line.dashed")
+                            Image(systemName: AppConfig.MapButtons.deleteBorderButton)
                                 .padding()
-                                .background(Color.white.opacity(0.8))
+                                .background(Color.white.opacity(AppConfig.MapButtons.opacity))
                                 .clipShape(Circle())
                         }
                     
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, AppConfig.MapButtons.mapLocation)
                 .padding(.horizontal)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }

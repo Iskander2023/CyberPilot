@@ -29,18 +29,40 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    var isTesting = true
+    
     
     init(authService: AuthService, connectionMode: SocketConnectionMode = .plain) {
         self.authService = authService
         self.connectionMode = connectionMode
         super.init()
-            self.authService.$token
-                .sink { [weak self] newToken in
-                    guard let self = self else { return }
-                    self.token = newToken
-                }
-                .store(in: &cancellables)
+        setupBindings()
+//            self.authService.$token
+//                .sink { [weak self] newToken in
+//                    guard let self = self else { return }
+//                    self.token = newToken
+//                }
+//                .store(in: &cancellables)
     }
+    
+    
+    private func setupBindings() {
+        authService.$token
+            .sink { [weak self] newToken in
+                self?.token = newToken
+            }
+            .store(in: &cancellables)
+    }
+    
+    
+    // переподключение
+    func attemptReconnect(after delay: TimeInterval = 2.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            self.logger.info("Попытка переподключения...")
+            self.socket.connect()
+        }
+    }
+
     
     
     func startResolvingIP(for hostname: String) {
@@ -114,6 +136,10 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     
     
     func sendJSONCommand(_ data: [String: Any]) {
+//        guard let socket = socket else {
+//            logger.info("Ошибка: WebSocket не инициализирован.")
+//            return
+//        }
         guard let jsonData = try? JSONSerialization.data(withJSONObject: data, options: []),
               let jsonString = String(data: jsonData, encoding: .utf8) else {
             self.logger.info("Ошибка: не удалось закодировать JSON")
@@ -214,8 +240,7 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         isConnected = false
         connectionError = "Disconnected: \(reason) (code \(code))"
         logger.info("Connection closed. Reason: \(reason), Код: \(code)")
-//        self.connectionStatus.send(true) // заглушка для тестов
-        connectionStatus.send(false)
+        connectionStatus.send(isTesting ? true : false)
     }
     
     
@@ -230,16 +255,14 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         isConnected = false
         logger.info("Connection canceled.")
         self.receivedResponses.send("Connection canceled.")
-        self.connectionStatus.send(false)
-//        self.connectionStatus.send(true) // заглушка для тестов
+        self.connectionStatus.send(isTesting ? true : false)
     }
     
     
     func handlePeerClosed() {
         isConnected = false
         logger.info("Connection closed")
-//        self.connectionStatus.send(true) // заглушка для тестов
-        self.connectionStatus.send(false)
+        self.connectionStatus.send(isTesting ? true : false)
         self.receivedResponses.send("Connection closed.")
     }
     

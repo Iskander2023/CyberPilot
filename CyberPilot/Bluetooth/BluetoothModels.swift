@@ -36,3 +36,8 @@ struct PeripheralDevice: Identifiable {
     let uuid: UUID
     var isConnected: Bool = false // Состояние подключения
 }
+
+
+struct WiFiNetworkResponse: Decodable {
+    let wifi_networks: [String]
+}

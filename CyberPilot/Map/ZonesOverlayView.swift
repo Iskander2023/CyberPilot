@@ -23,7 +23,7 @@ struct ZonesOverlayView: View {
         ForEach(mapZoneHandler.zones) { zone in
             let center = calculator.convertMapPointToScreen(zone.center, map: map, in: geometrySize, scale: scale, offset: offset)
             Text(zone.name)
-                .position(x: center.x, y: center.y - 3)
+                .position(x: center.x, y: center.y - AppConfig.ZonesOverlay.texyOffset)
                 .onTapGesture {
                     zoneToEdit = zone
                     newZoneName = zone.name
@@ -31,18 +31,18 @@ struct ZonesOverlayView: View {
                 }
                 .sheet(isPresented: $isEditing) {
                     VStack {
-                        Text("Введите название")
-                        TextField("Новое название", text: $newZoneName)
+                        Text(AppConfig.ZonesOverlay.inputZoneName)
+                        TextField(AppConfig.ZonesOverlay.newZoneName, text: $newZoneName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                         
-                        Button("Сохранить") {
+                        Button(AppConfig.ZonesOverlay.buttonSaveText) {
                             if let zone = zoneToEdit {
                                 mapZoneHandler.renameZone(id: zone.id, newName: newZoneName)
                             }
                             isEditing = false
                         }
                         
-                        Button("Отмена") {
+                        Button(AppConfig.ZonesOverlay.buttonCancelText) {
                             isEditing = false
                         }
                     }

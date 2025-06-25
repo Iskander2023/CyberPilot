@@ -9,14 +9,12 @@ import SwiftUI
 
 struct TouchIndicatorView: View {
     @ObservedObject var controller: TouchController
-    let generalColor: Color = .blue
-    let generalOpacity: Double = 0.2
 
     var body: some View {
         ZStack {
             Circle()
-                .stroke(generalColor.opacity(generalOpacity), lineWidth: 2)
-                .background(Circle().fill(Color.white.opacity(0.01)))
+                .stroke(AppConfig.TouchIndicator.color.opacity(AppConfig.TouchIndicator.opacity), lineWidth: AppConfig.TouchIndicator.lineWidth)
+                .background(Circle().fill(Color.white.opacity(AppConfig.TouchIndicator.backgroundColorOpacity)))
                 .frame(width: controller.touchIndicatorSize, height: controller.touchIndicatorSize)
                 .position(controller.touchIndicatorPosition)
                 .transition(.opacity)
@@ -26,15 +24,15 @@ struct TouchIndicatorView: View {
                 currentAngle: controller.currentAngle,
                 touchIndicatorSize: controller.touchIndicatorSize,
                 position: controller.touchIndicatorPosition,
-                arrowColor: generalColor,
-                arrowOpacity: generalOpacity
+                arrowColor: AppConfig.TouchIndicator.color,
+                arrowOpacity: AppConfig.TouchIndicator.opacity
             )
 
             DirectionLabels(
                 touchIndicatorSize: controller.touchIndicatorSize,
                 position: controller.touchIndicatorPosition,
-                labelsColor: generalColor,
-                labelsOpasity: generalOpacity
+                labelsColor: AppConfig.TouchIndicator.color,
+                labelsOpasity: AppConfig.TouchIndicator.opacity
             )
         }
     }

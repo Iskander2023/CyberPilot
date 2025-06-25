@@ -26,25 +26,26 @@ struct LoginView: View {
     var body: some View {
         ScrollView {
             VStack {
-                Text("Введите данные")
+                Text(AppConfig.Strings.enterData)
                     .font(.system(.largeTitle, design: .rounded))
                     .bold()
                     .padding(.bottom, 30)
                 
-                FormField(fieldName: "Логин", fieldValue: $loginManager.email)
+                FormField(fieldName: AppConfig.Strings.loginRus, fieldValue: $loginManager.email)
                 RequirementText(
+                    iconName: AppConfig.Strings.iconName,
                     iconColor: loginManager.isMailValid ? Color.secondary
-                    : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "Минимум 4 символа",
+                    : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.emailRus,
                     isStrikeThrough: loginManager.isMailValid
                 )
                 .padding()
                 
-                FormField(fieldName: "Пароль", fieldValue: $loginManager.password, isSecure: true)
+                FormField(fieldName: AppConfig.Strings.passwordRus, fieldValue: $loginManager.password, isSecure: true)
                 RequirementText(
-                    iconName: "lock.open",
-                    iconColor: loginManager.isPasswordLengthValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "Минимум 8 символов",
+                    iconName: AppConfig.Strings.iconName,
+                    iconColor: loginManager.isPasswordLengthValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.min8Simbols,
                     isStrikeThrough: loginManager.isPasswordLengthValid
                 )
                 .padding()
@@ -57,16 +58,16 @@ struct LoginView: View {
                                 isLoginSuccessful = true
                             } catch {
                                 //errorMessage = error.localizedDescription
-                                errorMessage = "Не удалось войти. Проверьте данные и попробуйте снова."
+                                errorMessage = AppConfig.Strings.errorLoginMessage
                                //"The operation couldn’t be completed. (NSURLErrorDomain error -1011.)"
                                 showErrorAlert = true
                             }
                         }
                     }) {
-                        Text("Вход")
+                        Text(AppConfig.Strings.loginEntry)
                             .font(.system(.body, design: .rounded))
                             .bold()
-                            .foregroundColor(Color(red: 34/255, green: 177/255, blue: 76/255))
+                            .foregroundColor(AppConfig.Colors.primaryGreen)
                     }
                 }
                 .padding(.top, 50)
@@ -75,21 +76,21 @@ struct LoginView: View {
                 
                 
                 HStack {
-                    Text("Нет аккаунта?")
+                    Text(AppConfig.Strings.dontHaveAccount)
                         .font(.system(.body, design: .rounded))
                         .bold()
                     
                     NavigationLink(destination: RegistrationFlowView(stateManager: authService, userRegistrationManager: registrationManager)) {
-                        Text("Зарегистрироваться")
+                        Text(AppConfig.Strings.registerButtonTitle)
                             .font(.system(.body, design: .rounded))
                             .bold()
-                            .foregroundColor(Color(red: 34/255, green: 177/255, blue: 76/255))
+                            .foregroundColor(AppConfig.Colors.primaryGreen)
                     }
                 }.padding(.top, 50)
                 
             }
-            .alert("Ошибка входа", isPresented: $showErrorAlert) {
-                Button("OK", role: .cancel) { }
+            .alert(AppConfig.Strings.loginError, isPresented: $showErrorAlert) {
+                Button(AppConfig.Strings.buttonOk, role: .cancel) { }
             } message: {
                 Text(errorMessage)
             }

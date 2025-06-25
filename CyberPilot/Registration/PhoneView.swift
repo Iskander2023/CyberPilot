@@ -12,25 +12,25 @@ struct PhoneView: View {
     var onPhoneStep: () -> Void
     var body: some View {
         VStack {
-            Text("Введите номер телефона")
+            Text(AppConfig.Strings.inputPhoneNumber)
                 .font(.system(.largeTitle, design: .rounded))
                 .bold()
                 .padding(.bottom, 30)
             
             VStack {
-                FormField(fieldName: "Номер +7", fieldValue: $userRegistrationManager.phoneNumber)
+                FormField(fieldName: AppConfig.Strings.phoneNumberPrefix, fieldValue: $userRegistrationManager.phoneNumber)
                 
                 RequirementText(
-                    iconName: "lock.open",
-                    iconColor: userRegistrationManager.isPhoneNumberValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "только цифры",
+                    iconName: AppConfig.Strings.iconName,
+                    iconColor: userRegistrationManager.isPhoneNumberValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.onlyNumbers,
                     isStrikeThrough: userRegistrationManager.isPhoneNumberValid
                 )
                 
                 RequirementText(
-                    iconName: "lock.open",
-                    iconColor: userRegistrationManager.isPhoneNumberLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "10",
+                    iconName: AppConfig.Strings.iconName,
+                    iconColor: userRegistrationManager.isPhoneNumberLenghtValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.phoneNumbersCount,
                     isStrikeThrough: userRegistrationManager.isPhoneNumberLenghtValid
                 )
             }
@@ -42,7 +42,7 @@ struct PhoneView: View {
                     onPhoneStep()
                 }
             }) {
-                Text("Отправить")
+                Text(AppConfig.Strings.sendPhoneNumber)
                     .font(.system(.body, design: .rounded))
                     .foregroundColor(.white)
                     .bold()
@@ -51,8 +51,8 @@ struct PhoneView: View {
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: [
-                                Color(red: 34/255, green: 177/255, blue: 76/255),
-                                Color(red: 34/255, green: 177/255, blue: 76/255)
+                                AppConfig.Colors.primaryGreen,
+                                AppConfig.Colors.primaryGreen
                             ]),
                             startPoint: .leading,
                             endPoint: .trailing

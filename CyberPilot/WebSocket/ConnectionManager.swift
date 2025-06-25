@@ -50,9 +50,11 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
         socketManager.connectSocket(urlString: urlString)
     }
     
+    
     private func connectToRemote() {
         socketManager.connectSocket(urlString: remoteURL)
     }
+    
     
     private func getPort(from host: String) -> String {
         let parts = host.split(separator: ".")

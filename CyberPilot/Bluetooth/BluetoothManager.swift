@@ -27,7 +27,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     private var writeCharacteristics: [CBCharacteristic] = []
     private var jsonDataBuffer = Data()
     private var networkConnectionStatus = ""
-
+    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
 
     override init() {
         super.init()
@@ -40,13 +40,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         case .poweredOn:
             startScanning()
         case .poweredOff:
-            print("Bluetooth выключен.")
+            logger.info("Bluetooth выключен.")
             connectionStatus = "Bluetooth выключен"
         case .unsupported:
-            //print("Устройство не поддерживает Bluetooth.")
+            logger.info("Устройство не поддерживает Bluetooth.")
             connectionStatus = "Bluetooth не поддерживается"
         default:
-            print("Неизвестное состояние Bluetooth.")
+            logger.info("Неизвестное состояние Bluetooth.")
             connectionStatus = "Неизвестное состояние Bluetooth"
         }
     }
@@ -65,7 +65,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("Успешно подключено к \(peripheral.name ?? "Неизвестное устройство")")
+        logger.info("Успешно подключено к \(peripheral.name ?? "Неизвестное устройство")")
         connectionStatus = "Подключено к \(peripheral.name ?? "Неизвестное устройство")"
         connectedPeripheral = peripheral
         peripheral.delegate = self
@@ -75,14 +75,14 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         if let error = error {
-            print("Ошибка подключения: \(error.localizedDescription)")
+            logger.info("Ошибка подключения: \(error.localizedDescription)")
             connectionStatus = "Ошибка подключения"
         }
     }
 
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        print("Отключено от \(peripheral.name ?? "Неизвестное устройство")")
+        logger.info("Отключено от \(peripheral.name ?? "Неизвестное устройство")")
         connectionStatus = "Не подключено"
         connectedPeripheral = nil
     }
@@ -90,13 +90,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if let error = error {
-            print("Ошибка при обнаружении сервисов: \(error.localizedDescription)")
+            logger.info("Ошибка при обнаружении сервисов: \(error.localizedDescription)")
             return
         }
 
         guard let services = peripheral.services else { return }
         for service in services {
-            print("Найден сервис: \(service.uuid)")
+            logger.info("Найден сервис: \(service.uuid)")
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
@@ -104,25 +104,25 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if let error = error {
-            print("Ошибка при обнаружении характеристик: \(error.localizedDescription)")
+            logger.info("Ошибка при обнаружении характеристик: \(error.localizedDescription)")
             return
         }
 
         guard let characteristics = service.characteristics else { return }
         for characteristic in characteristics {
-            print("Найдена характеристика: \(characteristic.uuid)")
+            logger.info("Найдена характеристика: \(characteristic.uuid)")
             if characteristic.properties.contains(.read) {
-                print("Чтение данных из характеристики \(characteristic.uuid)")
+                logger.info("Чтение данных из характеристики \(characteristic.uuid)")
                 peripheral.readValue(for: characteristic)
                 readCharacteristics.append(characteristic)
             }
             if characteristic.properties.contains(.notify) {
-                print("Подписка на уведомления для характеристики \(characteristic.uuid)")
+                logger.info("Подписка на уведомления для характеристики \(characteristic.uuid)")
                 peripheral.setNotifyValue(true, for: characteristic)
                 notifyCharacteristics.append(characteristic)
             }
             if characteristic.properties.contains(.write) {
-                print("Характеристика \(characteristic.uuid) поддерживает запись")
+                logger.info("Характеристика \(characteristic.uuid) поддерживает запись")
                 writeCharacteristics.append(characteristic)
                 targetCharacteristic = characteristic
                     if characteristic.uuid == CBUUID(string: "FFE1") {
@@ -138,7 +138,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
               let chunk = characteristic.value,
               let receivedString = String(data: chunk, encoding: .utf8) else { return }
 
-        print("Получено: \(receivedString)")
+        logger.info("Получено: \(receivedString)")
 
         DispatchQueue.main.async {
             // Проверяем, если устройство уже подключено к Wi-Fi
@@ -167,21 +167,21 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                     do {
                         let decoder = JSONDecoder()
                         let response = try decoder.decode(WiFiNetworkResponse.self, from: jsonData)
-                        print("Получено: \(response)")
+                        self.logger.info("Получено: \(response)")
 
                         self.wifiConnectionStatus = ""  // Убираем статус "Подключено"
                         self.receivedData = response.wifi_networks
-                        print("Полный список WiFi сетей: \(response.wifi_networks)")
+                        self.logger.info("Полный список WiFi сетей: \(response.wifi_networks)")
                         self.jsonDataBuffer.removeAll() // Очищаем буфер после успешного парсинга
 
                     } catch {
-                        print("Ошибка при разборе JSON: \(error.localizedDescription)")
+                        self.logger.info("Ошибка при разборе JSON: \(error.localizedDescription)")
                     }
                 } else {
-                    print("JSON поврежден, ожидаем оставшиеся фрагменты...")
+                    self.logger.info("JSON поврежден, ожидаем оставшиеся фрагменты...")
                 }
             } else {
-                print("Данные пока не полные, ожидаем оставшиеся фрагменты...")
+                self.logger.info("Данные пока не полные, ожидаем оставшиеся фрагменты...")
             }
         }
     }
@@ -189,10 +189,10 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if let error = error {
-            print("Ошибка при записи данных: \(error.localizedDescription)")
+            logger.info("Ошибка при записи данных: \(error.localizedDescription)")
             return
         }
-        print("Данные успешно записаны в характеристику \(characteristic.uuid).")
+        logger.info("Данные успешно записаны в характеристику \(characteristic.uuid).")
     }
 
 
@@ -200,20 +200,20 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         discoveredDevices.removeAll()
         centralManager.scanForPeripherals(withServices: nil, options: nil)
         isScanning = true
-        print("Сканирование началось.")
+        logger.info("Сканирование началось.")
     }
 
     func stopScanning() {
         centralManager.stopScan()
         isScanning = false
-        print("Сканирование остановлено.")
+        logger.info("Сканирование остановлено.")
     }
     
 
 
     func connect(to peripheral: CBPeripheral) {
         centralManager.connect(peripheral, options: nil)
-        print("Подключение к \(peripheral.name ?? "Неизвестное устройство")...")
+        logger.info("Подключение к \(peripheral.name ?? "Неизвестное устройство")...")
 
         // Таймер на отключение, если устройство не подключилось за 10 секунд
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
@@ -221,7 +221,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             if self.connectedPeripheral == nil {
                 self.centralManager.cancelPeripheralConnection(peripheral)
                 self.connectionStatus = "Ошибка: тайм-аут подключения"
-                print("Тайм-аут подключения к \(peripheral.name ?? "Неизвестное устройство")")
+                logger.info("Тайм-аут подключения к \(peripheral.name ?? "Неизвестное устройство")")
             }
         }
     }
@@ -241,13 +241,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     func disconnectFromWiFi() {
         guard let peripheral = connectedPeripheral, let characteristic = targetCharacteristic else {
-            print("❌ Ошибка: Устройство или характеристика для записи не выбраны.")
+            logger.info("❌ Ошибка: Устройство или характеристика для записи не выбраны.")
             return
         }
         
         // Проверяем, подключено ли устройство
         guard peripheral.state == .connected else {
-            print("⚠️ Ошибка: Устройство не подключено по Bluetooth.")
+            logger.info("⚠️ Ошибка: Устройство не подключено по Bluetooth.")
             return
         }
         
@@ -262,9 +262,9 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             // Отправка данных по Bluetooth
             peripheral.writeValue(disconnectWiFiData, for: characteristic, type: .withResponse)
             
-            print("✅ Отправлена команда на отключение Wi-Fi: \(String(data: disconnectWiFiData, encoding: .utf8) ?? "Ошибка кодирования")")
+            logger.info("✅ Отправлена команда на отключение Wi-Fi: \(String(data: disconnectWiFiData, encoding: .utf8) ?? "Ошибка кодирования")")
         } catch {
-            print("❌ Ошибка кодирования JSON Wi-Fi данных: \(error.localizedDescription)")
+            logger.info("❌ Ошибка кодирования JSON Wi-Fi данных: \(error.localizedDescription)")
         }
     }
 
@@ -272,7 +272,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     func sendWiFiCredentials(ssid: String, password: String) {
         guard let peripheral = connectedPeripheral, let characteristic = targetCharacteristic else {
-            print("Устройство или характеристика для записи не выбраны.")
+            logger.info("Устройство или характеристика для записи не выбраны.")
             return
         }
 
@@ -284,33 +284,31 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
         // Кодирование JSON в Data
         guard let jsonData = try? JSONSerialization.data(withJSONObject: credentials, options: []) else {
-            print("Ошибка кодирования JSON Wi-Fi данных.")
+            logger.info("Ошибка кодирования JSON Wi-Fi данных.")
             return
         }
 
         // Отправка данных по Bluetooth
         peripheral.writeValue(jsonData, for: characteristic, type: .withResponse)
 
-        print("Отправка Wi-Fi данных в формате JSON: \(String(data: jsonData, encoding: .utf8) ?? "Ошибка кодирования")")
+        logger.info("Отправка Wi-Fi данных в формате JSON: \(String(data: jsonData, encoding: .utf8) ?? "Ошибка кодирования")")
     }
 
     func writeValue(_ value: String) {
         guard let peripheral = connectedPeripheral, let characteristic = targetCharacteristic else {
-            print("Устройство или характеристика для записи не выбраны.")
+            logger.info("Устройство или характеристика для записи не выбраны.")
             return
         }
 
         guard let data = value.data(using: .utf8) else {
-            print("Не удалось преобразовать строку в данные.")
+            logger.info("Не удалось преобразовать строку в данные.")
             return
         }
 
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
-        print("Запись данных '\(value)' в характеристику \(characteristic.uuid).")
+        logger.info("Запись данных '\(value)' в характеристику \(characteristic.uuid).")
     }
 }
 
 
-struct WiFiNetworkResponse: Decodable {
-    let wifi_networks: [String]
-}
+

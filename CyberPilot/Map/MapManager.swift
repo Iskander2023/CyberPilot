@@ -12,19 +12,16 @@ import Combine
 
 class MapManager: ObservableObject {
     @Published var map: OccupancyGridMap?
-    let mapCacheManager = GenericCacheManager<OccupancyGridMap>(filename: "cached_map.json")
+    let mapCacheManager = GenericCacheManager<OccupancyGridMap>(filename: AppConfig.Cached.mapFilename)
     private let socketListener: SocketListener
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    private let mapUpdateTime: TimeInterval = 10
     private var timerCancellable: AnyCancellable?
-    var socketIp: String = "ws://172.16.17.79:8765"
-    var noLocalIp: String = "http://192.168.0.201:8000/map.yaml" // для запуска на телефоне
-//    var noLocalIp: String = "http://127.0.0.1:8000/map.yaml"
+
     
     
     init(authService: AuthService) {
         map = mapCacheManager.load()
-        socketListener = SocketListener(authService: authService, socketIp: socketIp)
+        socketListener = SocketListener(authService: authService, socketIp: AppConfig.Cached.mapFilename)
     }
     
     
@@ -44,8 +41,8 @@ class MapManager: ObservableObject {
     
     
     func setupFromLocalFile() {
-        logger.info("✅ загрузка с локального файла")
-        downloadMapFromLocalFile(from: noLocalIp)
+        logger.info(AppConfig.MapManagerMessage.loadingFromLocalFile)
+        downloadMapFromLocalFile(from: AppConfig.MapManager.noLocalIp)
         //setupRefreshTimer() // закомичено для тестов
         
     }
@@ -54,11 +51,11 @@ class MapManager: ObservableObject {
     func setupRefreshTimer() {
         timerCancellable?.cancel()
         timerCancellable = Timer
-            .publish(every: mapUpdateTime, on: .main, in: .common)
+            .publish(every: AppConfig.MapManager.mapUpdateTime, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                self.downloadMapFromLocalFile(from: self.noLocalIp)
+                self.downloadMapFromLocalFile(from: AppConfig.MapManager.noLocalIp)
             }
     }
     
@@ -88,12 +85,12 @@ class MapManager: ObservableObject {
             let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: data)
             DispatchQueue.main.async {
                 if self.map != newMap {
-                    self.logger.info("🔄 Карта изменилась — сохраняем в кэш")
+                    self.logger.info(AppConfig.MapManagerMessage.theMapHasChanged)
                     self.map = newMap
                     self.mapCacheManager.save(newMap)
                     completion?(true)
                 } else {
-                    self.logger.info("✅ Карта не изменилась")
+                    self.logger.info(AppConfig.MapManagerMessage.theMapHasNotChanged)
                     completion?(false)
                 }
             }
@@ -104,20 +101,19 @@ class MapManager: ObservableObject {
     func updateIfChanged(with dataArray: [Int], len: Int,  completion: ((Bool) -> Void)? = nil) {
         let width = len
         let height = len
-        let resolution = 0.1
         guard dataArray.count == width * height else {
-            logger.error("❌ Размер массива не совпадает с размерами карты.")
+            logger.error(AppConfig.MapManagerMessage.arrayDoesNotMatchMap)
             return
         }
-        let newMap = OccupancyGridMap(width: width, height: height, resolution: resolution, data: dataArray)
+        let newMap = OccupancyGridMap(width: width, height: height, resolution: AppConfig.MapManager.resolution, data: dataArray)
         DispatchQueue.main.async {
             if self.map != newMap {
-                self.logger.debug("🔄 Карта изменилась — сохраняем в кэш")
+                self.logger.debug(AppConfig.MapManagerMessage.theMapHasChanged)
                 self.map = newMap
                 self.mapCacheManager.save(newMap)
                 completion?(true)
             } else {
-                self.logger.debug("✅ Карта не изменилась — пропускаем кэширование")
+                self.logger.debug(AppConfig.MapManagerMessage.theMapHasNotChanged)
                 completion?(false)
             }
         }

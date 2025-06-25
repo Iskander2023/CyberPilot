@@ -14,7 +14,9 @@ final class GenericCacheManager<T: Codable> {
     init(filename: String) {
         self.filename = filename
     }
-
+    
+    
+    // сохранение в файл
     func save(_ object: T) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -28,7 +30,9 @@ final class GenericCacheManager<T: Codable> {
             logger.error("❌ Ошибка при сохранении объекта в кэш: \(error)")
         }
     }
-
+    
+    
+    // загрузка из файла
     func load() -> T? {
         let url = getDocumentsDirectory().appendingPathComponent(filename)
 

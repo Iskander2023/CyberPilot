@@ -11,7 +11,7 @@
 		8406345A2DD24054007E0E1F /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 840634592DD24054007E0E1F /* Yams */; };
 		840634602DD24CE1007E0E1F /* map.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 8406345F2DD24CE1007E0E1F /* map.yaml */; };
 		840634622DD4A9B1007E0E1F /* MapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634612DD4A9B1007E0E1F /* MapModels.swift */; };
-		840634642DD4B00E007E0E1F /* BluetoothStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634632DD4B00E007E0E1F /* BluetoothStructs.swift */; };
+		840634642DD4B00E007E0E1F /* BluetoothModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634632DD4B00E007E0E1F /* BluetoothModels.swift */; };
 		840634662DD4B071007E0E1F /* RegistrationStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634652DD4B071007E0E1F /* RegistrationStructs.swift */; };
 		8409CC6B2E015E3200DA0BFC /* MapZoneHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC6A2E015E3200DA0BFC /* MapZoneHandler.swift */; };
 		8409CC6D2E017CE100DA0BFC /* MapPointCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC6C2E017CE100DA0BFC /* MapPointCalculator.swift */; };
@@ -23,6 +23,7 @@
 		8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC7C2E03023500DA0BFC /* DrawningPointsView.swift */; };
 		8409CC7F2E03E28E00DA0BFC /* DeletePointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */; };
 		8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */; };
+		8409CC862E0AB60700DA0BFC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC852E0AB60700DA0BFC /* AppConfig.swift */; };
 		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
 		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
@@ -86,7 +87,7 @@
 		1762666A9678416263BA440C /* Pods_CyberPilot.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CyberPilot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8406345F2DD24CE1007E0E1F /* map.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = map.yaml; sourceTree = "<group>"; };
 		840634612DD4A9B1007E0E1F /* MapModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModels.swift; sourceTree = "<group>"; };
-		840634632DD4B00E007E0E1F /* BluetoothStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothStructs.swift; sourceTree = "<group>"; };
+		840634632DD4B00E007E0E1F /* BluetoothModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothModels.swift; sourceTree = "<group>"; };
 		840634652DD4B071007E0E1F /* RegistrationStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationStructs.swift; sourceTree = "<group>"; };
 		8409CC6A2E015E3200DA0BFC /* MapZoneHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapZoneHandler.swift; sourceTree = "<group>"; };
 		8409CC6C2E017CE100DA0BFC /* MapPointCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPointCalculator.swift; sourceTree = "<group>"; };
@@ -98,6 +99,7 @@
 		8409CC7C2E03023500DA0BFC /* DrawningPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawningPointsView.swift; sourceTree = "<group>"; };
 		8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletePointView.swift; sourceTree = "<group>"; };
 		8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawningDeletePoinView.swift; sourceTree = "<group>"; };
+		8409CC852E0AB60700DA0BFC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
@@ -191,6 +193,14 @@
 				BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		8409CC842E0AB5A600DA0BFC /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				8409CC852E0AB60700DA0BFC /* AppConfig.swift */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		846AA3E62DD76E8C0000FDFD /* Line */ = {
@@ -287,6 +297,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				8409CC842E0AB5A600DA0BFC /* Config */,
 				84EF32DC2DF034F0005F3FF6 /* BorderLine */,
 				84AA3BC22DEF0BEB000E120F /* App */,
 				846AA4622DE7493D0000FDFD /* TouchIndicator */,
@@ -362,7 +373,7 @@
 			children = (
 				84AE146D2DA147660094A792 /* BluetoothManager.swift */,
 				84AE146F2DA147840094A792 /* BluetoothView.swift */,
-				840634632DD4B00E007E0E1F /* BluetoothStructs.swift */,
+				840634632DD4B00E007E0E1F /* BluetoothModels.swift */,
 			);
 			path = Bluetooth;
 			sourceTree = "<group>";
@@ -556,6 +567,7 @@
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */,
 				84E5F1C52DCA186000D41A4F /* RobotSelectionView.swift in Sources */,
+				8409CC862E0AB60700DA0BFC /* AppConfig.swift in Sources */,
 				846AA3E52DD769E40000FDFD /* LineView.swift in Sources */,
 				846AA3FD2DDCC4340000FDFD /* TouchIndicatorView.swift in Sources */,
 				846AA41C2DE6009F0000FDFD /* GenericCacheManager.swift in Sources */,
@@ -600,7 +612,7 @@
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
 				84E5F1CB2DCB774700D41A4F /* VideoStreamManager.swift in Sources */,
-				840634642DD4B00E007E0E1F /* BluetoothStructs.swift in Sources */,
+				840634642DD4B00E007E0E1F /* BluetoothModels.swift in Sources */,
 				84AE14692DA147020094A792 /* SocketManager.swift in Sources */,
 				84EF32DB2DEF1E2E005F3FF6 /* MapButtonsView.swift in Sources */,
 				84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */,

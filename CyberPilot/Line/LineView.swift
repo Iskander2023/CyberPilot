@@ -57,13 +57,13 @@ struct LineView: View {
                         }
                     }
 
-                    .stroke(Color.blue, lineWidth: 2)
+                    .stroke(Color.blue, lineWidth: AppConfig.LineView.lineWidth)
 
                     if let robotPos = lineStore.robotPosition {
                         let transformed = transformPoint(robotPos, in: geometry)
                         Circle()
                             .fill(Color.red)
-                            .frame(width: 10, height: 10)
+                            .frame(width: AppConfig.LineView.robotPositionwidth, height: AppConfig.LineView.robotPositionheight)
                             .position(transformed)
                     }
                 }

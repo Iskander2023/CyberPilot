@@ -24,6 +24,7 @@ class UserRegistrationManager: ObservableObject {
     private var confirmationCodeAttempts = 0
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+    
     var generatedCode = String(Int.random(in: 1000...9999))
     
     @Published var isLoginLengthValid = false
@@ -62,14 +63,21 @@ class UserRegistrationManager: ObservableObject {
     
 
     private var cancellableSet: Set<AnyCancellable> = []
+    
+    func clearFields() {
+        email = ""
+        userName = ""
+        password = ""
+        passwordConfirm = ""
+    }
+
 
     init(stateManager: AuthService) {
         self.stateManager = stateManager
         
         $email
             .map { email in
-                        let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-                        let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailPattern)
+                let emailPredicate = NSPredicate(format:"SELF MATCHES %@", AppConfig.PatternsForInput.emailPattern)
                         return emailPredicate.evaluate(with: email)
                     }
                 .assign(to: \.isMailValid, on: self)
@@ -94,8 +102,7 @@ class UserRegistrationManager: ObservableObject {
         $password
             .receive(on: RunLoop.main)
             .map { password in
-                let pattern = "[A-Z]"
-                if let _ = password.range(of: pattern, options: .regularExpression) {
+                if let _ = password.range(of: AppConfig.PatternsForInput.passwordPattern, options: .regularExpression) {
                     return true
                 } else {
                     return false
@@ -107,8 +114,7 @@ class UserRegistrationManager: ObservableObject {
         $phoneNumber
             .receive(on: RunLoop.main)
             .map { password in
-                let pattern = "[0-9]"
-                return password.range(of: pattern, options: .regularExpression) != nil
+                return password.range(of: AppConfig.PatternsForInput.phoneNumberPattern, options: .regularExpression) != nil
             }
             .assign(to: \.isPhoneNumberValid, on: self)
             .store(in: &cancellableSet)
@@ -124,8 +130,7 @@ class UserRegistrationManager: ObservableObject {
         $confirmationCode
             .receive(on: RunLoop.main)
             .map { password in
-                let pattern = "[0-9]"
-                return password.range(of: pattern, options: .regularExpression) != nil
+                return password.range(of: AppConfig.PatternsForInput.confirmationCodePattern, options: .regularExpression) != nil
             }
             .assign(to: \.isConfirmationCodeValid, on: self)
             .store(in: &cancellableSet)
@@ -164,14 +169,16 @@ class UserRegistrationManager: ObservableObject {
         }
     }
     
+    
+    // регистрация пользователя
     func registerUser(email: String, username: String, password: String) async throws {
-        guard let url = URL(string: "http://selekpann.tech:3000/register") else {
+        guard let url = URL(string: AppConfig.Addresses.userRegistrationUrl) else {
             throw URLError(.badURL)
         }
 
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = AppConfig.HttpMethods.postMethod
+        request.setValue(AppConfig.HttpMethods.httpRequestValue, forHTTPHeaderField: AppConfig.HttpMethods.httpRequestHeader)
 
         let body: [String: Any] = [
             "email": email,
@@ -187,7 +194,7 @@ class UserRegistrationManager: ObservableObject {
         }
         
         // Правильное декодирование ответа с русским текстом
-        let responseString = String(data: data, encoding: .utf8) ?? "No response data"
+        let responseString = String(data: data, encoding: .utf8) ?? AppConfig.Strings.responseString
         print("Raw server response:", responseString)
         
         do {
@@ -202,13 +209,13 @@ class UserRegistrationManager: ObservableObject {
         case 201:
             // Успешная регистрация
             await MainActor.run {
-                self.logger.info("User registered successfully!")
+                self.logger.info(AppConfig.Strings.registrationStatusTrue)
                 self.stateManager?.isAuthenticated = true
                 self.stateManager?.userLogin = username
             }
         case 409:
             // Пользователь уже существует
-            let errorMessage = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? "Пользователь с таким email уже зарегистрирован"
+            let errorMessage = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? AppConfig.Strings.alreadyRegistered
             throw NSError(
                 domain: "RegistrationError",
                 code: 409,
@@ -216,7 +223,7 @@ class UserRegistrationManager: ObservableObject {
             )
         case 400...499:
             // Другие клиентские ошибки
-            let errorMessage = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? "Неверные данные регистрации"
+            let errorMessage = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? AppConfig.Strings.incorrectData
             throw NSError(
                 domain: "RegistrationError",
                 code: httpResponse.statusCode,
@@ -255,10 +262,8 @@ class UserRegistrationManager: ObservableObject {
         
         
     func sendVerificationCode(to phoneNumber: String, code: String) {
-        let apiID = "5A5A737E-09E1-0492-ADD3-957B269669D8"
         let message = "Ваш проверочный код: \(code)"
-        
-        let urlString = "https://sms.ru/sms/send?api_id=\(apiID)&to=\(phoneNumber)&msg=\(message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&json=1"
+        let urlString = "https://sms.ru/sms/send?api_id=\(AppConfig.Addresses.apiID)&to=\(phoneNumber)&msg=\(message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&json=1"
         
         guard let url = URL(string: urlString) else {
             print("❌ Invalid URL")

@@ -8,10 +8,10 @@ import SwiftUI
 
 
 struct RoadView: View {
-    @State private var roadWidth: CGFloat = 400
-    @State private var lineHeight: CGFloat = 30
-    @State private var segmentAngle: CGFloat = 0
-    @State private var previousDegrees: CGFloat = 270
+    @State private var roadWidth: CGFloat = AppConfig.RoadView.roadWidth
+    @State private var lineHeight: CGFloat = AppConfig.RoadView.lineHeight
+    @State private var segmentAngle: CGFloat = AppConfig.RoadView.segmentAngle
+    @State private var previousDegrees: CGFloat = AppConfig.RoadView.previousDegrees
     
     var horizontalPixels: CGFloat
     var verticalPixels: CGFloat

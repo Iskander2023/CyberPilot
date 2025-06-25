@@ -11,10 +11,6 @@ import SwiftUI
 struct Perspective {
     let horizontalPixels: CGFloat
     let verticalPixels: CGFloat
-    let planeDistance: CGFloat = 400
-    let horizontalAngleGrad: CGFloat = 145.8
-    let verticalAngleGrad: CGFloat = 122.6
-
     var halfDisplayHeight: CGFloat
     var displayDistance: CGFloat
     var bottomCentralPoint: CGFloat
@@ -23,18 +19,18 @@ struct Perspective {
         self.horizontalPixels = horizontalPixels
         self.verticalPixels = verticalPixels
         
-        let verticalAngle = verticalAngleGrad * 2 * .pi / 360
+        let verticalAngle = AppConfig.Perspective.verticalAngleGrad * 2 * .pi / 360
         let halfVerticalAngle = verticalAngle / 2
         
         let bottomAngle = halfVerticalAngle
         
         if 0 < bottomAngle && bottomAngle <= .pi {
-            bottomCentralPoint = planeDistance / tan(bottomAngle)
+            bottomCentralPoint = AppConfig.Perspective.planeDistance / tan(bottomAngle)
         } else {
             bottomCentralPoint = 1
         }
 
-        let hypotenuse = sqrt(bottomCentralPoint * bottomCentralPoint + planeDistance * planeDistance)
+        let hypotenuse = sqrt(bottomCentralPoint * bottomCentralPoint + AppConfig.Perspective.planeDistance * AppConfig.Perspective.planeDistance)
         displayDistance = hypotenuse * cos(halfVerticalAngle)
         halfDisplayHeight = sqrt(hypotenuse * hypotenuse - displayDistance * displayDistance)
     }
@@ -44,8 +40,8 @@ struct Perspective {
         let ratio = verticalPixels / (halfDisplayHeight * 2)
         
         for (x, y) in points {
-            let hypotenuse = sqrt(planeDistance * planeDistance + y * y)
-            let vertAngle = atan(planeDistance / y)
+            let hypotenuse = sqrt(AppConfig.Perspective.planeDistance * AppConfig.Perspective.planeDistance + y * y)
+            let vertAngle = atan(AppConfig.Perspective.planeDistance / y)
             let yDist = -displayDistance * tan(vertAngle)
             let dispHyp = sqrt(yDist * yDist + displayDistance * displayDistance)
             let xDist = x * dispHyp / hypotenuse

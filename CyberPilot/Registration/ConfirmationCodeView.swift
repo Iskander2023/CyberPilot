@@ -7,6 +7,7 @@
 import SwiftUI
 
 
+
 struct ConfirmationCodeView: View {
     
     @ObservedObject var stateManager: AuthService
@@ -17,25 +18,25 @@ struct ConfirmationCodeView: View {
     
     var body: some View {
         VStack {
-            Text("Введите полученый код")
+            Text(AppConfig.Strings.enterReciverCode)
                 .font(.system(.largeTitle, design: .rounded))
                 .bold()
                 .padding(.bottom, 30)
             
             VStack {
-                FormField(fieldName: "Код", fieldValue: $userRegistrationManager.confirmationCode)
+                FormField(fieldName: AppConfig.Strings.code, fieldValue: $userRegistrationManager.confirmationCode)
                 
                 RequirementText(
-                    iconName: "lock.open",
-                    iconColor: userRegistrationManager.isConfirmationCodeValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "только цифры",
+                    iconName: AppConfig.Strings.iconName,
+                    iconColor: userRegistrationManager.isConfirmationCodeValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.onlyNumbers,
                     isStrikeThrough: userRegistrationManager.isConfirmationCodeValid
                 )
                 
                 RequirementText(
-                    iconName: "lock.open",
-                    iconColor: userRegistrationManager.isConfirmationCodeLenghtValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "4",
+                    iconName: AppConfig.Strings.iconName,
+                    iconColor: userRegistrationManager.isConfirmationCodeLenghtValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.codeLength,
                     isStrikeThrough: userRegistrationManager.isConfirmationCodeLenghtValid
                 )
             }
@@ -48,10 +49,10 @@ struct ConfirmationCodeView: View {
                 if userRegistrationManager.isConfirmationCodeTrue && userRegistrationManager.isPhoneNumberFormValid {
                     onCodeStep()
                 } else {
-                    alertManager.showAlert(title: "Ошибка", message: "Не правильный код")
+                    alertManager.showAlert(title: AppConfig.Strings.errorMessage, message: AppConfig.Strings.incorrectCodeMessage)
                 }
             }) {
-                Text("Подтвердить")
+                Text(AppConfig.Strings.confirm)
                     .font(.system(.body, design: .rounded))
                     .foregroundColor(.white)
                     .bold()
@@ -60,8 +61,8 @@ struct ConfirmationCodeView: View {
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: [
-                                Color(red: 34/255, green: 177/255, blue: 76/255),
-                                Color(red: 34/255, green: 177/255, blue: 76/255)
+                                AppConfig.Colors.primaryGreen,
+                                AppConfig.Colors.primaryGreen
                             ]),
                             startPoint: .leading,
                             endPoint: .trailing

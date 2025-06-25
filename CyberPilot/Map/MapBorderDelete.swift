@@ -25,11 +25,4 @@ class MapBorderDelete: ObservableObject {
             self.deleteCell = nil
         }
     }
-
-    
-    
-    func deleteBorderOnEnded() {
-        deleteCell = nil
-    }
-    
 }

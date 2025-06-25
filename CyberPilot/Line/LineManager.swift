@@ -11,12 +11,12 @@ import Combine
 class LineManager: ObservableObject {
     private let socketListener: SocketListener
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    private let segmentsCacheManager = GenericCacheManager<CachedSegments>(filename: "cached_segments.json")
+    private let segmentsCacheManager = GenericCacheManager<CachedSegments>(filename: AppConfig.Cached.segmentsFilename)
     @Published var segments: [ShapeSegment] = []
     @Published var robotPosition: CGPoint? = nil
 
     init (authService: AuthService) {
-        socketListener = SocketListener(authService: authService, socketIp: "ws://172.16.17.79:8765")
+        socketListener = SocketListener(authService: authService, socketIp: AppConfig.LineManager.socketIp)
         loadInitialData() // тестовый режим
     }
     

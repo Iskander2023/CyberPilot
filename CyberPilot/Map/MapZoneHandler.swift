@@ -13,7 +13,7 @@ class MapZoneHandler: ObservableObject {
     @Published var zones: [ZoneInfo] = []
     var mapManager: MapManager
     var centerZoneList: [CGPoint] = []
-    let mapCacheManager = GenericCacheManager<OccupancyGridMap>(filename: "cached_map.json")
+    let mapCacheManager = GenericCacheManager<OccupancyGridMap>(filename: AppConfig.Cached.mapFilename)
     var currentRobotIndex: Int?
     
     init(mapManager: MapManager) {
@@ -56,8 +56,8 @@ class MapZoneHandler: ObservableObject {
     }
     
 
-    
-    func setValue(_ value: Int, forCells cells: [CGPoint], allowedOldValues: [Int], fillPoints: Int, robotPoint: Int) {
+    // установка значений по индексу на карте(можно устанавливать allowedValues-разрешеные для именения значения и fillPoints точки на которые нужно изменить, robotPoint-позиция робота)
+    func setValue(_ value: Int, forCells cells: [CGPoint], allowedValues: [Int], fillPoints: Int, robotPoint: Int) {
         guard var currentMap = mapManager.map else {
             print("Карта не загружена")
             return
@@ -69,7 +69,7 @@ class MapZoneHandler: ObservableObject {
             if currentValue == robotPoint {
                 saveRobotPoint(index: index)
                 currentMap.data[index] = value
-            } else if allowedOldValues.contains(currentValue) {
+            } else if allowedValues.contains(currentValue) {
                 currentMap.data[index] = value
             }
         }
@@ -77,7 +77,6 @@ class MapZoneHandler: ObservableObject {
         self.mapCacheManager.save(currentMap)
     }
 
-    
     
     
     // Метод для изменения названия зоны по id
@@ -122,12 +121,12 @@ class MapZoneHandler: ObservableObject {
             } else {
                 name = "Зона \(i+1)"
             }
-            setValue(id, forCells: contour, allowedOldValues: Array(31...100), fillPoints: 0, robotPoint: 20)
+            setValue(id, forCells: contour, allowedValues: Array(31...100), fillPoints: 0, robotPoint: 20)
             putARobotPoint()
             let zone = ZoneInfo(id: id, name: name, center: center)
             zones.append(zone)
         }
-        setValue(60, forCells: centerZoneList, allowedOldValues: [100], fillPoints: 0, robotPoint: 20)
+        setValue(60, forCells: centerZoneList, allowedValues: [100], fillPoints: 0, robotPoint: 20)
     }
     
     
@@ -136,35 +135,27 @@ class MapZoneHandler: ObservableObject {
         let height = data.count / width
         var visited = Array(repeating: false, count: data.count)
         var result = [[CGPoint]]()
-        
         func isInside(_ r: Int, _ c: Int) -> Bool {
             return r >= 0 && c >= 0 && r < height && c < width
         }
-        
         let directions = [(0,1), (1,0), (0,-1), (-1,0)]
-        
         for row in 0..<height {
             for col in 0..<width {
                 let idx = row * width + col
                 // Проверяем, входит ли значение в диапазон и не посещено ли
                 guard valueRange.contains(data[idx]) && !visited[idx] else { continue }
-                
                 var region = [CGPoint]()
                 var queue = [(row, col)]
                 var isTouchingBorder = false
-                
                 while !queue.isEmpty {
                     let (r, c) = queue.removeFirst()
                     let i = r * width + c
-                    
                     guard isInside(r, c), valueRange.contains(data[i]), !visited[i] else { continue }
                     visited[i] = true
                     region.append(CGPoint(x: c, y: r))
-                    
                     if r == 0 || r == height - 1 || c == 0 || c == width - 1 {
                         isTouchingBorder = true
                     }
-                    
                     for (dr, dc) in directions {
                         let nr = r + dr
                         let nc = c + dc
@@ -173,15 +164,11 @@ class MapZoneHandler: ObservableObject {
                         }
                     }
                 }
-                
                 if !region.isEmpty && !isTouchingBorder {
                     result.append(region)
                 }
             }
         }
-        
         return result
     }
-    
-    
 }

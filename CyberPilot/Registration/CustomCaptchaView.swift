@@ -17,11 +17,10 @@ struct CustomCaptchaView: View {
     var onCaptchaStep: (() -> Void)?
 
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    private let characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("Введите текст ниже:")
+            Text(AppConfig.Strings.inputCaptchaText)
                 .font(.headline)
 
             Text(captchaText)
@@ -31,22 +30,22 @@ struct CustomCaptchaView: View {
                 .cornerRadius(5)
                 .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 1))
 
-            TextField("Введите капчу", text: $userInput)
+            TextField(AppConfig.Strings.inputCaptcha, text: $userInput)
                 .textFieldStyle(.roundedBorder)
                 .autocapitalization(.allCharacters)
                 .disableAutocorrection(true)
 
             Button(action: verifyCaptcha) {
                 if isButtonDisabled {
-                    Text("Повторить через \(remainingTime) сек")
+                    Text("\(AppConfig.Strings.repeatIn) \(remainingTime)")
                 } else {
-                    Text("Проверить")
+                    Text(AppConfig.Strings.checkCaptcha)
                 }
             }
             .buttonStyle(.borderedProminent)
             .disabled(isButtonDisabled)
 
-            Button("Обновить капчу") {
+            Button(AppConfig.Strings.updateCaptcha) {
                 generateNewCaptcha()
             }
             .buttonStyle(.bordered)
@@ -79,7 +78,7 @@ struct CustomCaptchaView: View {
     }
 
     private func generateNewCaptcha() {
-        captchaText = String((0..<4).map { _ in characters.randomElement()! })
+        captchaText = String((0..<4).map { _ in AppConfig.Strings.charactersForCaptcha.randomElement()! })
         userInput = ""
     }
 }

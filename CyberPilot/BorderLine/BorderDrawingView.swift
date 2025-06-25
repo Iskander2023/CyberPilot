@@ -16,10 +16,7 @@ struct BorderDrawingView: View {
         if let start = firstTouch, let current = currentDragLocation {
             BorderLineView(
                 start: start,
-                end: current,
-                color: .red,
-                lineWidth: 2,
-                dash: [5]
+                end: current
             )
             .allowsHitTesting(false)
         }

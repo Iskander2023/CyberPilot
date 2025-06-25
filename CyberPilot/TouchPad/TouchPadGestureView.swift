@@ -15,7 +15,7 @@ struct TouchPadGestureView: View {
             Color.clear
                 .contentShape(Rectangle())
                 .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
+                    DragGesture(minimumDistance: AppConfig.TouchPadGesture.minimumDistance)
                         .onChanged { value in
                             controller.handleTouchChanged(value)
                             controller.updateAnchorPoint(from: value.location, in: geometry.size)

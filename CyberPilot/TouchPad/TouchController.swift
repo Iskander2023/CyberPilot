@@ -18,9 +18,6 @@ class TouchController: ObservableObject {
     private var timerDelay: Double
     private var angleUpdateTimer: Timer?
     private var isWaitingForTapDelay = false
-    let maxSizeTach: CGFloat = 125
-    let maxSize: CGFloat = 250
-    let minSize: CGFloat = 100
     var currentAngle: CGFloat = 0.0
     
     
@@ -79,19 +76,19 @@ class TouchController: ObservableObject {
             let distX = currentPoint.x - touchIndicatorPosition.x
             let distY = currentPoint.y - touchIndicatorPosition.y
             var distance = sqrt(distX * distX + distY * distY)
-            if distance > maxSizeTach {
-                distance = maxSizeTach
+        if distance > AppConfig.TouchController.maxSizeTach {
+                distance = AppConfig.TouchController.maxSizeTach
             }
             arrowLength = distance
             updateLenghtPerspective(distance: distance) // меняем длину перспективы
-            touchIndicatorSize = min(max(minSize, distance * 2), maxSize)
+        touchIndicatorSize = min(max(AppConfig.TouchController.minSize, distance * 2), AppConfig.TouchController.maxSize)
         }
 
     
     private func updateLenghtPerspective(distance: CGFloat) {
-        if distance > 50 && distance <= 80 {
+        if distance > AppConfig.TouchController.minLenghtPerspective && distance <= AppConfig.TouchController.maxLenghtPerspective {
             perspectiveLength = 4
-        } else if distance > 80 {
+        } else if distance > AppConfig.TouchController.maxLenghtPerspective {
             perspectiveLength = 5
         } else {
             perspectiveLength = 3
@@ -164,7 +161,7 @@ class TouchController: ObservableObject {
 
     private func startAngleUpdateTimer() {
         stopAngleUpdateTimer()
-        angleUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+        angleUpdateTimer = Timer.scheduledTimer(withTimeInterval: AppConfig.TouchController.updateTime, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             //self.accumulatedRotation *= 0.95
             if abs(self.accumulatedRotation) < 0.01 {

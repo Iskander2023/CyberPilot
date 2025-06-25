@@ -12,6 +12,8 @@ struct VideoView: View {
     var videoURL: String?
     @EnvironmentObject private var touchPadController: TouchController
     @Environment(\.presentationMode) var presentationMode
+    @State private var videoFailedToLoad = false
+    @State private var webView: WKWebView?
     
     init(videoURL: String?, commandSender: CommandSender) {
         self.videoURL = videoURL
@@ -21,9 +23,20 @@ struct VideoView: View {
         GeometryReader { geometry in
             ZStack {
                 // Видео
-                WebView(urlString: videoURL ?? "")
+                if videoFailedToLoad {
+                    Text("⚠️ Видео недоступно")
+                        .foregroundColor(.white)
+                        .font(.headline)
+                } else {
+                    WebView(
+                        urlString: videoURL ?? "",
+                        onLoadFailed: {
+                            videoFailedToLoad = true
+                        }
+                    )
                     .edgesIgnoringSafeArea(.all)
                     .allowsHitTesting(false)
+                }
 
                 // Перспектива
                 RoadView(horizontalPixels: geometry.size.width,

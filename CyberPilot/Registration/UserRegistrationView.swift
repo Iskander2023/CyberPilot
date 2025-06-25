@@ -7,85 +7,102 @@
 import SwiftUI
 
 
-struct UserRegistarationView: View {
+struct UserRegistrationView: View {
     
     @ObservedObject var stateManager: AuthService
     @ObservedObject var userRegistrationManager: UserRegistrationManager
     
     @State private var registrationStatus: String = ""
     
+    //let inactiveColor = Color(red: 220/255, green: 220/255, blue: 220/255)
+    
     
     var body: some View {
-        NavigationView {
             VStack {
-                Text("Создать аккаунт")
+                Text(AppConfig.Strings.registrationTitle)
                     .font(.system(.largeTitle, design: .rounded))
                     .bold()
                     .padding(.bottom, 30)
                 
-                FormField(fieldName: "Почта", fieldValue: $userRegistrationManager.email)
+                FormField(fieldName: AppConfig.Strings.emailRus, fieldValue: $userRegistrationManager.email)
                 RequirementText(
+                    iconName: AppConfig.Strings.iconName,
                     iconColor: userRegistrationManager.isMailValid ? Color.secondary
-                    : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "Email",
+                    :AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.EmailEng,
                     isStrikeThrough: userRegistrationManager.isMailValid
                 )
                 .padding()
                 
-                FormField(fieldName: "Логин", fieldValue: $userRegistrationManager.userName)
+                FormField(fieldName: AppConfig.Strings.loginRus, fieldValue: $userRegistrationManager.userName)
                 RequirementText(
+                    iconName: AppConfig.Strings.iconName,
                     iconColor: userRegistrationManager.isLoginLengthValid ? Color.secondary
-                    : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "Минимум 4 символа",
+                    : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.min4Simbols,
                     isStrikeThrough: userRegistrationManager.isLoginLengthValid
                 )
                 .padding()
                 
-                FormField(fieldName: "Пароль", fieldValue: $userRegistrationManager.password, isSecure: true)
+                FormField(fieldName: AppConfig.Strings.passwordRus, fieldValue: $userRegistrationManager.password, isSecure: true)
                 VStack {
                     RequirementText(
-                        iconName: "lock.open",
-                        iconColor: userRegistrationManager.isPasswordLengthValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                        text: "Минимум 8 символов",
+                        iconName: AppConfig.Strings.iconName,
+                        iconColor: userRegistrationManager.isPasswordLengthValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                        text: AppConfig.Strings.min8Simbols,
                         isStrikeThrough: userRegistrationManager.isPasswordLengthValid
                     )
                     RequirementText(
-                        iconName: "lock.open",
-                        iconColor: userRegistrationManager.isPasswordCapitalLetter ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                        text: "Один символ с большой буквы",
+                        iconName: AppConfig.Strings.iconName,
+                        iconColor: userRegistrationManager.isPasswordCapitalLetter ? Color.secondary : AppConfig.Colors.inactiveGray,
+                        text: AppConfig.Strings.OneSymbolWithACapitalLetter,
                         isStrikeThrough: userRegistrationManager.isPasswordCapitalLetter
                     )
                 }
                 .padding()
                 
-                FormField(fieldName: "Подтвердите пароль", fieldValue: $userRegistrationManager.passwordConfirm, isSecure: true)
+                FormField(fieldName: AppConfig.Strings.confirmPassword, fieldValue: $userRegistrationManager.passwordConfirm, isSecure: true)
                 RequirementText(
-                    iconName: "lock.open",
-                    iconColor: userRegistrationManager.isPasswordConfirmValid ? Color.secondary : Color(red: 220/255, green: 220/255, blue: 220/255),
-                    text: "Пароль должен совпадать с введенным ранее",
+                    iconName: AppConfig.Strings.iconName,
+                    iconColor: userRegistrationManager.isPasswordConfirmValid ? Color.secondary : AppConfig.Colors.inactiveGray,
+                    text: AppConfig.Strings.passwordMatch,
                     isStrikeThrough: userRegistrationManager.isPasswordConfirmValid)
                 .padding()
                 .padding(.bottom, 50)
                 
+                if !registrationStatus.isEmpty {
+                    Text(registrationStatus)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
                 
                 Button(action: {
                     Task {
                         do {
-                            try await userRegistrationManager.registerUser(email: userRegistrationManager.email, username: userRegistrationManager.userName, password: userRegistrationManager.password)
+                            try await userRegistrationManager.registerUser(email: userRegistrationManager.email, 
+                                                                           username: userRegistrationManager.userName,
+                                                                           password: userRegistrationManager.password
+                                                                           )
+                                                                           registrationStatus = AppConfig.Strings.registrationStatusTrue
+                                                                           userRegistrationManager.clearFields()
                         } catch {
-                            print("Ошибка регистрации: \(error.localizedDescription)")
+                            registrationStatus = "\(AppConfig.Strings.registrationStatusFalse) \(error.localizedDescription)"
+                            print("\(AppConfig.Strings.registrationStatusFalse) \(error.localizedDescription)")
                         }
                     }
                 }
             )
-                                                                                    {
-                    Text("Зарегистрироваться")
+                {
+                    Text(AppConfig.Strings.registerButtonTitle)
                         .font(.system(.body, design: .rounded))
                         .foregroundColor(.white)
                         .bold()
                         .padding()
                         .frame(minWidth: 0, maxWidth: .infinity)
-                        .background(LinearGradient(gradient: Gradient(colors: [Color(red: 34/255, green: 177/255, blue: 76/255), Color(red: 34/255, green: 177/255, blue: 76/255)]), startPoint: .leading, endPoint: .trailing))
+                        .background(LinearGradient(gradient: Gradient(colors: [AppConfig.Colors.primaryGreen,
+                                                                               AppConfig.Colors.primaryGreen]),
+                                                   startPoint: .leading, endPoint: .trailing))
                         .cornerRadius(10)
                         .padding(.horizontal)
                     
@@ -99,4 +116,3 @@ struct UserRegistarationView: View {
         }
     }
 
-}

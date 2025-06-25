@@ -43,7 +43,7 @@ struct RegistrationFlowView: View {
         .animation(.easeInOut(duration: 0.4), value: currentStep)
         .padding()
         .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: Button("< Назад") {
+        .navigationBarItems(leading: Button(AppConfig.Strings.backButton) {
             goToPreviousStep()
             }
         )
@@ -96,7 +96,7 @@ struct RegistrationFlowView: View {
     
     
     private var userRegistrationView: some View {
-        UserRegistarationView(
+        UserRegistrationView(
             stateManager: stateManager,
             userRegistrationManager: userRegistrationManager
         )

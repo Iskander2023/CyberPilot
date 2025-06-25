@@ -62,6 +62,7 @@ final class CommandSender {
         }
     }
 
+    
     private func sendCurrentState() {
         let command: [String: Any] = [
             "type": "message",
@@ -71,6 +72,7 @@ final class CommandSender {
         ]
         sendJSONCommand(command)
     }
+    
 
     func sendJSONCommand(_ data: [String: Any]) {
         guard let jsonData = try? JSONSerialization.data(withJSONObject: data, options: []),
@@ -81,8 +83,8 @@ final class CommandSender {
         socketManager?.sendCommand(jsonString)
     }
 
-    // MARK: - Таймер для отправки пустого состояния (когда кнопки не нажаты)
     
+    // Таймер для отправки пустого состояния (когда кнопки не нажаты)
     func startIdleStateSending() {
         // Прерываем старый таймер, если он есть
         stopIdleStateSending()
@@ -95,18 +97,20 @@ final class CommandSender {
         RunLoop.current.add(idleTimer!, forMode: .common)
     }
 
+    
     func stopIdleStateSending() {
         idleTimer?.invalidate()
         idleTimer = nil
     }
 
+    
     private func sendIdleState() {
         currentKeysState = ["w": false, "s": false, "a": false, "d": false, "e": false]
         sendCurrentState()
     }
 
+    
     //  Таймер для повторяющейся отправки команд с интервалом 0.2 секунды (для зажатых кнопок)
-
     private func startRepeatCommandSending() {
         stopRepeatCommandSending()
         
@@ -146,12 +150,4 @@ final class CommandSender {
 
 
 
-struct Command {
-    static let moveForward = "iosMoveForward"
-    static let moveBackward = "iosMoveBackward"
-    static let turnLeft = "iosTurnLeft"
-    static let turnRight = "iosTurnRight"
-    static let stopTheMovement = "iosStopMovement"
-    
-    
-}
+

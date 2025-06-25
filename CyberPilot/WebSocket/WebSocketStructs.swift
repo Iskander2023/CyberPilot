@@ -11,3 +11,14 @@ import Foundation
 struct MessageType: Decodable {
     let type: String
 }
+
+
+struct Command {
+    static let moveForward = "iosMoveForward"
+    static let moveBackward = "iosMoveBackward"
+    static let turnLeft = "iosTurnLeft"
+    static let turnRight = "iosTurnRight"
+    static let stopTheMovement = "iosStopMovement"
+    
+    
+}
