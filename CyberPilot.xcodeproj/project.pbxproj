@@ -24,6 +24,7 @@
 		8409CC7F2E03E28E00DA0BFC /* DeletePointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */; };
 		8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */; };
 		8409CC862E0AB60700DA0BFC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC852E0AB60700DA0BFC /* AppConfig.swift */; };
+		8409CC882E0D603500DA0BFC /* PerspectiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */; };
 		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
 		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
@@ -32,7 +33,7 @@
 		846AA3E52DD769E40000FDFD /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E42DD769E40000FDFD /* LineView.swift */; };
 		846AA3EA2DD771B30000FDFD /* LineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E92DD771B30000FDFD /* LineModels.swift */; };
 		846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3EB2DD772D60000FDFD /* LineManager.swift */; };
-		846AA3F52DDCABBA0000FDFD /* CloseButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3F42DDCABBA0000FDFD /* CloseButtons.swift */; };
+		846AA3F52DDCABBA0000FDFD /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3F42DDCABBA0000FDFD /* CloseButton.swift */; };
 		846AA3FB2DDCB3DA0000FDFD /* TouchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FA2DDCB3DA0000FDFD /* TouchController.swift */; };
 		846AA3FD2DDCC4340000FDFD /* TouchIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FC2DDCC4340000FDFD /* TouchIndicatorView.swift */; };
 		846AA3FF2DDCC49C0000FDFD /* DirectionArrowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3FE2DDCC49C0000FDFD /* DirectionArrowView.swift */; };
@@ -100,6 +101,7 @@
 		8409CC7E2E03E28E00DA0BFC /* DeletePointView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletePointView.swift; sourceTree = "<group>"; };
 		8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawningDeletePoinView.swift; sourceTree = "<group>"; };
 		8409CC852E0AB60700DA0BFC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectiveButton.swift; sourceTree = "<group>"; };
 		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
@@ -108,7 +110,7 @@
 		846AA3E42DD769E40000FDFD /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		846AA3E92DD771B30000FDFD /* LineModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineModels.swift; sourceTree = "<group>"; };
 		846AA3EB2DD772D60000FDFD /* LineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineManager.swift; sourceTree = "<group>"; };
-		846AA3F42DDCABBA0000FDFD /* CloseButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButtons.swift; sourceTree = "<group>"; };
+		846AA3F42DDCABBA0000FDFD /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
 		846AA3FA2DDCB3DA0000FDFD /* TouchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchController.swift; sourceTree = "<group>"; };
 		846AA3FC2DDCC4340000FDFD /* TouchIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchIndicatorView.swift; sourceTree = "<group>"; };
 		846AA3FE2DDCC49C0000FDFD /* DirectionArrowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionArrowView.swift; sourceTree = "<group>"; };
@@ -337,7 +339,8 @@
 			children = (
 				84C9262E2DAFCC4F009B1FFA /* VideoView.swift */,
 				84E5F1952DB8CC9100D41A4F /* WebView.swift */,
-				846AA3F42DDCABBA0000FDFD /* CloseButtons.swift */,
+				846AA3F42DDCABBA0000FDFD /* CloseButton.swift */,
+				8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -598,6 +601,7 @@
 				84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */,
 				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
 				8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */,
+				8409CC882E0D603500DA0BFC /* PerspectiveButton.swift in Sources */,
 				8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */,
 				8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */,
 				8409CC6B2E015E3200DA0BFC /* MapZoneHandler.swift in Sources */,
@@ -617,7 +621,7 @@
 				84EF32DB2DEF1E2E005F3FF6 /* MapButtonsView.swift in Sources */,
 				84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */,
 				84E5F1CD2DCB77E700D41A4F /* ErrorManager.swift in Sources */,
-				846AA3F52DDCABBA0000FDFD /* CloseButtons.swift in Sources */,
+				846AA3F52DDCABBA0000FDFD /* CloseButton.swift in Sources */,
 				84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */,
 				84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */,
 				8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */,

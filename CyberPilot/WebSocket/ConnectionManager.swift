@@ -10,8 +10,8 @@ import Combine
 
 final class ConnectionManager: ObservableObject, TokenUpdatable {
     @Published var isConnected = false
-    @Published var host = "robot3.local"
-    @Published var remoteURL = "ws://selekpann.tech:2000"
+    @Published var host = AppConfig.Addresses.localAddress
+    @Published var remoteURL = AppConfig.Addresses.serverAddress
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     var cancellables = Set<AnyCancellable>()
     var token: String?

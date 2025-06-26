@@ -24,9 +24,9 @@ class TouchController: ObservableObject {
     @Published var anchorPoint: UnitPoint = .zero
     @Published var touchIndicatorVisible: Bool = false
     @Published var touchIndicatorPosition: CGPoint = .zero
-    @Published var touchIndicatorSize: CGFloat = 100
+    @Published var touchIndicatorSize: CGFloat = AppConfig.TouchController.touchIndicatorSize
     @Published var arrowLength: CGFloat = 0
-    @Published var perspectiveLength: Int = 3
+    @Published var perspectiveLength: Int = AppConfig.TouchController.perspectiveLength
     
     
     
@@ -40,7 +40,6 @@ class TouchController: ObservableObject {
     func handleTouchChanged(_ value: DragGesture.Value) {
         guard !isWaitingForTapDelay else { return }
         if !touchIndicatorVisible {
-            //logger.info("handleTouchChanged")
             isWaitingForTapDelay = true
             tapDelayTimer?.invalidate()
             tapDelayTimer = Timer.scheduledTimer(withTimeInterval: timerDelay, repeats: false) { [weak self] _ in
@@ -163,7 +162,7 @@ class TouchController: ObservableObject {
         stopAngleUpdateTimer()
         angleUpdateTimer = Timer.scheduledTimer(withTimeInterval: AppConfig.TouchController.updateTime, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            //self.accumulatedRotation *= 0.95
+            self.accumulatedRotation *= 0.95
             if abs(self.accumulatedRotation) < 0.01 {
                 self.accumulatedRotation = 0
             }

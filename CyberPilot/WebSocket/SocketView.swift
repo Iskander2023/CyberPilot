@@ -19,7 +19,7 @@ struct SocketView: View {
             Color.white.ignoresSafeArea()
             
             mainContent
-                .padding(.top, 100)
+                .padding(.top, AppConfig.SocketView.mainContentPadding)
             
             connectionIndicator
             
@@ -52,13 +52,13 @@ struct SocketView: View {
     
     
     private var mainContent: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: AppConfig.SocketView.mainContentSpacing) {
             Spacer()
             
             if controller.connectionManager.isConnected {
                 WebView(urlString: controller.videoStreamManager.videoURL)
-                    .frame(height: 350)
-                    .padding(.horizontal, 20)
+                    .frame(height: AppConfig.SocketView.webViewHeight)
+                    .padding(.horizontal, AppConfig.SocketView.mainContentPadding)
             }
             
             if !controller.connectionManager.isConnected {
@@ -91,15 +91,15 @@ struct SocketView: View {
     private var connectionAddressField: some View {
         Group {
             if selectedConnectionType == 0 {
-                TextField("ws://selekpann.tech:2000", text: $controller.connectionManager.remoteURL)
+                TextField(AppConfig.Addresses.serverAddress, text: $controller.connectionManager.remoteURL)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
             } else {
-                TextField("robot3.local", text: $controller.connectionManager.host)
+                TextField(AppConfig.Addresses.localAddress, text: $controller.connectionManager.host)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disableAutocorrection(true)
             }
         }
-        .frame(width: 250)
+        .frame(width: AppConfig.SocketView.connectionAddressFrame)
     }
     
     private var connectionButton: some View {
@@ -117,19 +117,19 @@ struct SocketView: View {
             controller.connectionManager.connect(isLocal: selectedConnectionType == 1)
         }) {
             Text("Connect")
-                .foregroundColor(.white)
+                .foregroundColor(AppConfig.SocketView.connectButtonForegroundColor)
                 .padding()
-                .background(Color.blue)
-                .cornerRadius(8)
+                .background(AppConfig.SocketView.connectButtonBackgroundColor)
+                .cornerRadius(AppConfig.SocketView.connectButtonCornerRadius)
         }
     }
     
     private var disconnectButton: some View {
         HStack {
             Button(action: controller.connectionManager.disconnect) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 35))
-                    .foregroundColor(.red)
+                Image(systemName: AppConfig.SocketView.disconnectButtonSystemName)
+                    .font(.system(size: AppConfig.SocketView.disconnectButtonFont))
+                    .foregroundColor(AppConfig.SocketView.disconnectButtonForegroundColor)
             }
         }
     }
@@ -147,11 +147,11 @@ struct SocketView: View {
     private var connectionIndicator: some View {
         HStack {
             Text("R\(controller.robotSuffix):")
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: AppConfig.SocketView.connectionIndicatorTextSize, weight: .medium))
             
             Circle()
-                .frame(width: 20, height: 20)
-                .foregroundColor(controller.connectionManager.isConnected ? .green : .red)
+                .frame(width: AppConfig.SocketView.connectionIndicatorCircleWidth, height: AppConfig.SocketView.connectionIndicatorCircleHeight)
+                .foregroundColor(controller.connectionManager.isConnected ? AppConfig.SocketView.connectionIndicatorConnectColor : AppConfig.SocketView.connectionIndicatorDisconnectColor)
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
@@ -165,14 +165,14 @@ struct SocketView: View {
                         Button(action: {
                             showVideoView = true
                         }) {
-                            Image(systemName: "camera.fill")
-                                .foregroundColor(.black)
+                            Image(systemName: AppConfig.SocketView.cameraButtonSystemName)
+                                .foregroundColor(AppConfig.SocketView.cameraButtonForegroundColor)
                                 .padding()
-                                .background(Color.white.opacity(0.8))
+                                .background(AppConfig.SocketView.cameraButtonBackground.opacity(AppConfig.SocketView.cameraButtonOpacity))
                                 .clipShape(Circle())
                         }
-                        .padding(.top, 16)
-                        .padding(.leading, 16)
+                        .padding(.top, AppConfig.SocketView.cameraButtonPaddingTop)
+                        .padding(.leading, AppConfig.SocketView.cameraButtonPaddingLeading)
                         
                         Spacer()
                     }

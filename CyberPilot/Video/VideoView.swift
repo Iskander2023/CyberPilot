@@ -14,6 +14,7 @@ struct VideoView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var videoFailedToLoad = false
     @State private var webView: WKWebView?
+    @State private var showPerspective = false
     
     init(videoURL: String?, commandSender: CommandSender) {
         self.videoURL = videoURL
@@ -39,12 +40,13 @@ struct VideoView: View {
                 }
 
                 // Перспектива
-                RoadView(horizontalPixels: geometry.size.width,
-                         verticalPixels: geometry.size.height,
-                         angle: touchPadController.currentAngle,
-                         segmentsCount: touchPadController.perspectiveLength)
+                if showPerspective {
+                    RoadView(horizontalPixels: geometry.size.width,
+                             verticalPixels: geometry.size.height,
+                             angle: touchPadController.currentAngle,
+                             segmentsCount: touchPadController.perspectiveLength)
                     .animation(.linear(duration: 0.2), value: touchPadController.currentAngle)
-
+                }
                 // Управление тачпадом
                 TouchPadGestureView()
 
@@ -52,6 +54,9 @@ struct VideoView: View {
                 if touchPadController.touchIndicatorVisible {
                     TouchIndicatorView(controller: touchPadController)
                 }
+                
+                // кнопка включения/выключения перспективы
+                PerspectiveButton(showPerspective: $showPerspective)
                 
                 // Кнопка отключения
                 CloseButton {

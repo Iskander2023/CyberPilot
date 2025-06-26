@@ -25,23 +25,22 @@ struct DirectionArrowView: View {
             )
             path.addLine(to: endPoint)
 
-            let arrowHeadLength: CGFloat = 15
             let angle1 = currentAngle + .pi * 0.8
             let angle2 = currentAngle + .pi * 1.2
 
             path.move(to: endPoint)
             path.addLine(to: CGPoint(
-                x: endPoint.x + arrowHeadLength * cos(angle1),
-                y: endPoint.y + arrowHeadLength * sin(angle1)
+                x: endPoint.x + AppConfig.DirectionArrow.arrowHeadLength * cos(angle1),
+                y: endPoint.y + AppConfig.DirectionArrow.arrowHeadLength * sin(angle1)
             ))
 
             path.move(to: endPoint)
             path.addLine(to: CGPoint(
-                x: endPoint.x + arrowHeadLength * cos(angle2),
-                y: endPoint.y + arrowHeadLength * sin(angle2)
+                x: endPoint.x + AppConfig.DirectionArrow.arrowHeadLength * cos(angle2),
+                y: endPoint.y + AppConfig.DirectionArrow.arrowHeadLength * sin(angle2)
             ))
         }
-        .stroke(arrowColor.opacity(arrowOpacity), lineWidth: 4)
+        .stroke(arrowColor.opacity(arrowOpacity), lineWidth: AppConfig.DirectionArrow.lineWidth)
         .frame(width: touchIndicatorSize, height: touchIndicatorSize)
         .position(position)
     }

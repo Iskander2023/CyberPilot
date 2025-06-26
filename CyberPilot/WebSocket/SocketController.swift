@@ -58,8 +58,8 @@ final class SocketController: ObservableObject {
     // симуляция списка роботов
     func simulateRobotListResponse() {
         let mockRobots: [[String: Any]] = [
-            ["robotId": "robot123"],
-            ["robotId": "robot456"]
+            ["robotId": "robot1"],
+            ["robotId": "robot2"]
         ]
         logger.info("mockMessage")
         let mockMessage: [String: Any] = ["type": "robotList", "robots": mockRobots]

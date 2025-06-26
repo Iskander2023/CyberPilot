@@ -24,7 +24,7 @@ struct DirectionLabels: View {
                 let y = center.y + radius * sin(angle)
 
                 Circle()
-                    .frame(width: 6, height: 6)
+                    .frame(width: AppConfig.DirectionLabels.width, height: AppConfig.DirectionLabels.height)
                     .foregroundColor(labelsColor.opacity(labelsOpasity))
                     .position(x: x, y: y)
             }
