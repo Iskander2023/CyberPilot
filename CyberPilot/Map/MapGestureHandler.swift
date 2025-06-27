@@ -2,11 +2,11 @@
 //  MapGestureHandler.swift
 //  CyberPilot
 //
-//  Created by Admin on 17/06/25.
+//  Created by Aleksandr Chumakov on 17/06/25.
 //
 
 import SwiftUI
-import Combine
+
 
 
 class MapGestureHandler: ObservableObject {
@@ -26,19 +26,37 @@ class MapGestureHandler: ObservableObject {
     
     
     func onMagnificationEnded() {
-        lastScale = AppConfig.MapGestureHandler.lastScale
+        lastScale = AppConfig.MapGestureHandler.defaultScale
     }
        
     
     func onDragGestureChanged(gesture: CGSize) {
-            offset = CGSize(
-                width: lastOffset.width + gesture.width,
-                height: lastOffset.height + gesture.height
-            )
+        offset = CGSize(
+            width: lastOffset.width + gesture.width,
+            height: lastOffset.height + gesture.height
+        )
     }
+    
     
     func onDragGestureEnded() {
             lastOffset = offset
     }
+    
+    func clampOffset(mapSize: CGSize, containerSize: CGSize) {
+        let scaledWidth = mapSize.width * scale
+        let scaledHeight = mapSize.height * scale
+
+        let horizontalExcess = scaledWidth - containerSize.width
+        let verticalExcess = scaledHeight - containerSize.height
+
+        let maxOffsetX = horizontalExcess > 0 ? horizontalExcess / 2 : 0
+        let maxOffsetY = verticalExcess > 0 ? verticalExcess / 2 : 0
+
+        offset.width = min(max(offset.width, -maxOffsetX), maxOffsetX)
+        offset.height = min(max(offset.height, -maxOffsetY), maxOffsetY)
+
+        lastOffset = offset
+    }
+
 }
 

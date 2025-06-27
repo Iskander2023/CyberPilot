@@ -97,9 +97,9 @@ struct AppConfig {
     }
     
     struct MapGestureHandler {
-        static let minScale: CGFloat = 0.5
-        static let maxScale: CGFloat = 5
-        static let lastScale: CGFloat = 1
+        static let minScale: CGFloat = 1
+        static let maxScale: CGFloat = 3
+        static let defaultScale: CGFloat = 1
     }
     
     struct MapButtons {

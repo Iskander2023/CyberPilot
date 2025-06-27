@@ -24,7 +24,7 @@ struct MapView: View {
                 ZStack {
                     MapCanvasView(map: map, scale: gestureHandler.scale, offset: gestureHandler.offset)
                         .gesture(
-                            MagnificationGesture()
+                            MagnificationGesture() // жест увеличения
                                 .onChanged { value in
                                     gestureHandler.onMagnificationChanged(value)
                                 }
@@ -33,12 +33,12 @@ struct MapView: View {
                                 }
                             )
                         .simultaneousGesture(
-                            DragGesture(minimumDistance: 0)
+                            DragGesture(minimumDistance: 0) // жест перетаскивания
                                 .onChanged {
                                     gesture in
                                     switch mapMode {
                                     case .normal:
-                                        gestureHandler.onDragGestureChanged(gesture: gesture.translation)
+                                        gestureHandler.onDragGestureChanged(gesture: gesture.translation)                        
                                     case .deletingBorder:
                                         mapBorderDelete.deleteBorderOnChanged(location: gesture.location,
                                                                               size: geometry.size,

@@ -25,6 +25,7 @@
 		8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */; };
 		8409CC862E0AB60700DA0BFC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC852E0AB60700DA0BFC /* AppConfig.swift */; };
 		8409CC882E0D603500DA0BFC /* PerspectiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */; };
+		8409CC8D2E0EC1F100DA0BFC /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC8C2E0EC1F100DA0BFC /* Keychain.swift */; };
 		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
 		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
@@ -102,6 +103,7 @@
 		8409CC802E03E4F300DA0BFC /* DrawningDeletePoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawningDeletePoinView.swift; sourceTree = "<group>"; };
 		8409CC852E0AB60700DA0BFC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectiveButton.swift; sourceTree = "<group>"; };
+		8409CC8C2E0EC1F100DA0BFC /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
@@ -205,6 +207,14 @@
 			path = Config;
 			sourceTree = "<group>";
 		};
+		8409CC8B2E0EC1C500DA0BFC /* KeyChain */ = {
+			isa = PBXGroup;
+			children = (
+				8409CC8C2E0EC1F100DA0BFC /* Keychain.swift */,
+			);
+			path = KeyChain;
+			sourceTree = "<group>";
+		};
 		846AA3E62DD76E8C0000FDFD /* Line */ = {
 			isa = PBXGroup;
 			children = (
@@ -299,6 +309,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				8409CC8B2E0EC1C500DA0BFC /* KeyChain */,
 				8409CC842E0AB5A600DA0BFC /* Config */,
 				84EF32DC2DF034F0005F3FF6 /* BorderLine */,
 				84AA3BC22DEF0BEB000E120F /* App */,
@@ -577,6 +588,7 @@
 				84AE146B2DA147230094A792 /* SocketView.swift in Sources */,
 				8409CC6D2E017CE100DA0BFC /* MapPointCalculator.swift in Sources */,
 				84AE147B2DA148590094A792 /* AuthService.swift in Sources */,
+				8409CC8D2E0EC1F100DA0BFC /* Keychain.swift in Sources */,
 				8409CC792E01A99900DA0BFC /* MapTouchHandler.swift in Sources */,
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */,
