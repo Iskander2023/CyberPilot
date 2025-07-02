@@ -17,6 +17,12 @@ struct AppConfig {
         static let paddingLeading: CGFloat = 16
         static let ikonSize: CGFloat = 30
         static let foreground:Color = .black
+        
+        static let voiceButtonIkon = "mic.circle.fill"
+        static let voiceButtonikonSize: CGFloat = 32
+        static let paddingBottom: CGFloat = 20
+        static let paddingTrailing: CGFloat = 20
+      
     }
     
     

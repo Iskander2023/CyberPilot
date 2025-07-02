@@ -17,6 +17,8 @@ final class AppContainer: ObservableObject {
     let bluetoothManager: BluetoothManager
     let mapManager: MapManager
     let mapZoneHandler: MapZoneHandler
+    let voiceControlManager: VoiceService
+    let voiceControlViewModel: VoiceViewModel
 
     init() {
         self.authService = AuthService()
@@ -28,6 +30,8 @@ final class AppContainer: ObservableObject {
         self.bluetoothManager = BluetoothManager()
         self.mapManager = MapManager(authService: authService)
         self.mapZoneHandler = MapZoneHandler(mapManager: mapManager)
+        self.voiceControlManager = VoiceService(commandSender: socketController.commandSender)
+        self.voiceControlViewModel = VoiceViewModel(voiceManager: voiceControlManager)
 
     }
 }

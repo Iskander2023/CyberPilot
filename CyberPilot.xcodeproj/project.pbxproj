@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		5C3F139D1E22022C67C74C32 /* Pods_CyberPilot.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1762666A9678416263BA440C /* Pods_CyberPilot.framework */; };
+		84062D382E13D9BA002560A1 /* VoiceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D372E13D9BA002560A1 /* VoiceService.swift */; };
+		84062D3A2E1512A9002560A1 /* VoiceCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D392E1512A9002560A1 /* VoiceCommand.swift */; };
+		84062D3C2E151CB7002560A1 /* VoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D3B2E151CB7002560A1 /* VoiceViewModel.swift */; };
+		84062D3E2E152899002560A1 /* VoiceControlButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D3D2E152899002560A1 /* VoiceControlButton.swift */; };
 		8406345A2DD24054007E0E1F /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 840634592DD24054007E0E1F /* Yams */; };
 		840634602DD24CE1007E0E1F /* map.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 8406345F2DD24CE1007E0E1F /* map.yaml */; };
 		840634622DD4A9B1007E0E1F /* MapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634612DD4A9B1007E0E1F /* MapModels.swift */; };
@@ -26,6 +30,7 @@
 		8409CC862E0AB60700DA0BFC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC852E0AB60700DA0BFC /* AppConfig.swift */; };
 		8409CC882E0D603500DA0BFC /* PerspectiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */; };
 		8409CC8D2E0EC1F100DA0BFC /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC8C2E0EC1F100DA0BFC /* Keychain.swift */; };
+		8409CC902E13CD0D00DA0BFC /* VoiceControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409CC8F2E13CD0D00DA0BFC /* VoiceControlView.swift */; };
 		842F8E172DE9B37F00A0B028 /* PinchZoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */; };
 		842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F8E182DE9B6B600A0B028 /* TouchTracker.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
@@ -87,6 +92,10 @@
 
 /* Begin PBXFileReference section */
 		1762666A9678416263BA440C /* Pods_CyberPilot.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CyberPilot.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		84062D372E13D9BA002560A1 /* VoiceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceService.swift; sourceTree = "<group>"; };
+		84062D392E1512A9002560A1 /* VoiceCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCommand.swift; sourceTree = "<group>"; };
+		84062D3B2E151CB7002560A1 /* VoiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceViewModel.swift; sourceTree = "<group>"; };
+		84062D3D2E152899002560A1 /* VoiceControlButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceControlButton.swift; sourceTree = "<group>"; };
 		8406345F2DD24CE1007E0E1F /* map.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = map.yaml; sourceTree = "<group>"; };
 		840634612DD4A9B1007E0E1F /* MapModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModels.swift; sourceTree = "<group>"; };
 		840634632DD4B00E007E0E1F /* BluetoothModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothModels.swift; sourceTree = "<group>"; };
@@ -104,6 +113,7 @@
 		8409CC852E0AB60700DA0BFC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectiveButton.swift; sourceTree = "<group>"; };
 		8409CC8C2E0EC1F100DA0BFC /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		8409CC8F2E13CD0D00DA0BFC /* VoiceControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceControlView.swift; sourceTree = "<group>"; };
 		842F8E162DE9B37F00A0B028 /* PinchZoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchZoomView.swift; sourceTree = "<group>"; };
 		842F8E182DE9B6B600A0B028 /* TouchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
@@ -215,6 +225,17 @@
 			path = KeyChain;
 			sourceTree = "<group>";
 		};
+		8409CC8E2E13CCE700DA0BFC /* VoiceControl */ = {
+			isa = PBXGroup;
+			children = (
+				8409CC8F2E13CD0D00DA0BFC /* VoiceControlView.swift */,
+				84062D372E13D9BA002560A1 /* VoiceService.swift */,
+				84062D392E1512A9002560A1 /* VoiceCommand.swift */,
+				84062D3B2E151CB7002560A1 /* VoiceViewModel.swift */,
+			);
+			path = VoiceControl;
+			sourceTree = "<group>";
+		};
 		846AA3E62DD76E8C0000FDFD /* Line */ = {
 			isa = PBXGroup;
 			children = (
@@ -309,6 +330,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				8409CC8E2E13CCE700DA0BFC /* VoiceControl */,
 				8409CC8B2E0EC1C500DA0BFC /* KeyChain */,
 				8409CC842E0AB5A600DA0BFC /* Config */,
 				84EF32DC2DF034F0005F3FF6 /* BorderLine */,
@@ -352,6 +374,7 @@
 				84E5F1952DB8CC9100D41A4F /* WebView.swift */,
 				846AA3F42DDCABBA0000FDFD /* CloseButton.swift */,
 				8409CC872E0D603500DA0BFC /* PerspectiveButton.swift */,
+				84062D3D2E152899002560A1 /* VoiceControlButton.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -593,6 +616,7 @@
 				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,
+				84062D3C2E151CB7002560A1 /* VoiceViewModel.swift in Sources */,
 				84EF32E02DF08E7D005F3FF6 /* BorderLine.swift in Sources */,
 				846AA4112DE09B3D0000FDFD /* WebSocketStructs.swift in Sources */,
 				842F8E192DE9B6B600A0B028 /* TouchTracker.swift in Sources */,
@@ -617,15 +641,19 @@
 				8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */,
 				8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */,
 				8409CC6B2E015E3200DA0BFC /* MapZoneHandler.swift in Sources */,
+				84062D3E2E152899002560A1 /* VoiceControlButton.swift in Sources */,
 				84AE144D2DA144C20094A792 /* ContentView.swift in Sources */,
+				84062D3A2E1512A9002560A1 /* VoiceCommand.swift in Sources */,
 				84C9262F2DAFCC4F009B1FFA /* VideoView.swift in Sources */,
 				84AE14702DA147840094A792 /* BluetoothView.swift in Sources */,
 				8409CC732E0190B400DA0BFC /* BorderDrawingView.swift in Sources */,
 				8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */,
 				840634622DD4A9B1007E0E1F /* MapModels.swift in Sources */,
+				8409CC902E13CD0D00DA0BFC /* VoiceControlView.swift in Sources */,
 				84EF32DE2DF0350E005F3FF6 /* BorderLineView.swift in Sources */,
 				84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */,
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
+				84062D382E13D9BA002560A1 /* VoiceService.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
 				84E5F1CB2DCB774700D41A4F /* VideoStreamManager.swift in Sources */,
 				840634642DD4B00E007E0E1F /* BluetoothModels.swift in Sources */,
@@ -701,7 +729,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -758,7 +786,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

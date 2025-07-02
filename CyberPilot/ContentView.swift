@@ -83,6 +83,12 @@ struct ContentView: View {
                             )
                         )
                     .tag(3)
+//                VoiceControlView()
+//                    .tabItem {
+//                        Label("Voice", systemImage: "person.wave.2.fill")
+//                    }
+//                    .tag(4)
+                
             }
             .padding(.top, 10)
             .onChange(of: selectedTab) {

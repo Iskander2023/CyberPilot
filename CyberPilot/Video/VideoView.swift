@@ -11,10 +11,13 @@ import WebKit
 struct VideoView: View {
     var videoURL: String?
     @EnvironmentObject private var touchPadController: TouchController
+    
     @Environment(\.presentationMode) var presentationMode
     @State private var videoFailedToLoad = false
     @State private var webView: WKWebView?
     @State private var showPerspective = false
+    @State private var voiceControl = false
+    
     
     init(videoURL: String?, commandSender: CommandSender) {
         self.videoURL = videoURL
@@ -57,6 +60,9 @@ struct VideoView: View {
                 
                 // кнопка включения/выключения перспективы
                 PerspectiveButton(showPerspective: $showPerspective)
+                
+                // кнопка голосового управления
+                VoiceControlButton(voiceControl: $voiceControl)
                 
                 // Кнопка отключения
                 CloseButton {

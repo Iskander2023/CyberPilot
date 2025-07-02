@@ -23,6 +23,8 @@ struct Robot_ControllerApp: App {
                 .environmentObject(container.touchController)
                 .environmentObject(container.bluetoothManager)
                 .environmentObject(container.mapZoneHandler)
+                .environmentObject(container.voiceControlManager)
+                .environmentObject(container.voiceControlViewModel)
         
         }
     }
