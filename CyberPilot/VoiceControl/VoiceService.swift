@@ -4,15 +4,16 @@
 //
 //  Created by Aleksandr Chumakov on 1/07/25.
 //
-
 import Foundation
 import AVFoundation
 import Speech
 import Combine
 
+
 final class VoiceService: NSObject, ObservableObject {
     let commandSender: CommandSender
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    private var clearTimer: Timer?
     @Published var transcribedText: String = ""
     @Published var isListening: Bool = false
     @Published var isSpeaking: Bool = false
@@ -23,7 +24,8 @@ final class VoiceService: NSObject, ObservableObject {
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let synthesizer = AVSpeechSynthesizer()
-    private var cancellables = Set<AnyCancellable>()
+    
+    var silenceTimer: Timer?
     
 
     init(commandSender: CommandSender) {
@@ -31,9 +33,25 @@ final class VoiceService: NSObject, ObservableObject {
             super.init()
         }
     
+    
+    func restartSilenceTimer() {
+        silenceTimer?.invalidate()
+        silenceTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: false) { [weak self] _ in
+            self?.logger.info("⏹ Завершаем распознавание: тишина")
+            self?.stopListening()
+        }
+    }
+    
     func requestAuthorization() {
+        
+        if speechRecognizer?.supportsOnDeviceRecognition == true {
+            recognitionRequest?.requiresOnDeviceRecognition = true
+            logger.info("Используется локальное распознавание")
+        } else {
+            logger.info("Локальное распознавание недоступно")
+        }
         // проверка доступности русского языка
-        self.speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ru-RU"))
+        self.speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: AppConfig.VoiceService.language))
             if speechRecognizer == nil {
                 logger.info("⛔️ Русский язык не поддерживается")
                 return
@@ -66,11 +84,23 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
+    // проверка голосов ru-RU - милена
+    func checkVoices() {
+        let voices = AVSpeechSynthesisVoice.speechVoices()
+        print("Доступные голоса: \(voices)")
+    }
+    
+    
     // Останавка предыдущих задач аудиодвижка
     func stopAudioEngine() {
         audioEngine.stop()
         recognitionRequest?.endAudio()
         recognitionTask?.cancel()
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch {
+            logger.info("⛔️ Ошибка деактивации аудиосессии: \(error.localizedDescription)")
+        }
     }
     
     
@@ -104,9 +134,10 @@ final class VoiceService: NSObject, ObservableObject {
     func startListening() {
         // Проверяем, что распознаватель речи доступен
         guard let speechRecognizer = speechRecognizer else {
-            logger.info("⛔️ Распознавание речи для ru-RU недоступно")
+            logger.info("⛔️ Распознавание речи для \(AppConfig.VoiceService.language) недоступно")
             return
         }
+        
         isListening = true
         stopAudioEngine()
         settingAudioSession()
@@ -120,26 +151,90 @@ final class VoiceService: NSObject, ObservableObject {
         let inputNode = audioEngine.inputNode
         inputNode.removeTap(onBus: 0) // Удаляем старый tap, если был
         let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 2048, format: recordingFormat) { buffer, _ in
-            recognitionRequest.append(buffer)
+        logger.info("Формат аудио: sampleRate=\(recordingFormat.sampleRate), channels=\(recordingFormat.channelCount)")
+        inputNode.installTap(onBus: 0, bufferSize: 2048, format: recordingFormat) { [weak self] buffer, _ in
+            self?.recognitionRequest?.append(buffer)
         }
         startAudioEngine()
         // Запускаем распознавание и записываем текст в буфер
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
+            guard let self = self else { return }
+
             if let error = error {
-                self?.logger.info("⛔️ Ошибка распознавания: \(error.localizedDescription)")
+                self.logger.info("⛔️ Ошибка распознавания: \(error.localizedDescription)")
+                self.stopListening()
                 return
             }
+
             guard let result = result else { return }
+
             let text = result.bestTranscription.formattedString
-                DispatchQueue.main.async {
-                    self?.transcribedText = text
-                }
-                self?.logger.info("Результат: \(text)")
+//            self.logger.info("⏳ Промежуточный текст: \(text)")
+            self.transcribedText = text
+            self.restartSilenceTimer()
+
+            let words = text.lowercased().components(separatedBy: " ").filter { !$0.isEmpty }
+            //let lastWords = words.suffix(2).joined(separator: " ")  // Анализируем последние 1–2 слова
+            let lastWord = words.last ?? "" // последнее слово
+
+            if let voiceCommand = VoiceCommand.parse(from: lastWord) {
+                let direction = self.commandDirection(from: voiceCommand)
+                self.handleVoiceCommand(with: direction)
+                self.logger.info("✅ Команда: \(direction)")
+                self.logger.info("📢 Распознано: \(lastWord)")
+                self.transcribedText = ""
+            } else {
+                self.logger.info("⚠️ Неизвестная команда: \(lastWord)")
+            }
+
+            if result.isFinal {
+                self.logger.info("⏹ Финальный результат")
+                self.stopListening()
+            }
+        }
+    }
+    
+    func commandDirection(from command: VoiceCommand?) -> [String: Bool] {
+        var flags = [
+            "forward": false,
+            "backward": false,
+            "left": false,
+            "right": false
+        ]
+        if let cmd = command {
+            switch cmd {
+            case .forward:
+                flags["forward"] = true
+            case .backward:
+                flags["backward"] = true
+            case .left:
+                flags["left"] = true
+            case .right:
+                flags["right"] = true
+            case .forwardLeft:
+                flags["forward"] = true
+                flags["left"] = true
+            case .forwardRight:
+                flags["forward"] = true
+                flags["right"] = true
+            case .stop:
+                break
             }
         }
 
+        return flags
+    }
 
+
+    
+    func handleVoiceCommand(with direction: [String: Bool]) {
+        commandSender.moveForward(isPressed: direction["forward"] ?? false)
+        commandSender.moveBackward(isPressed: direction["backward"] ?? false)
+        commandSender.turnLeft(isPressed: direction["left"] ?? false)
+        commandSender.turnRight(isPressed: direction["right"] ?? false)
+    }
+    
+    
     // остановка голосового управления
     func stopListening() {
         stopAudioEngine()
@@ -151,7 +246,7 @@ final class VoiceService: NSObject, ObservableObject {
 
     
     // метод воспроизведения текста в голосовую речь
-    func speak(text: String, language: String = "ru-RU", rate: Float = 0.5) {
+    func speak(text: String, language: String = AppConfig.VoiceService.language, rate: Float = 0.5) {
         stopListening()
 
         let utterance = AVSpeechUtterance(string: text)

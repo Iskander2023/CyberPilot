@@ -8,31 +8,39 @@
 import Foundation
 
 
-enum VoiceCommand: CaseIterable {
-    case forward, backward, left, right, stop, start, hello
+enum VoiceCommand: String, CaseIterable {
+    case forward, backward, left, right, stop, forwardLeft, forwardRight
 
     var keywords: [String] {
         switch self {
-        case .forward: return ["вперёд", "едь вперёд", "поехали", "поехал", "гони"]
-        case .backward: return ["назад"]
-        case .left: return ["влево", "налево"]
-        case .right: return ["вправо", "направо"]
-        case .stop: return ["стоп", "стой"]
-        case .start: return ["поехали", "начинай"]
-        case .hello: return ["привет", "здравствуй"]
+        case .forward: return ["вперёд", "едь вперёд", "поехали", "поехал", "гони", "прямо"]
+        case .backward: return ["назад", "взад"]
+        case .left: return ["влево"]
+        case .right: return ["вправо"]
+        case .stop: return ["стоп", "стой", "тормози", "стоять", "оп", "ааааааа"]
+        case .forwardLeft: return ["левее"]
+        case .forwardRight: return ["правее"]
         }
     }
 
+
     static func parse(from text: String) -> VoiceCommand? {
         let lowerText = text.lowercased()
+        var latestMatch: (command: VoiceCommand, index: String.Index)?
+
         for command in VoiceCommand.allCases {
             for keyword in command.keywords {
-                if lowerText.contains(keyword) {
-                    return command
+                var searchRange = lowerText.startIndex..<lowerText.endIndex
+                while let range = lowerText.range(of: keyword, options: [], range: searchRange) {
+                    if latestMatch == nil || range.lowerBound > latestMatch!.index {
+                        latestMatch = (command, range.lowerBound)
+                    }
+                    searchRange = range.upperBound..<lowerText.endIndex
                 }
             }
         }
-        return nil
+        
+        return latestMatch?.command
     }
 }
 

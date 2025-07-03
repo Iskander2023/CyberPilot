@@ -11,6 +11,21 @@ import SwiftUI
 struct AppConfig {
     
     
+    struct VoiceControlButton {
+        static let voiceIkonSize: CGFloat = 45
+        static let paddingBottom: CGFloat = 20
+        static let paddingTrailing: CGFloat = 20
+        static let foreground:Color = .black
+        static let defaultIkon = "mic.circle"
+        static let voiceIkon = "waveform.circle.fill"
+    }
+    
+    
+    struct VoiceService {
+        static var language = "ru-RU"
+        
+    }
+    
     struct VideoView {
         static var systemName = "road.lane.arrowtriangle.2.inward"
         static let paddingTop: CGFloat = 16
@@ -18,10 +33,7 @@ struct AppConfig {
         static let ikonSize: CGFloat = 30
         static let foreground:Color = .black
         
-        static let voiceButtonIkon = "mic.circle.fill"
-        static let voiceButtonikonSize: CGFloat = 32
-        static let paddingBottom: CGFloat = 20
-        static let paddingTrailing: CGFloat = 20
+        
       
     }
     
