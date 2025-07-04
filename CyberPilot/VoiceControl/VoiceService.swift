@@ -31,8 +31,28 @@ final class VoiceService: NSObject, ObservableObject {
     init(commandSender: CommandSender) {
             self.commandSender = commandSender
             super.init()
+            NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(handleAudioSessionInterruption),
+                    name: AVAudioSession.interruptionNotification,
+                    object: nil
+                )
         }
     
+    
+    @objc private func handleAudioSessionInterruption(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+            return
+        }
+
+        if type == .began {
+            logger.info("🔇 Аудиосессия прервана")
+            stopListening()
+        }
+    }
+
     
     func restartSilenceTimer() {
         silenceTimer?.invalidate()
@@ -108,8 +128,10 @@ final class VoiceService: NSObject, ObservableObject {
     func settingAudioSession() {
         do {
             let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
-            try audioSession.setActive(true)
+            try audioSession.setCategory(.playAndRecord,
+                                         mode: .voiceChat,
+                                         options: [.duckOthers, .defaultToSpeaker, .allowBluetooth])
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
             logger.info("✅ Аудиосессия настроена")
         } catch {
             logger.info("⛔️ Ошибка настройки аудиосессии: \(error.localizedDescription)")
@@ -137,7 +159,10 @@ final class VoiceService: NSObject, ObservableObject {
             logger.info("⛔️ Распознавание речи для \(AppConfig.VoiceService.language) недоступно")
             return
         }
-        
+        guard !audioEngine.isRunning else {
+            logger.info("⚠️ Распознавание уже запущено")
+            return
+        }
         isListening = true
         stopAudioEngine()
         settingAudioSession()
@@ -147,12 +172,24 @@ final class VoiceService: NSObject, ObservableObject {
             logger.info("⛔️ Не удалось создать recognitionRequest")
             return
         }
+        
         // Настройка микрофонного входа
         let inputNode = audioEngine.inputNode
         inputNode.removeTap(onBus: 0) // Удаляем старый tap, если был
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        logger.info("Формат аудио: sampleRate=\(recordingFormat.sampleRate), channels=\(recordingFormat.channelCount)")
-        inputNode.installTap(onBus: 0, bufferSize: 2048, format: recordingFormat) { [weak self] buffer, _ in
+        
+        
+        //let inputFormat = inputNode.outputFormat(forBus: 0) // для тестов в эмуляторе
+        
+        // для телефона
+        let sampleRate = AVAudioSession.sharedInstance().sampleRate
+        let inputFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32,
+                                        sampleRate: sampleRate,
+                                        channels: 1,
+                                        interleaved: false)!
+        
+        
+        logger.info("Формат аудио: sampleRate=\(inputFormat.sampleRate), channels=\(inputFormat.channelCount)")
+        inputNode.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { [weak self] buffer, _ in
             self?.recognitionRequest?.append(buffer)
         }
         startAudioEngine()
@@ -169,7 +206,6 @@ final class VoiceService: NSObject, ObservableObject {
             guard let result = result else { return }
 
             let text = result.bestTranscription.formattedString
-//            self.logger.info("⏳ Промежуточный текст: \(text)")
             self.transcribedText = text
             self.restartSilenceTimer()
 

@@ -17,6 +17,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
 </dict>

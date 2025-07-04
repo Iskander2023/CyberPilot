@@ -167,6 +167,7 @@ struct SocketView: View {
                         }) {
                             Image(systemName: AppConfig.SocketView.cameraButtonSystemName)
                                 .foregroundColor(AppConfig.SocketView.cameraButtonForegroundColor)
+                                .font(.system(size: AppConfig.SocketView.cameraButtonikonSize))
                                 .padding()
                                 .background(AppConfig.SocketView.cameraButtonBackground.opacity(AppConfig.SocketView.cameraButtonOpacity))
                                 .clipShape(Circle())

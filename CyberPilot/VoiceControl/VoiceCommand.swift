@@ -13,13 +13,13 @@ enum VoiceCommand: String, CaseIterable {
 
     var keywords: [String] {
         switch self {
-        case .forward: return ["вперёд", "едь вперёд", "поехали", "поехал", "гони", "прямо"]
-        case .backward: return ["назад", "взад"]
-        case .left: return ["влево"]
-        case .right: return ["вправо"]
-        case .stop: return ["стоп", "стой", "тормози", "стоять", "оп", "ааааааа"]
-        case .forwardLeft: return ["левее"]
-        case .forwardRight: return ["правее"]
+        case .forward: return AppConfig.VoiceControl.forward
+        case .backward: return AppConfig.VoiceControl.backward
+        case .left: return AppConfig.VoiceControl.left
+        case .right: return AppConfig.VoiceControl.right
+        case .stop: return AppConfig.VoiceControl.stop
+        case .forwardLeft: return AppConfig.VoiceControl.forwardLeft
+        case .forwardRight: return AppConfig.VoiceControl.forwardRight
         }
     }
 

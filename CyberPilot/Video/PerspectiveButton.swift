@@ -16,12 +16,12 @@ struct PerspectiveButton: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Button(action: changeVisiblePerspective) {
-                Image(systemName: AppConfig.VideoView.systemName)
-                    .font(.system(size: AppConfig.VideoView.ikonSize))
-                    .foregroundColor(AppConfig.VideoView.foreground)
+                Image(systemName: AppConfig.PerspectiveButton.systemName)
+                    .font(.system(size: AppConfig.PerspectiveButton.ikonSize))
+                    .foregroundColor(AppConfig.PerspectiveButton.foreground)
             }
-            .padding(.top, AppConfig.VideoView.paddingTop)
-            .padding(.trailing, AppConfig.VideoView.paddingLeading)
+            .padding(.top, AppConfig.PerspectiveButton.paddingTop)
+            .padding(.trailing, AppConfig.PerspectiveButton.paddingLeading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
     }

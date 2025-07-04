@@ -10,6 +10,15 @@ import SwiftUI
 
 struct AppConfig {
     
+    struct VoiceControl {
+        static let forward = ["вперёд", "едь вперёд", "поехали", "поехал", "гони", "прямо"]
+        static let backward = ["назад", "взад"]
+        static let left = ["влево"]
+        static let right = ["вправо"]
+        static let stop = ["стоп", "стой", "тормози", "стоять", "оп", "ааааааа"]
+        static let forwardLeft = ["левее"]
+        static let forwardRight = ["правее"]
+    }
     
     struct VoiceControlButton {
         static let voiceIkonSize: CGFloat = 45
@@ -26,15 +35,13 @@ struct AppConfig {
         
     }
     
-    struct VideoView {
+    struct PerspectiveButton {
         static var systemName = "road.lane.arrowtriangle.2.inward"
         static let paddingTop: CGFloat = 16
         static let paddingLeading: CGFloat = 16
         static let ikonSize: CGFloat = 30
         static let foreground:Color = .black
         
-        
-      
     }
     
     
@@ -68,6 +75,7 @@ struct AppConfig {
         static let cameraButtonOpacity: CGFloat = 0.8
         static let cameraButtonPaddingTop: CGFloat = 16
         static let cameraButtonPaddingLeading: CGFloat = 16
+        static let cameraButtonikonSize: CGFloat = 25
         
     }
     
