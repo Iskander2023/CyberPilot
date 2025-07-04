@@ -24,11 +24,11 @@ struct VoiceControlView: View {
 
             HStack {
                 Button("🎤 Начать запись") {
-                    viewModel.startListening()
+                    viewModel.startVoiceControl()
                 }
 
                 Button("⛔️ Стоп") {
-                    viewModel.stopListening()
+                    viewModel.stopVoiceControl()
                 }
             }
 

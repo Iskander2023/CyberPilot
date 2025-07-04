@@ -40,12 +40,12 @@ final class VoiceViewModel: ObservableObject {
         voiceManager.requestAuthorization()
     }
 
-    func startListening() {
-        voiceManager.startListening()
+    func startVoiceControl() {
+        voiceManager.startVoiceControl()
     }
 
-    func stopListening() {
-        voiceManager.stopListening()
+    func stopVoiceControl() {
+        voiceManager.stopVoiceControl()
     }
 
     func speak(text: String) {

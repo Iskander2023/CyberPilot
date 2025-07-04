@@ -31,12 +31,21 @@ final class VoiceService: NSObject, ObservableObject {
     init(commandSender: CommandSender) {
             self.commandSender = commandSender
             super.init()
+            // уведомление о входящем звонке
             NotificationCenter.default.addObserver(
                     self,
                     selector: #selector(handleAudioSessionInterruption),
                     name: AVAudioSession.interruptionNotification,
                     object: nil
                 )
+            // уведомление о смене источника
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(handleRouteChange),
+                name: AVAudioSession.routeChangeNotification,
+                object: nil
+            )
+
         }
     
     
@@ -51,16 +60,54 @@ final class VoiceService: NSObject, ObservableObject {
             logger.info("🔇 Аудиосессия прервана")
             stopListening()
         }
-    }
+        // возобновление голосового режима после звонка
+//        if type == .ended,
+//           let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
+//            let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+//            if options.contains(.shouldResume) {
+//                try? startListening()
+//            }
+//        }
 
+    }
+    
+    
+    @objc private func handleRouteChange(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
+            return
+        }
+        switch reason {
+        case .newDeviceAvailable:
+            logger.info("🎧 Подключено новое аудиоустройство")
+            restartAudioSession()
+        case .oldDeviceUnavailable:
+            logger.info("🔌 Аудиоустройство отключено")
+            restartAudioSession()
+        default:
+            break
+        }
+    }
+    
+    
+    func restartAudioSession() {
+        stopListening()
+        settingAudioSession()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.startVoiceControl()
+        }
+    }
+    
     
     func restartSilenceTimer() {
         silenceTimer?.invalidate()
-        silenceTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: false) { [weak self] _ in
+        silenceTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { [weak self] _ in
             self?.logger.info("⏹ Завершаем распознавание: тишина")
             self?.stopListening()
         }
     }
+    
     
     func requestAuthorization() {
         
@@ -113,14 +160,38 @@ final class VoiceService: NSObject, ObservableObject {
     
     // Останавка предыдущих задач аудиодвижка
     func stopAudioEngine() {
-        audioEngine.stop()
+        if audioEngine.isRunning {
+            audioEngine.stop()
+            audioEngine.inputNode.removeTap(onBus: 0)
+        }
         recognitionRequest?.endAudio()
         recognitionTask?.cancel()
+    }
+    
+    
+    func deactivateAudioEngine() {
         do {
-            try AVAudioSession.sharedInstance().setActive(false)
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         } catch {
-            logger.info("⛔️ Ошибка деактивации аудиосессии: \(error.localizedDescription)")
+            print("Ошибка при деактивации аудиосессии: \(error.localizedDescription)")
         }
+    }
+    
+    
+    func stopVoiceControl() {
+        stopListening()
+        deactivateAudioEngine()
+    }
+    
+    
+    // остановка голосового управления
+    func stopListening() {
+        stopAudioEngine()
+        recognitionRequest = nil
+        recognitionTask = nil
+        isListening = false
+        silenceTimer?.invalidate()
+        silenceTimer = nil
     }
     
     
@@ -153,7 +224,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
 
     
-    func startListening() {
+    func startVoiceControl() {
         // Проверяем, что распознаватель речи доступен
         guard let speechRecognizer = speechRecognizer else {
             logger.info("⛔️ Распознавание речи для \(AppConfig.VoiceService.language) недоступно")
@@ -164,8 +235,8 @@ final class VoiceService: NSObject, ObservableObject {
             return
         }
         isListening = true
-        stopAudioEngine()
         settingAudioSession()
+        
         // Создаем новый запрос на распознавание
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         guard let recognitionRequest = recognitionRequest else {
@@ -176,23 +247,14 @@ final class VoiceService: NSObject, ObservableObject {
         // Настройка микрофонного входа
         let inputNode = audioEngine.inputNode
         inputNode.removeTap(onBus: 0) // Удаляем старый tap, если был
-        
-        
-        //let inputFormat = inputNode.outputFormat(forBus: 0) // для тестов в эмуляторе
-        
-        // для телефона
-        let sampleRate = AVAudioSession.sharedInstance().sampleRate
-        let inputFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32,
-                                        sampleRate: sampleRate,
-                                        channels: 1,
-                                        interleaved: false)!
-        
-        
+        let inputFormat = inputNode.inputFormat(forBus: 0)
         logger.info("Формат аудио: sampleRate=\(inputFormat.sampleRate), channels=\(inputFormat.channelCount)")
         inputNode.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { [weak self] buffer, _ in
             self?.recognitionRequest?.append(buffer)
         }
+        
         startAudioEngine()
+        
         // Запускаем распознавание и записываем текст в буфер
         recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
             guard let self = self else { return }
@@ -260,8 +322,7 @@ final class VoiceService: NSObject, ObservableObject {
 
         return flags
     }
-
-
+    
     
     func handleVoiceCommand(with direction: [String: Bool]) {
         commandSender.moveForward(isPressed: direction["forward"] ?? false)
@@ -270,16 +331,6 @@ final class VoiceService: NSObject, ObservableObject {
         commandSender.turnRight(isPressed: direction["right"] ?? false)
     }
     
-    
-    // остановка голосового управления
-    func stopListening() {
-        stopAudioEngine()
-        audioEngine.inputNode.removeTap(onBus: 0)
-        recognitionRequest = nil
-        recognitionTask = nil
-        isListening = false
-    }
-
     
     // метод воспроизведения текста в голосовую речь
     func speak(text: String, language: String = AppConfig.VoiceService.language, rate: Float = 0.5) {

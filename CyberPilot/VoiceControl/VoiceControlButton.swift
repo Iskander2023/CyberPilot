@@ -34,9 +34,9 @@ struct VoiceControlButton: View {
     private func activateVoiceControl() {
         voiceControl.toggle()
         if voiceControl {
-            voiceViewModel.startListening()
+            voiceViewModel.startVoiceControl()
         } else {
-            voiceViewModel.stopListening()
+            voiceViewModel.stopVoiceControl()
         }
     }
 }
