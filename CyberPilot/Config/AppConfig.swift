@@ -11,13 +11,20 @@ import SwiftUI
 struct AppConfig {
     
     struct VoiceControl {
-        static let forward = ["вперёд", "едь вперёд", "поехали", "поехал", "гони", "прямо"]
+        // команды
+        static let forward = ["вперёд", "едь вперёд", "поехали", "поехал", "прямо"]
         static let backward = ["назад", "взад"]
         static let left = ["влево"]
         static let right = ["вправо"]
-        static let stop = ["стоп", "стой", "тормози", "стоять", "оп", "ааааааа"]
+        static let stop = ["стоп", "стой", "тормози", "стоять", "оп", "выключить"]
         static let forwardLeft = ["левее"]
         static let forwardRight = ["правее"]
+        static let stopVoiceControl = ["остановить голосовое управление", "отключи голосовое управление", "завершить голос"]
+        static let parking = ["едь на парковку", "парковка", "припаркуйся", "следуй на парковку"]
+        //
+        static let startVoiceMessage = "Активирован голосовой ввод"
+        static let stopVoiceMessage = "Голосовой ввод выключен"
+    
     }
     
     struct VoiceControlButton {

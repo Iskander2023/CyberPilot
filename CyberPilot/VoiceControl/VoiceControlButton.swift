@@ -28,7 +28,11 @@ struct VoiceControlButton: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             voiceViewModel.requestAuthorization()
+            voiceViewModel.voiceControlExternallyDisabled = {
+                    voiceControl = false
+                }
         }
+        .disabled(voiceViewModel.isSpeaking)
     }
     
     private func activateVoiceControl() {

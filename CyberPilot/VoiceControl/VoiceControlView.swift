@@ -32,14 +32,14 @@ struct VoiceControlView: View {
                 }
             }
 
-            Button("🗣 Проговорить") {
-                viewModel.speak(text: viewModel.transcribedText)
-            }
+//            Button("🗣 Проговорить") {
+//                viewModel.speak(text: viewModel.transcribedText)
+//            }
         }
         .padding()
-        .onAppear {
-            viewModel.requestAuthorization()
-        }
+//        .onAppear {
+//            viewModel.requestAuthorization()
+//        }
     }
 }
 

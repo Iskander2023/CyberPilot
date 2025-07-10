@@ -12,10 +12,13 @@ import Combine
 final class VoiceViewModel: ObservableObject {
     private let voiceManager: VoiceService
     private var cancellables = Set<AnyCancellable>()
+    var voiceControlExternallyDisabled: (() -> Void)?
 
+    
     @Published var transcribedText: String = ""
     @Published var isListening: Bool = false
     @Published var isSpeaking: Bool = false
+    
 
     init(voiceManager: VoiceService) {
         self.voiceManager = voiceManager
@@ -34,26 +37,33 @@ final class VoiceViewModel: ObservableObject {
         voiceManager.$isSpeaking
             .assign(to: \.isSpeaking, on: self)
             .store(in: &cancellables)
+        
+        voiceManager.$voiceControlShouldStop
+            .filter { $0 } // Только если true
+            .sink { [weak self] _ in
+                self?.voiceControlExternallyDisabled?()
+            }
+            .store(in: &cancellables)
     }
 
+    
     func requestAuthorization() {
         voiceManager.requestAuthorization()
     }
 
+    
     func startVoiceControl() {
-        voiceManager.startVoiceControl()
+        voiceManager.speak(text: AppConfig.VoiceControl.startVoiceMessage) {
+            self.voiceManager.startVoiceControl()
+        }
     }
 
+    
     func stopVoiceControl() {
-        voiceManager.stopVoiceControl()
+        voiceManager.speak(text: AppConfig.VoiceControl.stopVoiceMessage) {
+            self.voiceManager.stopVoiceControl()
+        }
     }
 
-    func speak(text: String) {
-        voiceManager.speak(text: text)
-    }
-
-    func stopSpeaking() {
-        voiceManager.stopSpeaking()
-    }
 }
 

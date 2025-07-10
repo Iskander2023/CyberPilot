@@ -8,8 +8,14 @@
 import Foundation
 
 
+enum CommandCategory {
+    case movement
+    case system
+}
+
+
 enum VoiceCommand: String, CaseIterable {
-    case forward, backward, left, right, stop, forwardLeft, forwardRight
+    case forward, backward, left, right, stop, forwardLeft, forwardRight, stopVoiceControl
 
     var keywords: [String] {
         switch self {
@@ -20,9 +26,21 @@ enum VoiceCommand: String, CaseIterable {
         case .stop: return AppConfig.VoiceControl.stop
         case .forwardLeft: return AppConfig.VoiceControl.forwardLeft
         case .forwardRight: return AppConfig.VoiceControl.forwardRight
+        case .stopVoiceControl: return AppConfig.VoiceControl.stopVoiceControl
         }
     }
-
+    
+    var category: CommandCategory {
+        switch self {
+            
+        case .forward, .backward, .left, .right, .stop, .forwardLeft, .forwardRight:
+            return .movement
+            
+        case .stopVoiceControl:
+            return .system
+        }
+        
+    }
 
     static func parse(from text: String) -> VoiceCommand? {
         let lowerText = text.lowercased()
