@@ -14,12 +14,14 @@ class UserRegistrationManager: ObservableObject {
     
     private weak var stateManager: AuthService?
     
-    @Published var email = "newuser@example.com"
-    @Published var userName = "Alex777"
+    @Published var email = "user@example.com"
+    @Published var userName = "Alex"
     @Published var password = "Sssssssss"
     @Published var passwordConfirm = "Sssssssss"
     @Published var phoneNumber = "79895317697"
     @Published var confirmationCode = "3333"
+    
+    let role: String = "client"
     
     private var confirmationCodeAttempts = 0
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -182,11 +184,12 @@ class UserRegistrationManager: ObservableObject {
 
         let body: [String: Any] = [
             "email": email,
-            "username": username,
-            "password": password
+            "login": username,
+            "password": password,
+            "role": role
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        //self.logger.info("body: \(body)")
+        self.logger.info("body: \(body)")
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -198,20 +201,28 @@ class UserRegistrationManager: ObservableObject {
         print("Raw server response:", responseString)
         
         do {
-            if let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                print("Decoded server response:", jsonResponse)
+            if let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let accessToken = jsonResponse["access_token"] as? String {
+            
+                KeychainService.shared.saveAccessToken(accessToken) // сохранение токена в безопасное хранилище
+                
+                print("✅ Token saved:", accessToken)
+            } else {
+                print("⚠️ access_token not found in response")
             }
         } catch {
-            print("Failed to decode JSON:", error)
+            print("❌ Failed to decode JSON:", error)
         }
 
+
         switch httpResponse.statusCode {
-        case 201:
+        case 200:
             // Успешная регистрация
             await MainActor.run {
                 self.logger.info(AppConfig.Strings.registrationStatusTrue)
                 self.stateManager?.isAuthenticated = true
                 self.stateManager?.userLogin = username
+               
             }
         case 409:
             // Пользователь уже существует

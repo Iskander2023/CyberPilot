@@ -24,6 +24,9 @@ struct AppConfig {
         //
         static let startVoiceMessage = "Активирован голосовой ввод"
         static let stopVoiceMessage = "Голосовой ввод выключен"
+        //
+        
+        
     
     }
     
@@ -32,8 +35,9 @@ struct AppConfig {
         static let paddingBottom: CGFloat = 20
         static let paddingTrailing: CGFloat = 20
         static let foreground:Color = .black
-        static let defaultIkon = "mic.circle"
-        static let voiceIkon = "waveform.circle.fill"
+        static let defaultIcon = "mic.circle"
+        static let phoneIcon = "phone"
+        static let headphonesIcon = "headphones"
     }
     
     
@@ -231,10 +235,11 @@ struct AppConfig {
     }
     
     struct Addresses {
-        static let serverAddress =  "ws://selekpann.tech:2000"
+        //static let serverAddress =  "ws://selekpann.tech:2000"
+        static let serverAddress = "ws://172.16.17.161:8000"
         static let localAddress = "robot3.local"
-        static let userRegistrationUrl = "http://selekpann.tech:3000/register" // адрес для регистрации нового пользователя
-        static let userLoginUrl = "http://selekpann.tech:3000/login" // адрес авторизации пользователя
+        static let userRegistrationUrl = "http://172.16.17.161:8000/api/register" // адрес для регистрации нового пользователя
+        static let userLoginUrl = "http://172.16.17.161:8000/api/token" // адрес авторизации пользователя
         static let apiID = "5A5A737E-09E1-0492-ADD3-957B269669D8" // апи для отправки кода на номер телефона
         
     }

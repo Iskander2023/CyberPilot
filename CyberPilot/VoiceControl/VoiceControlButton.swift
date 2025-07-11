@@ -17,7 +17,7 @@ struct VoiceControlButton: View {
             HStack {
                 Spacer()
                 Button(action: activateVoiceControl) {
-                    Image(systemName: voiceViewModel.isListening ? AppConfig.VoiceControlButton.voiceIkon : AppConfig.VoiceControlButton.defaultIkon)
+                    Image(systemName: voiceViewModel.currentIcon)
                         .font(.system(size: AppConfig.VoiceControlButton.voiceIkonSize))
                         .foregroundColor(AppConfig.VoiceControlButton.foreground)
                 }

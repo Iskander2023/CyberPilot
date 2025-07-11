@@ -15,8 +15,8 @@ final class VoiceService: NSObject, ObservableObject {
     @Published var isListening: Bool = false
     @Published var isSpeaking: Bool = false
     @Published var voiceControlShouldStop: Bool = false
+    @Published var deviceState: DeviceState = .phone
 
-    
     let commandSender: CommandSender
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
 
@@ -59,8 +59,9 @@ final class VoiceService: NSObject, ObservableObject {
         }
 
         if type == .began {
-            logger.info("🔇 Аудиосессия прервана")
-            stopListening()
+            logger.warn("🔇 Аудиосессия прервана")
+            stopVoiceControl()
+            deviceState = .idle
         }
         // возобновление голосового режима после звонка
 //        if type == .ended,
@@ -84,9 +85,11 @@ final class VoiceService: NSObject, ObservableObject {
         case .newDeviceAvailable:
             logger.info("🎧 Подключено новое аудиоустройство")
             restartAudioSession()
+            deviceState = .headphones
         case .oldDeviceUnavailable:
             logger.info("🔌 Аудиоустройство отключено")
             restartAudioSession()
+            deviceState = .phone
         default:
             break
         }
@@ -106,23 +109,24 @@ final class VoiceService: NSObject, ObservableObject {
         silenceTimer?.invalidate()
         silenceTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { [weak self] _ in
             self?.logger.info("⏹ Завершаем распознавание: тишина")
-            self?.stopListening()
+            self?.stopVoiceControl()
         }
     }
     
-    
+    // метод проверки при запуске голосового ввода
     func requestAuthorization() {
+        self.restartSilenceTimer() //
         
         if speechRecognizer?.supportsOnDeviceRecognition == true {
             recognitionRequest?.requiresOnDeviceRecognition = true
-            logger.info("Используется локальное распознавание")
+            logger.debug("Используется локальное распознавание")
         } else {
-            logger.info("Локальное распознавание недоступно")
+            logger.debug("Локальное распознавание недоступно")
         }
         // проверка доступности русского языка
         self.speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: AppConfig.VoiceService.language))
             if speechRecognizer == nil {
-                logger.info("⛔️ Русский язык не поддерживается")
+                logger.warn("⛔️ Русский язык не поддерживается")
                 return
             }
         // разрешение на использование распознавания речи от пользователя
@@ -130,9 +134,9 @@ final class VoiceService: NSObject, ObservableObject {
             DispatchQueue.main.async {
                 switch authStatus {
                 case .authorized:
-                    self.logger.info("✅ Распознавание речи разрешено.")
+                    self.logger.info("✅ Распознавание речи разрешено пользователем.")
                 default:
-                    self.logger.info("⛔️ Распознавание речи не разрешено: \(authStatus)")
+                    self.logger.warn("⛔️ Распознавание речи не разрешено пользователем: \(authStatus)")
                 }
             }
         }
@@ -140,13 +144,13 @@ final class VoiceService: NSObject, ObservableObject {
         if #available(iOS 17.0, *) {
             AVAudioApplication.requestRecordPermission { granted in
                 if !granted {
-                    self.logger.info("Доступ к микрофону запрещен")
+                    self.logger.warn("Доступ к микрофону запрещен")
                 }
             }
         } else {
             AVAudioSession.sharedInstance().requestRecordPermission { granted in
                 if !granted {
-                    self.logger.info("Доступ к микрофону запрещен")
+                    self.logger.warn("Доступ к микрофону запрещен")
                 }
             }
         }
@@ -171,28 +175,23 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // деактивация аудиодвижка
+    // деактивация аудиосессии не используется
     func deactivateAudioEngine() {
         do {
-            // Добавьте проверку активности сессии перед деактивацией
-            if AVAudioSession.sharedInstance().isOtherAudioPlaying {
-                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-                logger.info("✅ Аудиосессия успешно деактивирована")
-            }
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            logger.info("✅ Аудиосессия успешно деактивирована")
         } catch {
             logger.error("🛑 Ошибка при деактивации аудиосессии: \(error.localizedDescription)")
             try? AVAudioSession.sharedInstance().setActive(false, options: [])
         }
     }
+
     
-    
-    // деактивация голосового управления
+    // выключение голосового управления
     func stopVoiceControl() {
-        logger.info("🛑 Вызван stopVoiceControl")
+        logger.info("🛑 Голосовой ввод выключен")
+        deviceState = .idle
         stopListening()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.deactivateAudioEngine()
-            }
         stopRepeatingCommand()
         voiceControlShouldStop = true
     }
@@ -201,7 +200,6 @@ final class VoiceService: NSObject, ObservableObject {
     // остановка голосового управления
     func stopListening() {
         guard isListening else { return }
-        logger.info("🛑 stopListening")
         stopAudioEngine()
         isListening = false
         recognitionRequest = nil
@@ -219,28 +217,31 @@ final class VoiceService: NSObject, ObservableObject {
                                          mode: .voiceChat,
                                          options: [.duckOthers, .defaultToSpeaker, .allowBluetooth])
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-            logger.info("✅ Аудиосессия настроена")
+            logger.debug("✅ Аудиосессия настроена")
         } catch {
-            logger.info("⛔️ Ошибка настройки аудиосессии: \(error.localizedDescription)")
+            logger.error("⛔️ Ошибка настройки аудиосессии: \(error.localizedDescription)")
             return
         }
     }
     
     
-    // Запускаем аудиодвижок
+    // Запуск аудиодвижка
     func startAudioEngine() {
         do {
             audioEngine.prepare()
             try audioEngine.start()
-            logger.info("✅ AudioEngine запущен, микрофон активен")
+            logger.debug("✅ AudioEngine запущен, микрофон активен")
         } catch {
-            logger.info("⛔️ Ошибка запуска audioEngine: \(error.localizedDescription)")
+            logger.warn("⛔️ Ошибка запуска audioEngine: \(error.localizedDescription)")
             return
         }
     }
 
     
+    
+    // запуск голосового управления
     func startVoiceControl() {
+        logger.info("✅ Запущено голосовое управление")
         // Проверяем, что распознаватель речи доступен
         guard let speechRecognizer = speechRecognizer else {
             logger.info("⛔️ Распознавание речи для \(AppConfig.VoiceService.language) недоступно")
@@ -277,8 +278,8 @@ final class VoiceService: NSObject, ObservableObject {
             guard let self = self else { return }
 
             if let error = error {
-                self.logger.info("⛔️ Ошибка распознавания: \(error.localizedDescription)")
-                //self.stopListening()
+                self.logger.warn("⛔️ Ошибка распознавания: \(error.localizedDescription)")
+                self.stopListening()
                 return
             }
 
@@ -286,12 +287,9 @@ final class VoiceService: NSObject, ObservableObject {
 
             let text = result.bestTranscription.formattedString
             self.transcribedText = text
-            self.restartSilenceTimer()
-
             
             let words = text.lowercased().components(separatedBy: " ").filter { !$0.isEmpty }
             let lastWord = words.suffix(3).joined(separator: " ")  // Анализируем последние 1–2 слова
-//            let lastWord = words.last ?? "" // последнее слово
             
             guard lastWord != self.lastProcessedCommandText else { return }
             
@@ -321,14 +319,13 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
     
+    
+    
     // команды управления роботом
     func commandSystem(from command: VoiceCommand?) {
         if let sys = command {
             switch sys {
             case .stopVoiceControl:
-//                speak(text: AppConfig.VoiceControl.stopVoiceMessage) {
-//                    self.stopVoiceControl()
-//                }
                 self.stopVoiceControl()
             default:
                     break
@@ -387,22 +384,17 @@ final class VoiceService: NSObject, ObservableObject {
         repeatCommandTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             guard let self = self, let direction = self.lastDirection else { return }
             self.handleVoiceCommand(with: direction)
-            self.logger.info("🔁 Повтор команды: \(direction)")
+            self.logger.debug("🔁 Повтор команды: \(direction)")
         }
     }
 
     // Останавливаем таймер
     func stopRepeatingCommand() {
-        self.logger.info("✅ Таймер остановлен")
+        self.logger.debug("✅ Таймер остановлен")
         repeatCommandTimer?.invalidate()
         repeatCommandTimer = nil
     }
     
-    
-//    func stopSpeaking() {
-//        synthesizer.stopSpeaking(at: .immediate)
-//        isSpeaking = false
-//    }
     
     
     // метод озвучки
@@ -410,13 +402,13 @@ final class VoiceService: NSObject, ObservableObject {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: language)
         utterance.rate = rate
-        //stopAudioEngine()
-        isSpeaking = true
         synthesizer.delegate = self
         speechCompletion = completion
         synthesizer.speak(utterance)
     }
-
+    
+    
+    // замыкание голосовой озвучки
     private var speechCompletion: (() -> Void)?
 
 }
@@ -425,6 +417,7 @@ final class VoiceService: NSObject, ObservableObject {
 extension VoiceService: AVSpeechSynthesizerDelegate {
     
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        logger.debug("⛔️ Озвучка закончена: \(utterance.speechString)")
         DispatchQueue.main.async {
             self.isSpeaking = false
             self.speechCompletion?()
@@ -433,10 +426,13 @@ extension VoiceService: AVSpeechSynthesizerDelegate {
     }
     
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
-        logger.info("🗣 Начало озвучки: \(utterance.speechString)")
+        logger.debug("🗣 Начало озвучки: \(utterance.speechString)")
+        DispatchQueue.main.async {
+               self.isSpeaking = true
+           }
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        logger.info("⛔️ Озвучка отменена: \(utterance.speechString)")
+        logger.debug("⛔️ Озвучка отменена: \(utterance.speechString)")
     }
 }

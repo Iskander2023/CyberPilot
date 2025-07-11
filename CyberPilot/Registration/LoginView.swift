@@ -31,7 +31,7 @@ struct LoginView: View {
                     .bold()
                     .padding(.bottom, 30)
                 
-                FormField(fieldName: AppConfig.Strings.loginRus, fieldValue: $loginManager.email)
+                FormField(fieldName: AppConfig.Strings.loginRus, fieldValue: $loginManager.username)
                 RequirementText(
                     iconName: AppConfig.Strings.iconName,
                     iconColor: loginManager.isMailValid ? Color.secondary
@@ -54,7 +54,7 @@ struct LoginView: View {
                     Button(action: {
                         Task {
                             do {
-                                _ = try await loginManager.login(email: loginManager.email, password: loginManager.password)
+                                _ = try await loginManager.login(email: loginManager.username, password: loginManager.password)
                                 isLoginSuccessful = true
                             } catch {
                                 //errorMessage = error.localizedDescription

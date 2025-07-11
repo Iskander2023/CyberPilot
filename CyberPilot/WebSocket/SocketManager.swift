@@ -29,7 +29,7 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    var isTesting = true
+    var isTesting = false
     
     
     init(authService: AuthService, connectionMode: SocketConnectionMode = .plain) {
