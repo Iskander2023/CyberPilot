@@ -10,6 +10,14 @@ import SwiftUI
 
 struct AppConfig {
     
+    struct ChatButton {
+        static let voiceIkonSize: CGFloat = 20
+        static let paddingBottom: CGFloat = 20
+        static let paddingTrailing: CGFloat = 20
+        static let foreground:Color = .black
+        static let chatIcon = "message"
+    }
+    
     struct VoiceControl {
         // команды
         static let forward = ["вперёд", "едь вперёд", "поехали", "поехал", "прямо"]
@@ -247,6 +255,7 @@ struct AppConfig {
     struct PatternsForInput {
         static let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         static let passwordPattern = "[A-Z]"
+        static let usernamePattern = "^(?=.*[A-Za-z])[A-Za-z0-9]{1,15}$"
         static let phoneNumberPattern = "^[0-9]+$"
         static let confirmationCodePattern = "[0-9]"
     }

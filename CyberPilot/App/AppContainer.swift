@@ -19,6 +19,8 @@ final class AppContainer: ObservableObject {
     let mapZoneHandler: MapZoneHandler
     let voiceControlManager: VoiceService
     let voiceControlViewModel: VoiceViewModel
+    let loginManager: LoginManager
+    let userRegistrationManager: UserRegistrationManager
 
     init() {
         self.authService = AuthService()
@@ -32,6 +34,8 @@ final class AppContainer: ObservableObject {
         self.mapZoneHandler = MapZoneHandler(mapManager: mapManager)
         self.voiceControlManager = VoiceService(commandSender: socketController.commandSender)
         self.voiceControlViewModel = VoiceViewModel(voiceManager: voiceControlManager)
+        self.loginManager = LoginManager(authService: authService)
+        self.userRegistrationManager = UserRegistrationManager(authService: authService)
 
     }
 }

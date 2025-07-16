@@ -22,7 +22,7 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 if authService.isAuthenticated == false {
-                    LoginView(authService: authService)
+                    LoginView()
                 } else {
                     mainContentView
                 }
@@ -32,6 +32,12 @@ struct ContentView: View {
                     Text(authService.userLogin)
                         .font(.system(size: 16))
                         .foregroundColor(.primary)
+                }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    ChatButton()
+                        .disabled(!authService.isAuthenticated)
+                        .opacity(authService.isAuthenticated ? 1.0 : 0)
                 }
                 
                 ToolbarItem {
@@ -83,11 +89,6 @@ struct ContentView: View {
                             )
                         )
                     .tag(3)
-//                VoiceControlView()
-//                    .tabItem {
-//                        Label("Voice", systemImage: "person.wave.2.fill")
-//                    }
-//                    .tag(4)
                 
             }
             .padding(.top, 10)

@@ -9,12 +9,10 @@ import SwiftUI
 
 struct UserRegistrationView: View {
     
-    @ObservedObject var stateManager: AuthService
-    @ObservedObject var userRegistrationManager: UserRegistrationManager
+    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var userRegistrationManager: UserRegistrationManager
     
     @State private var registrationStatus: String = ""
-    
-    //let inactiveColor = Color(red: 220/255, green: 220/255, blue: 220/255)
     
     
     var body: some View {

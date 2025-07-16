@@ -12,32 +12,21 @@ class UserRegistrationManager: ObservableObject {
     
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
-    private weak var stateManager: AuthService?
+    private let authService: AuthService
     
     @Published var email = "user@example.com"
     @Published var userName = "Alex"
     @Published var password = "Sssssssss"
     @Published var passwordConfirm = "Sssssssss"
-    @Published var phoneNumber = "79895317697"
-    @Published var confirmationCode = "3333"
+
     
     let role: String = "client"
     
-    private var confirmationCodeAttempts = 0
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    
-    var generatedCode = String(Int.random(in: 1000...9999))
     
     @Published var isLoginLengthValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
     @Published var isPasswordConfirmValid = false
-    @Published var isPhoneNumberValid = false
-    @Published var isPhoneNumberLenghtValid = false
-    @Published var isConfirmationCodeValid = false
-    @Published var isConfirmationCodeLenghtValid = false
-    @Published var isConfirmationCodeTrue = false
     @Published var isMailValid = false
     
 
@@ -55,14 +44,6 @@ class UserRegistrationManager: ObservableObject {
         return isLoginLengthValid && isPasswordLengthValid
     }
     
-    var isPhoneNumberFormValid: Bool {
-        return isPhoneNumberValid && isPhoneNumberLenghtValid
-    }
-    
-    var isCodeNumberFormValid: Bool {
-        return isConfirmationCodeValid && isConfirmationCodeLenghtValid
-    }
-    
 
     private var cancellableSet: Set<AnyCancellable> = []
     
@@ -74,8 +55,8 @@ class UserRegistrationManager: ObservableObject {
     }
 
 
-    init(stateManager: AuthService) {
-        self.stateManager = stateManager
+    init(authService: AuthService) {
+        self.authService = authService
         
         $email
             .map { email in
@@ -113,38 +94,6 @@ class UserRegistrationManager: ObservableObject {
             .assign(to: \.isPasswordCapitalLetter, on: self)
             .store(in: &cancellableSet)
         
-        $phoneNumber
-            .receive(on: RunLoop.main)
-            .map { password in
-                return password.range(of: AppConfig.PatternsForInput.phoneNumberPattern, options: .regularExpression) != nil
-            }
-            .assign(to: \.isPhoneNumberValid, on: self)
-            .store(in: &cancellableSet)
-        
-        $phoneNumber
-            .receive(on: RunLoop.main)
-            .map { password in
-                return password.count == 11
-            }
-            .assign(to: \.isPhoneNumberLenghtValid, on: self)
-            .store(in: &cancellableSet)
-        
-        $confirmationCode
-            .receive(on: RunLoop.main)
-            .map { password in
-                return password.range(of: AppConfig.PatternsForInput.confirmationCodePattern, options: .regularExpression) != nil
-            }
-            .assign(to: \.isConfirmationCodeValid, on: self)
-            .store(in: &cancellableSet)
-        
-        $confirmationCode
-            .receive(on: RunLoop.main)
-            .map { password in
-                return password.count == 4
-            }
-            .assign(to: \.isConfirmationCodeLenghtValid, on: self)
-            .store(in: &cancellableSet)
-        
         
         Publishers.CombineLatest($password, $passwordConfirm)
             .receive(on: RunLoop.main)
@@ -153,22 +102,6 @@ class UserRegistrationManager: ObservableObject {
             }
             .assign(to: \.isPasswordConfirmValid, on: self)
             .store(in: &cancellableSet)
-    }
-    
-    
-    func checkConfirmationCode(code: String) {
-        self.logger.info("code: \(code)")
-        if code == "3333" {
-            self.logger.info("succes ")
-            isConfirmationCodeTrue = true
-        } else if generatedCode == code {
-            self.logger.info("generatedCode: \(generatedCode)")
-            self.logger.info("code: \(code)")
-            isConfirmationCodeTrue = true
-        } else {
-            self.logger.info("code: \(code)")
-            self.logger.info("не правильный код: \(code)")
-        }
     }
     
     
@@ -220,8 +153,8 @@ class UserRegistrationManager: ObservableObject {
             // Успешная регистрация
             await MainActor.run {
                 self.logger.info(AppConfig.Strings.registrationStatusTrue)
-                self.stateManager?.isAuthenticated = true
-                self.stateManager?.userLogin = username
+                self.authService.isAuthenticated = true
+                self.authService.userLogin = username
                
             }
         case 409:
@@ -271,34 +204,7 @@ class UserRegistrationManager: ObservableObject {
         }
     }
         
-        
-    func sendVerificationCode(to phoneNumber: String, code: String) {
-        let message = "Ваш проверочный код: \(code)"
-        let urlString = "https://sms.ru/sms/send?api_id=\(AppConfig.Addresses.apiID)&to=\(phoneNumber)&msg=\(message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&json=1"
-        
-        guard let url = URL(string: urlString) else {
-            print("❌ Invalid URL")
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("❌ Ошибка при отправке запроса: \(error.localizedDescription)")
-                return
-            }
-            guard let data = data else {
-                print("❌ Нет данных в ответе")
-                return
-            }
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    print("✅ Ответ от сервера: \(json)")
-                }
-            } catch {
-                print("❌ Ошибка при разборе JSON: \(error.localizedDescription)")
-            }
-        }.resume()
-    }
+
 }
     
 

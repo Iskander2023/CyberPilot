@@ -8,19 +8,11 @@
 import SwiftUI
 
 struct LoginView: View {
-    @ObservedObject var authService: AuthService
-    @StateObject private var loginManager: LoginManager
-    @StateObject var registrationManager: UserRegistrationManager
+    @EnvironmentObject var loginManager: LoginManager
+    @EnvironmentObject var userRegistrationManager: UserRegistrationManager
     @State private var isLoginSuccessful = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    
-    
-    init(authService: AuthService) {
-        self.authService = authService
-        _loginManager = StateObject(wrappedValue: LoginManager(authService: authService))
-        _registrationManager = StateObject(wrappedValue: UserRegistrationManager(stateManager: authService))
-    }
     
     
     var body: some View {
@@ -34,10 +26,10 @@ struct LoginView: View {
                 FormField(fieldName: AppConfig.Strings.loginRus, fieldValue: $loginManager.username)
                 RequirementText(
                     iconName: AppConfig.Strings.iconName,
-                    iconColor: loginManager.isMailValid ? Color.secondary
+                    iconColor: loginManager.isUserNameValid ? Color.secondary
                     : AppConfig.Colors.inactiveGray,
                     text: AppConfig.Strings.emailRus,
-                    isStrikeThrough: loginManager.isMailValid
+                    isStrikeThrough: loginManager.isUserNameValid
                 )
                 .padding()
                 
@@ -54,7 +46,7 @@ struct LoginView: View {
                     Button(action: {
                         Task {
                             do {
-                                _ = try await loginManager.login(email: loginManager.username, password: loginManager.password)
+                                _ = try await loginManager.login(username: loginManager.username, password: loginManager.password)
                                 isLoginSuccessful = true
                             } catch {
                                 //errorMessage = error.localizedDescription
@@ -79,13 +71,16 @@ struct LoginView: View {
                     Text(AppConfig.Strings.dontHaveAccount)
                         .font(.system(.body, design: .rounded))
                         .bold()
-                    
-                    NavigationLink(destination: RegistrationFlowView(stateManager: authService, userRegistrationManager: registrationManager)) {
+
+                    NavigationLink(
+                        destination: UserRegistrationView()
+                    ) {
                         Text(AppConfig.Strings.registerButtonTitle)
                             .font(.system(.body, design: .rounded))
                             .bold()
                             .foregroundColor(AppConfig.Colors.primaryGreen)
                     }
+
                 }.padding(.top, 50)
                 
             }

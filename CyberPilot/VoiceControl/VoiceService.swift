@@ -9,15 +9,22 @@ import AVFoundation
 import Speech
 import Combine
 
-
+/// Сервис для голосового управления устройством.
+/// Отвечает за распознавание речи, синтез речи и отправку команд.
 final class VoiceService: NSObject, ObservableObject {
+    /// Распознанный текст речи.
     @Published var transcribedText: String = ""
+    /// Флаг, указывающий, что сейчас ведётся прослушивание.
     @Published var isListening: Bool = false
+    /// Флаг, указывающий, что устройство произносит текст.
     @Published var isSpeaking: Bool = false
+    /// Флаг, узказывающий вью что г.у. прекратилось в случае когда г.у. было остановлено голосовой командой (не кнопкой).
     @Published var voiceControlShouldStop: Bool = false
+    /// Устройство через которое передаются голосовые команды(по умолчанию телефон)
     @Published var deviceState: DeviceState = .phone
-
+    /// отправка команд роботу через сокет
     let commandSender: CommandSender
+    /// логер
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
 
     private var speechRecognizer: SFSpeechRecognizer?
@@ -74,7 +81,7 @@ final class VoiceService: NSObject, ObservableObject {
 
     }
     
-    
+    /// метод определяющий подключаемые/отключаемые устройства
     @objc private func handleRouteChange(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
@@ -95,7 +102,7 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
     
-    // перезапуск аудио сессии
+    /// перезапуск аудио сессии
     func restartAudioSession() {
         stopListening()
         settingAudioSession()
@@ -104,7 +111,7 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
     
-    // таймер отключения голосового управления через 30 секунд
+    /// таймер отключения голосового управления через 30 секунд
     func restartSilenceTimer() {
         silenceTimer?.invalidate()
         silenceTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { [weak self] _ in
@@ -113,7 +120,7 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
     
-    // метод проверки при запуске голосового ввода
+    /// метод проверки разрешений использования голосового ввода на устройстве при запуске голосового ввода
     func requestAuthorization() {
         self.restartSilenceTimer() //
         
@@ -156,15 +163,8 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
     
-    
-    // проверка голосов ru-RU - милена текущий
-    func checkVoices() {
-        let voices = AVSpeechSynthesisVoice.speechVoices()
-        print("Доступные голоса: \(voices)")
-    }
-    
-    
-    // Останавка предыдущих задач аудиодвижка
+
+    /// метод останавливающий  аудиодвижок
     func stopAudioEngine() {
         if audioEngine.isRunning {
             audioEngine.stop()
@@ -175,19 +175,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // деактивация аудиосессии не используется
-    func deactivateAudioEngine() {
-        do {
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            logger.info("✅ Аудиосессия успешно деактивирована")
-        } catch {
-            logger.error("🛑 Ошибка при деактивации аудиосессии: \(error.localizedDescription)")
-            try? AVAudioSession.sharedInstance().setActive(false, options: [])
-        }
-    }
-
-    
-    // выключение голосового управления
+    /// метод выключения голосового управления
     func stopVoiceControl() {
         logger.info("🛑 Голосовой ввод выключен")
         deviceState = .idle
@@ -197,7 +185,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // остановка голосового управления
+    /// метод остановки голосового ввода
     func stopListening() {
         guard isListening else { return }
         stopAudioEngine()
@@ -209,7 +197,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // Настройка аудиосессии
+    /// метод настройки аудиосессии
     func settingAudioSession() {
         do {
             let audioSession = AVAudioSession.sharedInstance()
@@ -225,7 +213,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // Запуск аудиодвижка
+    /// метод запускающий аудиодвижок
     func startAudioEngine() {
         do {
             audioEngine.prepare()
@@ -239,7 +227,7 @@ final class VoiceService: NSObject, ObservableObject {
 
     
     
-    // запуск голосового управления
+    /// метод запускающий голосовое управление
     func startVoiceControl() {
         logger.info("✅ Запущено голосовое управление")
         // Проверяем, что распознаватель речи доступен
@@ -321,7 +309,7 @@ final class VoiceService: NSObject, ObservableObject {
     
     
     
-    // команды управления роботом
+    /// метод отправки системных команд роботу
     func commandSystem(from command: VoiceCommand?) {
         if let sys = command {
             switch sys {
@@ -333,7 +321,7 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
     
-    // команды управления движением робота
+    /// метод выбора направления движения робота
     func commandDirection(from command: VoiceCommand?) -> [String: Bool] {
         var flags = [
             "forward": false,
@@ -369,7 +357,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // отправка команд управления роботу через сокет
+    /// метод отправки команд управления движением роботу через сокет
     func handleVoiceCommand(with direction: [String: Bool]) {
         commandSender.moveForward(isPressed: direction["forward"] ?? false)
         commandSender.moveBackward(isPressed: direction["backward"] ?? false)
@@ -378,7 +366,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // Запускаем таймер после распознавания команды
+    /// метод запуска таймера спамящего последнюю распознаную команду
     func startRepeatingLastCommand() {
         stopRepeatingCommand() // Сначала останавливаем, если уже был запущен
         repeatCommandTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
@@ -388,7 +376,7 @@ final class VoiceService: NSObject, ObservableObject {
         }
     }
 
-    // Останавливаем таймер
+    /// метод останавливки таймера
     func stopRepeatingCommand() {
         self.logger.debug("✅ Таймер остановлен")
         repeatCommandTimer?.invalidate()
@@ -397,7 +385,7 @@ final class VoiceService: NSObject, ObservableObject {
     
     
     
-    // метод озвучки
+    /// метод озвучки текста
     func speak(text: String, language: String = AppConfig.VoiceService.language, rate: Float = 0.5, completion: (() -> Void)? = nil) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: language)
@@ -408,7 +396,7 @@ final class VoiceService: NSObject, ObservableObject {
     }
     
     
-    // замыкание голосовой озвучки
+    /// замыкание голосовой озвучки
     private var speechCompletion: (() -> Void)?
 
 }

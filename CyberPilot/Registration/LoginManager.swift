@@ -9,19 +9,16 @@ import Combine
 
 class LoginManager: ObservableObject {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
-    private weak var authService: AuthService?
+    private let authService: AuthService
     @Published var username = "Alex"
     @Published var password = "Sssssssss"
-    @Published var isMailValid = false
+    @Published var isUserNameValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
-    var token: String?
-    var userName: String?
-    let login = "Alex"
 
     
     var isLoginFormValid: Bool {
-        return isMailValid && isPasswordCapitalLetter
+        return isUserNameValid && isPasswordCapitalLetter
     }
     
     private var cancellableSet: Set<AnyCancellable> = []
@@ -30,8 +27,8 @@ class LoginManager: ObservableObject {
         self.authService = authService
         
         $username
-            .map { $0.range(of: AppConfig.PatternsForInput.passwordPattern, options: .regularExpression) != nil }
-            .assign(to: \.isMailValid, on: self)
+            .map { $0.range(of: AppConfig.PatternsForInput.usernamePattern, options: .regularExpression) != nil }
+            .assign(to: \.isUserNameValid, on: self)
             .store(in: &cancellableSet)
         
         $password
@@ -46,8 +43,19 @@ class LoginManager: ObservableObject {
     }
     
     
-    func login(email: String, password: String) async throws -> String {
-
+    func login(username: String, password: String) async throws -> String {
+        
+        // Заглушка: тестовый пользователь
+        if username == "Alex" && password == "Sssssssss" {
+            await MainActor.run {
+                self.authService.isAuthenticated = true
+                self.authService.userLogin = "Alex"
+                self.authService.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ld3VzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IkFsZXg3NzciLCJpYXQiOjE3NDY0NTQzMjQsImV4cCI6MTc0NjQ1NzkyNH0.Gz6xofMF6D3etHAFhGOlFefQFDaS12pUtmHw2TRv__o"
+            }
+                return "mock_token_for_testuser"
+            }
+        
+        
         // Формирование URL
         guard let url = URL(string: AppConfig.Addresses.userLoginUrl) else {
             throw URLError(.badURL)
@@ -87,12 +95,12 @@ class LoginManager: ObservableObject {
         do {
             let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
             logger.info("Декодированный ответ: \(authResponse)")
-
+            
             // Сохранение данных на главном потоке
             await MainActor.run {
-                self.authService?.token = authResponse.accessToken
-                self.authService?.userLogin = email
-                self.authService?.isAuthenticated = true
+                self.authService.token = authResponse.accessToken
+                self.authService.userLogin = username
+                self.authService.isAuthenticated = true
                 self.logger.info(AppConfig.Strings.successfulLogin)
             }
 
@@ -105,22 +113,3 @@ class LoginManager: ObservableObject {
 }
 
 
-struct AuthResponse: Codable {
-    let accessToken: String
-    let tokenType: String
-
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case tokenType = "token_type"
-    }
-}
-// Заглушка: тестовый пользователь
-//        if email == "newuser@example.com" && password == "DiMeKo2025" {
-//            await MainActor.run {
-//                self.authService?.isAuthenticated = true
-//                self.authService?.userLogin = "Alex"
-//                //                socketManager.loginToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ld3VzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IkFsZXg3NzciLCJpYXQiOjE3NDY0NTQzMjQsImV4cCI6MTc0NjQ1NzkyNH0.Gz6xofMF6D3etHAFhGOlFefQFDaS12pUtmHw2TRv__o"
-//            }
-//                return "mock_token_for_testuser"
-//            }
-    //

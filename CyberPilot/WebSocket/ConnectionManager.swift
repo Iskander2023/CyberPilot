@@ -23,6 +23,12 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
         setupSocketObservers()
     }
     
+    
+    func updateToken(_ newToken: String?) {
+        self.token = newToken
+        logger.debug("Token обновлён: \(newToken ?? "nil")")
+    }
+    
     func connect(isLocal: Bool) {
         if isLocal {
             connectToLocalRobot()

@@ -13,6 +13,8 @@
 		84062D3C2E151CB7002560A1 /* VoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D3B2E151CB7002560A1 /* VoiceViewModel.swift */; };
 		84062D3E2E152899002560A1 /* VoiceControlButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D3D2E152899002560A1 /* VoiceControlButton.swift */; };
 		84062D402E1FE7B6002560A1 /* VoiceServiceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D3F2E1FE7B6002560A1 /* VoiceServiceState.swift */; };
+		84062D432E278229002560A1 /* ChatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D422E278229002560A1 /* ChatButton.swift */; };
+		84062D452E278239002560A1 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84062D442E278239002560A1 /* ChatService.swift */; };
 		8406345A2DD24054007E0E1F /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 840634592DD24054007E0E1F /* Yams */; };
 		840634602DD24CE1007E0E1F /* map.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 8406345F2DD24CE1007E0E1F /* map.yaml */; };
 		840634622DD4A9B1007E0E1F /* MapModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840634612DD4A9B1007E0E1F /* MapModels.swift */; };
@@ -51,8 +53,6 @@
 		846AA4112DE09B3D0000FDFD /* WebSocketStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA4102DE09B3D0000FDFD /* WebSocketStructs.swift */; };
 		846AA41C2DE6009F0000FDFD /* GenericCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA41B2DE6009F0000FDFD /* GenericCacheManager.swift */; };
 		846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA41E2DE6E5A40000FDFD /* SocketListener.swift */; };
-		8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */; };
-		8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */; };
 		8480B6FC2DA6810F00BF884F /* UserRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */; };
 		8480B6FE2DA6830C00BF884F /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FD2DA6830C00BF884F /* LoginManager.swift */; };
 		8480B7002DA6B29300BF884F /* FormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8480B6FF2DA6B29300BF884F /* FormField.swift */; };
@@ -71,9 +71,7 @@
 		84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE146D2DA147660094A792 /* BluetoothManager.swift */; };
 		84AE14702DA147840094A792 /* BluetoothView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE146F2DA147840094A792 /* BluetoothView.swift */; };
 		84AE14732DA147BA0094A792 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14722DA147BA0094A792 /* LoginView.swift */; };
-		84AE14752DA147D30094A792 /* PhoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14742DA147D30094A792 /* PhoneView.swift */; };
 		84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14762DA147F40094A792 /* UserRegistrationManager.swift */; };
-		84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */; };
 		84AE147B2DA148590094A792 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE147A2DA148590094A792 /* AuthService.swift */; };
 		84C9262F2DAFCC4F009B1FFA /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9262E2DAFCC4F009B1FFA /* VideoView.swift */; };
 		84E5F1962DB8CC9100D41A4F /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1952DB8CC9100D41A4F /* WebView.swift */; };
@@ -98,6 +96,8 @@
 		84062D3B2E151CB7002560A1 /* VoiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceViewModel.swift; sourceTree = "<group>"; };
 		84062D3D2E152899002560A1 /* VoiceControlButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceControlButton.swift; sourceTree = "<group>"; };
 		84062D3F2E1FE7B6002560A1 /* VoiceServiceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceServiceState.swift; sourceTree = "<group>"; };
+		84062D422E278229002560A1 /* ChatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatButton.swift; sourceTree = "<group>"; };
+		84062D442E278239002560A1 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
 		8406345F2DD24CE1007E0E1F /* map.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = map.yaml; sourceTree = "<group>"; };
 		840634612DD4A9B1007E0E1F /* MapModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapModels.swift; sourceTree = "<group>"; };
 		840634632DD4B00E007E0E1F /* BluetoothModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothModels.swift; sourceTree = "<group>"; };
@@ -136,8 +136,6 @@
 		846AA41B2DE6009F0000FDFD /* GenericCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericCacheManager.swift; sourceTree = "<group>"; };
 		846AA41E2DE6E5A40000FDFD /* SocketListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketListener.swift; sourceTree = "<group>"; };
 		8480B6F12DA17B9600BF884F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCaptchaView.swift; sourceTree = "<group>"; };
-		8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationCodeView.swift; sourceTree = "<group>"; };
 		8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRegistrationView.swift; sourceTree = "<group>"; };
 		8480B6FD2DA6830C00BF884F /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		8480B6FF2DA6B29300BF884F /* FormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormField.swift; sourceTree = "<group>"; };
@@ -158,9 +156,7 @@
 		84AE146D2DA147660094A792 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		84AE146F2DA147840094A792 /* BluetoothView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothView.swift; sourceTree = "<group>"; };
 		84AE14722DA147BA0094A792 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		84AE14742DA147D30094A792 /* PhoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneView.swift; sourceTree = "<group>"; };
 		84AE14762DA147F40094A792 /* UserRegistrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRegistrationManager.swift; sourceTree = "<group>"; };
-		84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationFlowView.swift; sourceTree = "<group>"; };
 		84AE147A2DA148590094A792 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		84C9262E2DAFCC4F009B1FFA /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		84E5F1952DB8CC9100D41A4F /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
@@ -209,6 +205,15 @@
 				BB04517D95AED5E29A64CF80 /* Pods-CyberPilot.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		84062D412E2781B4002560A1 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				84062D422E278229002560A1 /* ChatButton.swift */,
+				84062D442E278239002560A1 /* ChatService.swift */,
+			);
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		8409CC842E0AB5A600DA0BFC /* Config */ = {
@@ -334,6 +339,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				84062D412E2781B4002560A1 /* Chat */,
 				8409CC8E2E13CCE700DA0BFC /* VoiceControl */,
 				8409CC8B2E0EC1C500DA0BFC /* KeyChain */,
 				8409CC842E0AB5A600DA0BFC /* Config */,
@@ -422,11 +428,7 @@
 			isa = PBXGroup;
 			children = (
 				84AE14722DA147BA0094A792 /* LoginView.swift */,
-				84AE14742DA147D30094A792 /* PhoneView.swift */,
 				84AE14762DA147F40094A792 /* UserRegistrationManager.swift */,
-				84AE14782DA1480F0094A792 /* RegistrationFlowView.swift */,
-				8480B6F52DA3C6D300BF884F /* CustomCaptchaView.swift */,
-				8480B6F72DA407A000BF884F /* ConfirmationCodeView.swift */,
 				8480B6FB2DA6810F00BF884F /* UserRegistrationView.swift */,
 				8480B6FD2DA6830C00BF884F /* LoginManager.swift */,
 				8480B6FF2DA6B29300BF884F /* FormField.swift */,
@@ -602,7 +604,6 @@
 				8480B7052DA7AE0A00BF884F /* AllertManager.swift in Sources */,
 				84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */,
 				8480B7002DA6B29300BF884F /* FormField.swift in Sources */,
-				84AE14792DA1480F0094A792 /* RegistrationFlowView.swift in Sources */,
 				846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */,
@@ -616,7 +617,6 @@
 				84AE147B2DA148590094A792 /* AuthService.swift in Sources */,
 				8409CC8D2E0EC1F100DA0BFC /* Keychain.swift in Sources */,
 				8409CC792E01A99900DA0BFC /* MapTouchHandler.swift in Sources */,
-				84AE14752DA147D30094A792 /* PhoneView.swift in Sources */,
 				846AA41F2DE6E5A40000FDFD /* SocketListener.swift in Sources */,
 				84E5F1D62DCB8AAA00D41A4F /* MapView.swift in Sources */,
 				84062D3C2E151CB7002560A1 /* VoiceViewModel.swift in Sources */,
@@ -636,14 +636,13 @@
 				84E5F1962DB8CC9100D41A4F /* WebView.swift in Sources */,
 				84E5F1CF2DCB781400D41A4F /* RobotListManager.swift in Sources */,
 				8409CC7F2E03E28E00DA0BFC /* DeletePointView.swift in Sources */,
-				8480B6F62DA3C6D300BF884F /* CustomCaptchaView.swift in Sources */,
 				84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */,
 				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
-				8480B6F82DA407A000BF884F /* ConfirmationCodeView.swift in Sources */,
 				84062D402E1FE7B6002560A1 /* VoiceServiceState.swift in Sources */,
 				8409CC882E0D603500DA0BFC /* PerspectiveButton.swift in Sources */,
 				8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */,
 				8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */,
+				84062D452E278239002560A1 /* ChatService.swift in Sources */,
 				8409CC6B2E015E3200DA0BFC /* MapZoneHandler.swift in Sources */,
 				84062D3E2E152899002560A1 /* VoiceControlButton.swift in Sources */,
 				84AE144D2DA144C20094A792 /* ContentView.swift in Sources */,
@@ -656,6 +655,7 @@
 				8409CC902E13CD0D00DA0BFC /* VoiceControlView.swift in Sources */,
 				84EF32DE2DF0350E005F3FF6 /* BorderLineView.swift in Sources */,
 				84AE146E2DA147660094A792 /* BluetoothManager.swift in Sources */,
+				84062D432E278229002560A1 /* ChatButton.swift in Sources */,
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
 				84062D382E13D9BA002560A1 /* VoiceService.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
@@ -813,7 +813,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CyberPilot/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Приложению требуется Bluetooth для подключения к устройствам";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Приложению требуется разрешение для голосового управления";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Приложению требуется разрешение для распознавания голоса";
@@ -848,7 +847,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CyberPilot/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Приложению требуется Bluetooth для подключения к устройствам";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Приложению требуется разрешение для голосового управления";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Приложению требуется разрешение для распознавания голоса";

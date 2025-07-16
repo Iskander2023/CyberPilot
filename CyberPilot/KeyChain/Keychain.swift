@@ -19,13 +19,12 @@ final class KeychainService {
         self.keychain = KeychainSwift()
     }
     
-    // MARK: - Keys
+    //  Keys
     private enum Keys {
         static let accessToken = "accessToken"
-        static let refreshToken = "refreshToken"
     }
     
-    // MARK: - Access Token
+    //  Access Token
     func saveAccessToken(_ token: String) {
         keychain.set(token, forKey: Keys.accessToken)
     }
@@ -38,22 +37,9 @@ final class KeychainService {
         keychain.delete(Keys.accessToken)
     }
     
-    // MARK: - Refresh Token
-    func saveRefreshToken(_ token: String) {
-        keychain.set(token, forKey: Keys.refreshToken)
-    }
-    
-    func getRefreshToken() -> String? {
-        return keychain.get(Keys.refreshToken)
-    }
-    
-    func deleteRefreshToken() {
-        keychain.delete(Keys.refreshToken)
-    }
     
     // MARK: - Clear All
-    func clearAllTokens() {
+    func clearToken() {
         keychain.delete(Keys.accessToken)
-        keychain.delete(Keys.refreshToken)
     }
 }
