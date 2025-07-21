@@ -14,10 +14,10 @@ class UserRegistrationManager: ObservableObject {
     
     private let authService: AuthService
     
-    @Published var email = "user@example.com"
-    @Published var userName = "Alex"
-    @Published var password = "Sssssssss"
-    @Published var passwordConfirm = "Sssssssss"
+    @Published var email: String = ""
+    @Published var userName: String = ""
+    @Published var password: String = ""
+    @Published var passwordConfirm: String = ""
 
     
     let role: String = "client"
@@ -58,6 +58,11 @@ class UserRegistrationManager: ObservableObject {
     init(authService: AuthService) {
         self.authService = authService
         
+        self.email = "user@example.com"
+        self.userName = "Alex"
+        self.password = "Sssssssss"
+        self.passwordConfirm = "Sssssssss"
+    
         $email
             .map { email in
                 let emailPredicate = NSPredicate(format:"SELF MATCHES %@", AppConfig.PatternsForInput.emailPattern)

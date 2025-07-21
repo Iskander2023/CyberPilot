@@ -27,7 +27,8 @@ struct Robot_ControllerApp: App {
                 .environmentObject(container.voiceControlViewModel)
                 .environmentObject(container.loginManager)
                 .environmentObject(container.userRegistrationManager)
-        
+                .environmentObject(container.chatService)
+                .environmentObject(container.robotListViewModel)
         }
     }
 }

@@ -10,24 +10,32 @@ import WebKit
 final class SocketController: ObservableObject {
     @Published var robotSuffix = ""
     @Published var connectionManager: ConnectionManager
-    @Published var robotListManager: RobotListManager
     @Published var videoStreamManager: VideoStreamManager
     @Published var errorManager: ErrorManager
     @Published var commandSender: CommandSender
     @Published private(set) var isLoading = false
+    @Published var selectedRobot: Robot?
+    
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private var cancellables = Set<AnyCancellable>()
     
     init(authService: AuthService) {
         let socketManager = SocketManager(authService: authService)
         self.connectionManager = ConnectionManager(authService: authService, socketManager: socketManager)
-        self.robotListManager = RobotListManager(socketManager: socketManager)
         self.videoStreamManager = VideoStreamManager(robotManager: authService)
         self.errorManager = ErrorManager()
         self.commandSender = CommandSender(socketManager: socketManager)
         
         setupMessageHandlers(socketManager: socketManager)
     }
+    
+    
+
+    func setCurrentRobot(_ robot: Robot) {
+        self.selectedRobot = robot
+        connectionManager.setRobotID(robot.robot_id)
+    }
+
     
     private func setupMessageHandlers(socketManager: SocketManager) {
         socketManager.receivedMessages
@@ -38,15 +46,13 @@ final class SocketController: ObservableObject {
             .store(in: &cancellables)
     }
     
+    
     private func handleSocketMessage(_ message: [String: Any]) {
         guard let type = message["type"] as? String else {
             errorManager.show("Invalid message format: missing 'type'")
             return
         }
-        
         switch type {
-        case "robotList":
-            robotListManager.handleRobotListMessage(message)
         case "error":
             handleErrorMessage(message)
         default:
@@ -54,19 +60,6 @@ final class SocketController: ObservableObject {
         }
     }
     
-    
-    // симуляция списка роботов
-    func simulateRobotListResponse() {
-        let mockRobots: [[String: Any]] = [
-            ["robotId": "robot1"],
-            ["robotId": "robot2"]
-        ]
-        logger.info("mockMessage")
-        let mockMessage: [String: Any] = ["type": "robotList", "robots": mockRobots]
-        robotListManager.showRobotPicker = true
-        updateRobotSuffix()
-        handleSocketMessage(mockMessage)
-    }
     
     
     func updateRobotSuffix() {

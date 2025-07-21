@@ -41,13 +41,6 @@ struct SocketView: View {
                 commandSender: controller.commandSender
             )
         }
-        .sheet(isPresented: $controller.robotListManager.showRobotPicker) {
-            RobotSelectionView(
-                robots: controller.robotListManager.availableRobots
-            ) { selectedRobot in
-                controller.robotListManager.registerAsOperator(for: selectedRobot)
-            }
-        }
     }
     
     
@@ -68,9 +61,9 @@ struct SocketView: View {
             
             connectionButton
             
-            if !controller.connectionManager.isConnected {
-                testConnectionButton
-            }
+//            if !controller.connectionManager.isConnected {
+//                testConnectionButton
+//            }
             
             Spacer()
         }
@@ -134,15 +127,15 @@ struct SocketView: View {
         }
     }
     
-    private var testConnectionButton: some View {
-        Button("Симулировать подключение") {
-            controller.simulateRobotListResponse()
-        }
-        .foregroundColor(.white)
-        .padding()
-        .background(Color.orange)
-        .cornerRadius(8)
-    }
+//    private var testConnectionButton: some View {
+//        Button("Симулировать подключение") {
+//            controller.simulateRobotListResponse()
+//        }
+//        .foregroundColor(.white)
+//        .padding()
+//        .background(Color.orange)
+//        .cornerRadius(8)
+//    }
     
     private var connectionIndicator: some View {
         HStack {

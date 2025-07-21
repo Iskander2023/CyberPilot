@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+/// класс для тестового соединения с сокетом, реализован для карты и лидара
 class SocketListener {
     var authService: AuthService
     private var socketManager: SocketManager?
@@ -20,7 +20,7 @@ class SocketListener {
     init(authService: AuthService, socketIp: String) {
         self.authService = authService
         self.socketIp = socketIp
-        socketManager = SocketManager(authService: authService)
+        socketManager = SocketManager(authService: authService) // создание нового подключения со своим IP адресом
         
     }
     

@@ -22,7 +22,8 @@ struct FormField: View {
                     .padding(.horizontal)
                 
             } else {
-                TextField(fieldName, text: $fieldValue)
+                //TextField(fieldName, text: $fieldValue)
+                CustomTextField(text: $fieldValue, placeholder: fieldName)
                     .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .padding(.horizontal)
             }

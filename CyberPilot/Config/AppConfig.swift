@@ -11,7 +11,7 @@ import SwiftUI
 struct AppConfig {
     
     struct ChatButton {
-        static let voiceIkonSize: CGFloat = 20
+        static let voiceIkonSize: CGFloat = 15
         static let paddingBottom: CGFloat = 20
         static let paddingTrailing: CGFloat = 20
         static let foreground:Color = .black
@@ -243,12 +243,12 @@ struct AppConfig {
     }
     
     struct Addresses {
-        //static let serverAddress =  "ws://selekpann.tech:2000"
-        static let serverAddress = "ws://172.16.17.161:8000"
+        static let serverAddress = "wss://selekpann.tech"
+        static let wsUrl = "wss://selekpann.tech/api/ws/users" // для подключения к выбраному роботу
+        static let userRegistrationUrl = "https://selekpann.tech/api/register" // адрес для регистрации нового пользователя
+        static let userLoginUrl = "https://selekpann.tech/api/token" // адрес авторизации пользователя
         static let localAddress = "robot3.local"
-        static let userRegistrationUrl = "http://172.16.17.161:8000/api/register" // адрес для регистрации нового пользователя
-        static let userLoginUrl = "http://172.16.17.161:8000/api/token" // адрес авторизации пользователя
-        static let apiID = "5A5A737E-09E1-0492-ADD3-957B269669D8" // апи для отправки кода на номер телефона
+        //static let apiID = "5A5A737E-09E1-0492-ADD3-957B269669D8" // апи для отправки кода на номер телефона
         
     }
     
@@ -277,7 +277,7 @@ struct AppConfig {
         static let min4Simbols = "Минимум 4 символа"
         static let passwordRus = "Пароль"
         static let confirmPassword = "Подтвердите пароль"
-        static let min8Simbols = "Минимум 8 символов"
+        static let min8Simbols = "Пароль: минимум 8 символов"
         static let iconName = "lock.open"
         static let OneSymbolWithACapitalLetter = "Один символ с большой буквы"
         static let passwordMatch = "Пароль должен совпадать с введенным ранее"

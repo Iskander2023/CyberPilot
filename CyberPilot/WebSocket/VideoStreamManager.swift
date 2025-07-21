@@ -21,7 +21,7 @@ final class VideoStreamManager: ObservableObject, TokenUpdatable {
         self.token = newToken
         if let token = newToken {
             self.videoURL = "\(prefixUrl)\(token)"
-            print("video ==== \(self.videoURL)")
+            //print("video ==== \(self.videoURL)")
         } else {
             self.videoURL = ""
             

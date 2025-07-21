@@ -25,11 +25,11 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     var connectionMode: SocketConnectionMode = .plain
     var onMapArrayReceived: (([Int], Int) -> Void)?
     var onLineMessageReceived: (([[[Double]]], CGPoint) -> Void)?
-    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
     
     private var cancellables = Set<AnyCancellable>()
     
-    var isTesting = false
+    var isTesting = true
     
     
     init(authService: AuthService, connectionMode: SocketConnectionMode = .plain) {
@@ -156,7 +156,7 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
             self.logger.debug("Отправка команды: \(command)")
             socket.write(string: command)
         } else {
-            self.logger.debug("Ошибка отправки команды: соединение не установлено.")
+            self.logger.debug("Ошибка отправки команды: \(command), соединение не установлено.")
             return
         }
     }
@@ -209,29 +209,11 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     }
     
     
-    private func makeRegistrationPayload(token: String) -> [String: Any] {
-        return [
-            "type": "register",
-            "role": "operator",
-            "id": "robot1",
-            "robotId": "robot1",
-            "token": token
-        ]
-    }
-
-    
-    
     func handleConnected(headers: [String: String]) {
         isConnected = true
         connectionError = nil
         logger.info("Connection established. Headers: \(headers)")
-        switch connectionMode {
-        case .withRegistration(let token):
-            let reg = makeRegistrationPayload(token: token)
-            sendJSONCommand(reg)
-        case .plain:
-            logger.info("Режим без регистрации — регистрация не требуется.")
-        }
+        logger.info("Режим без регистрации — регистрация не требуется.")
         self.connectionStatus.send(true)
     }
     
@@ -299,7 +281,4 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
 }
 
 
-enum SocketConnectionMode {
-    case withRegistration(token: String)
-    case plain
-}
+

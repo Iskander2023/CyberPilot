@@ -12,15 +12,21 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
     @Published var isConnected = false
     @Published var host = AppConfig.Addresses.localAddress
     @Published var remoteURL = AppConfig.Addresses.serverAddress
-    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    private let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
     var cancellables = Set<AnyCancellable>()
     var token: String?
+    var robotId: String = ""
     private let socketManager: SocketManager
     
     init(authService: AuthService, socketManager: SocketManager) {
-        self.socketManager = SocketManager(authService: authService, connectionMode: .withRegistration(token: authService.token ?? ""))
+        self.socketManager = SocketManager(authService: authService)
         setupTokenBinding(from: authService)
         setupSocketObservers()
+    }
+    
+    func setRobotID(_ robotID: String) {
+        logger.info("Установлен robotID: \(robotID)")
+        self.robotId = robotID
     }
     
     
@@ -28,6 +34,7 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
         self.token = newToken
         logger.debug("Token обновлён: \(newToken ?? "nil")")
     }
+    
     
     func connect(isLocal: Bool) {
         if isLocal {
@@ -37,17 +44,21 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
         }
     }
     
+    
     func connectionTypeChanged(isLocal: Bool) {
         if isLocal {
             host = "robot3.local"
         } else {
-            remoteURL = "ws://selekpann.tech:2000"
+            remoteURL = "\(AppConfig.Addresses.serverAddress)/\(self.robotId)?token=\(self.token ?? "")"
+            logger.debug("сокет: \(remoteURL)")
         }
     }
+    
     
     func disconnect() {
         socketManager.disconnectSocket()
     }
+    
     
     private func connectToLocalRobot() {
         socketManager.startResolvingIP(for: host)
@@ -67,6 +78,7 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
         guard let lastPart = parts.last else { return "80" }
         return "8" + String(lastPart)
     }
+    
     
     private func setupSocketObservers() {
         socketManager.connectionStatus

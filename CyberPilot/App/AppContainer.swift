@@ -21,6 +21,8 @@ final class AppContainer: ObservableObject {
     let voiceControlViewModel: VoiceViewModel
     let loginManager: LoginManager
     let userRegistrationManager: UserRegistrationManager
+    let chatService: ChatService
+    let robotListViewModel: RobotListViewModel
 
     init() {
         self.authService = AuthService()
@@ -36,6 +38,8 @@ final class AppContainer: ObservableObject {
         self.voiceControlViewModel = VoiceViewModel(voiceManager: voiceControlManager)
         self.loginManager = LoginManager(authService: authService)
         self.userRegistrationManager = UserRegistrationManager(authService: authService)
+        self.chatService = ChatService(authService: authService, socketManager: socketManager)
+        self.robotListViewModel = RobotListViewModel()
 
     }
 }

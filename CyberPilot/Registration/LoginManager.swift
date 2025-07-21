@@ -8,10 +8,10 @@ import SwiftUI
 import Combine
 
 class LoginManager: ObservableObject {
-    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
     private let authService: AuthService
-    @Published var username = "Alex"
-    @Published var password = "Sssssssss"
+    @Published var username = ""
+    @Published var password = ""
     @Published var isUserNameValid = false
     @Published var isPasswordLengthValid = false
     @Published var isPasswordCapitalLetter = false
@@ -26,6 +26,8 @@ class LoginManager: ObservableObject {
     init(authService: AuthService) {
         self.authService = authService
         
+        self.username = "Alexander"
+        self.password = "Sssssssss"
         $username
             .map { $0.range(of: AppConfig.PatternsForInput.usernamePattern, options: .regularExpression) != nil }
             .assign(to: \.isUserNameValid, on: self)

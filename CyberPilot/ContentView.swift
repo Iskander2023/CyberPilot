@@ -13,6 +13,7 @@ struct ContentView: View {
     @EnvironmentObject private var authService: AuthService
     @EnvironmentObject private var mapManager: MapManager
     @EnvironmentObject private var lineStore: LineManager
+    @EnvironmentObject private var robotListViewModel: RobotListViewModel
 
     @State private var selectedTab = 0
     @State private var scale: CGFloat = 1.0
@@ -58,6 +59,12 @@ struct ContentView: View {
     private var mainContentView: some View {
         VStack {
             TabView(selection: $selectedTab) {
+                RobotSelectionView(viewModel: robotListViewModel)
+                    .tabItem {
+                        Label("Robots", systemImage: "externaldrive.badge.checkmark")
+                    }
+                    .tag(4)
+                
                 SocketView()
                     .tabItem {
                         Label("Socket", systemImage: "wifi")

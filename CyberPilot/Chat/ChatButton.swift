@@ -9,6 +9,8 @@ import SwiftUI
 
 
 struct ChatButton: View {
+    @State private var showChat = false
+    
     
     var body: some View {
         VStack {
@@ -16,7 +18,7 @@ struct ChatButton: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    print("Chat button tapped")
+                    showChat = true
                     }) {
                     Image(systemName: AppConfig.ChatButton.chatIcon)
                         .font(.system(size: AppConfig.ChatButton.voiceIkonSize))
@@ -24,6 +26,9 @@ struct ChatButton: View {
                 }
                 .padding(.bottom, AppConfig.ChatButton.paddingBottom)
                 .padding(.trailing, AppConfig.ChatButton.paddingTrailing)
+                .sheet(isPresented: $showChat) {
+                    ChatView()
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

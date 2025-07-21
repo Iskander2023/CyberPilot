@@ -22,3 +22,9 @@ struct Command {
     
     
 }
+
+
+enum SocketConnectionMode {
+    case withRegistration(token: String)
+    case plain
+}

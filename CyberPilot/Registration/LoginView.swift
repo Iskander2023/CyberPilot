@@ -28,7 +28,7 @@ struct LoginView: View {
                     iconName: AppConfig.Strings.iconName,
                     iconColor: loginManager.isUserNameValid ? Color.secondary
                     : AppConfig.Colors.inactiveGray,
-                    text: AppConfig.Strings.emailRus,
+                    text: AppConfig.Strings.loginRus,
                     isStrikeThrough: loginManager.isUserNameValid
                 )
                 .padding()
