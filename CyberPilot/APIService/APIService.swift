@@ -13,10 +13,10 @@ class APIService {
     
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
 
-    private let baseURL = AppConfig.Addresses.serverAddress
+    private let baseURL = AppConfig.Addresses.robotsList
 
     func fetchRobots(token: String, completion: @escaping (Result<[Robot], Error>) -> Void) {
-        guard let url = URL(string: "\(baseURL)/robots") else {
+        guard let url = URL(string: "\(baseURL)") else {
             completion(.failure(URLError(.badURL)))
             return
         }
@@ -26,7 +26,11 @@ class APIService {
         request.httpMethod = "GET"
         
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX"
+        decoder.dateDecodingStrategy = .formatted(formatter)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
@@ -38,7 +42,7 @@ class APIService {
                 completion(.failure(URLError(.badServerResponse)))
                 return
             }
-
+            
             if httpResponse.statusCode == 404 {
                 self.logger.info("У вас нет назначенных роботов.")
                 completion(.success([]))
@@ -52,7 +56,7 @@ class APIService {
             }
 
             do {
-                let robots = try decoder.decode([Robot].self, from: data) 
+                let robots = try decoder.decode([Robot].self, from: data)
                 completion(.success(robots))
             } catch {
                 completion(.failure(error))

@@ -60,10 +60,7 @@ struct SocketView: View {
             }
             
             connectionButton
-            
-//            if !controller.connectionManager.isConnected {
-//                testConnectionButton
-//            }
+
             
             Spacer()
         }
@@ -84,7 +81,7 @@ struct SocketView: View {
     private var connectionAddressField: some View {
         Group {
             if selectedConnectionType == 0 {
-                TextField(AppConfig.Addresses.serverAddress, text: $controller.connectionManager.remoteURL)
+                TextField(AppConfig.Addresses.wsUrl, text: $controller.connectionManager.remoteURL)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
             } else {
                 TextField(AppConfig.Addresses.localAddress, text: $controller.connectionManager.host)
@@ -127,15 +124,6 @@ struct SocketView: View {
         }
     }
     
-//    private var testConnectionButton: some View {
-//        Button("Симулировать подключение") {
-//            controller.simulateRobotListResponse()
-//        }
-//        .foregroundColor(.white)
-//        .padding()
-//        .background(Color.orange)
-//        .cornerRadius(8)
-//    }
     
     private var connectionIndicator: some View {
         HStack {

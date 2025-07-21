@@ -8,7 +8,6 @@
 import Foundation
 
 
-
 struct Robot: Identifiable, Codable {
     let robot_id: String
     let camera_url: String

@@ -243,7 +243,7 @@ struct AppConfig {
     }
     
     struct Addresses {
-        static let serverAddress = "wss://selekpann.tech"
+        static let robotsList = "https://selekpann.tech/api/robots"
         static let wsUrl = "wss://selekpann.tech/api/ws/users" // для подключения к выбраному роботу
         static let userRegistrationUrl = "https://selekpann.tech/api/register" // адрес для регистрации нового пользователя
         static let userLoginUrl = "https://selekpann.tech/api/token" // адрес авторизации пользователя
