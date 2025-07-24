@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ChatButton: View {
     @State private var showChat = false
-    
+    @EnvironmentObject var connectionManager: ConnectionManager
     
     var body: some View {
         VStack {
@@ -20,7 +20,7 @@ struct ChatButton: View {
                 Button(action: {
                     showChat = true
                     }) {
-                    Image(systemName: AppConfig.ChatButton.chatIcon)
+                        Image(systemName: connectionManager.isConnected ? AppConfig.ChatButton.chatIconIsConnected : AppConfig.ChatButton.chatIconIsNotConnected)
                         .font(.system(size: AppConfig.ChatButton.voiceIkonSize))
                         .foregroundColor(AppConfig.ChatButton.foreground)
                 }

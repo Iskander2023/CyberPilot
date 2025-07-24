@@ -29,7 +29,7 @@ struct VideoView: View {
                 // Видео
                 if videoFailedToLoad {
                     Text("⚠️ Видео недоступно")
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .font(.headline)
                 } else {
                     WebView(
@@ -69,7 +69,7 @@ struct VideoView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
             }
-            .background(Color.black)
+            .background(Color.white)
             .onDisappear {
                 touchPadController.onDisappear()
             }

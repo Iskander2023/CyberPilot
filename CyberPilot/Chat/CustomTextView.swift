@@ -12,12 +12,13 @@ struct CustomTextField: UIViewRepresentable {
     @Binding var text: String
     var placeholder: String
 
+    
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.placeholder = placeholder
         textField.delegate = context.coordinator
 
-        // Убираем assistant view
+        
         textField.inputAssistantItem.leadingBarButtonGroups = []
         textField.inputAssistantItem.trailingBarButtonGroups = []
 
@@ -25,14 +26,17 @@ struct CustomTextField: UIViewRepresentable {
         return textField
     }
 
+    
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
     }
 
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
+    
     class Coordinator: NSObject, UITextFieldDelegate {
         var parent: CustomTextField
 

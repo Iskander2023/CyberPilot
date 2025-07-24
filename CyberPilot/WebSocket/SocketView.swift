@@ -11,23 +11,46 @@ import WebKit
 struct SocketView: View {
     @EnvironmentObject var controller: SocketController
     @State private var showVideoView = false
-    @State private var selectedConnectionType = 0
     @State private var webView: WKWebView? = nil
+    @State private var videoFailedToLoad = false
+    
     
     var body: some View {
-        ZStack {
-            Color.white.ignoresSafeArea()
-            
-            mainContent
-                .padding(.top, AppConfig.SocketView.mainContentPadding)
-            
-            connectionIndicator
-            
-            cameraButton
-            
-            loadingIndicator
+        GeometryReader { geometry in
+            ZStack {
+                Color.white.ignoresSafeArea()
+                
+                let calculatedWidth = geometry.size.width * 0.9
+                let calculatedHeight: CGFloat = 300
+                
+                if videoFailedToLoad {
+                    VStack(spacing: 12) {
+                        Text("⚠️ Видео недоступно")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        
+                        
+                    }
+                    .frame(maxWidth: calculatedWidth, maxHeight: calculatedHeight)
+                    .background(Color.black)
+                    .zIndex(1)
+                } else {
+                    WebView(
+                        urlString: controller.videoStreamManager.videoURL,
+                        onLoadFailed: {
+                            videoFailedToLoad = true
+                        }
+                    )
+                    .frame(height: AppConfig.SocketView.webViewHeight)
+                    .padding(.horizontal, AppConfig.SocketView.mainContentPadding)
+                    .border(Color.gray, width: 2)
+                }
+                
+                cameraButton
+                loadingIndicator
+            }
         }
-        .onReceive(controller.connectionManager.$host) { _ in
+        .onReceive(controller.connectionManager.$socketURL) { _ in
             controller.updateRobotSuffix()
         }
         .alert("Ошибка", isPresented: $controller.errorManager.showError) {
@@ -44,103 +67,8 @@ struct SocketView: View {
     }
     
     
-    private var mainContent: some View {
-        VStack(spacing: AppConfig.SocketView.mainContentSpacing) {
-            Spacer()
-            
-            if controller.connectionManager.isConnected {
-                WebView(urlString: controller.videoStreamManager.videoURL)
-                    .frame(height: AppConfig.SocketView.webViewHeight)
-                    .padding(.horizontal, AppConfig.SocketView.mainContentPadding)
-            }
-            
-            if !controller.connectionManager.isConnected {
-                connectionTypePicker
-                connectionAddressField
-            }
-            
-            connectionButton
-
-            
-            Spacer()
-        }
-    }
-    
-    private var connectionTypePicker: some View {
-        Picker("Connection Type", selection: $selectedConnectionType) {
-            Text("Удалённый сервер").tag(0)
-            Text("Локальная сеть").tag(1)
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
-        .onChange(of: selectedConnectionType) {
-            controller.connectionManager.connectionTypeChanged(isLocal: selectedConnectionType == 1)
-        }
-    }
-    
-    private var connectionAddressField: some View {
-        Group {
-            if selectedConnectionType == 0 {
-                TextField(AppConfig.Addresses.wsUrl, text: $controller.connectionManager.remoteURL)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            } else {
-                TextField(AppConfig.Addresses.localAddress, text: $controller.connectionManager.host)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .disableAutocorrection(true)
-            }
-        }
-        .frame(width: AppConfig.SocketView.connectionAddressFrame)
-    }
-    
-    private var connectionButton: some View {
-        Group {
-            if controller.connectionManager.isConnected {
-                disconnectButton
-            } else {
-                connectButton
-            }
-        }
-    }
-    
-    private var connectButton: some View {
-        Button(action: {
-            controller.connectionManager.connect(isLocal: selectedConnectionType == 1)
-        }) {
-            Text("Connect")
-                .foregroundColor(AppConfig.SocketView.connectButtonForegroundColor)
-                .padding()
-                .background(AppConfig.SocketView.connectButtonBackgroundColor)
-                .cornerRadius(AppConfig.SocketView.connectButtonCornerRadius)
-        }
-    }
-    
-    private var disconnectButton: some View {
-        HStack {
-            Button(action: controller.connectionManager.disconnect) {
-                Image(systemName: AppConfig.SocketView.disconnectButtonSystemName)
-                    .font(.system(size: AppConfig.SocketView.disconnectButtonFont))
-                    .foregroundColor(AppConfig.SocketView.disconnectButtonForegroundColor)
-            }
-        }
-    }
-    
-    
-    private var connectionIndicator: some View {
-        HStack {
-            Text("R\(controller.robotSuffix):")
-                .font(.system(size: AppConfig.SocketView.connectionIndicatorTextSize, weight: .medium))
-            
-            Circle()
-                .frame(width: AppConfig.SocketView.connectionIndicatorCircleWidth, height: AppConfig.SocketView.connectionIndicatorCircleHeight)
-                .foregroundColor(controller.connectionManager.isConnected ? AppConfig.SocketView.connectionIndicatorConnectColor : AppConfig.SocketView.connectionIndicatorDisconnectColor)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-    }
-    
     private var cameraButton: some View {
         Group {
-            if controller.connectionManager.isConnected {
                 VStack {
                     HStack {
                         Button(action: {
@@ -162,7 +90,6 @@ struct SocketView: View {
                 }
             }
         }
-    }
     
     private var loadingIndicator: some View {
         Group {
@@ -175,3 +102,78 @@ struct SocketView: View {
     }
 }
 
+
+
+
+//private var mainContent: some View {
+//        VStack(spacing: AppConfig.SocketView.mainContentSpacing) {
+//
+//
+//            if controller.connectionManager.isConnected {
+//            WebView(urlString: controller.videoStreamManager.videoURL)
+//                .frame(height: AppConfig.SocketView.webViewHeight)
+//                .padding(.horizontal, AppConfig.SocketView.mainContentPadding)
+//            }
+//
+//            if !controller.connectionManager.isConnected {
+//                connectionAddressField
+//            }
+//
+//            connectionButton
+//
+//
+//        }
+//    }
+
+//private var connectionAddressField: some View {
+//        VStack(alignment: .leading, spacing: 6) {
+//            Text("Адрес сервера:")
+//                .font(.system(size: 14, weight: .semibold))
+//                .foregroundColor(.gray)
+//                .padding(.horizontal)
+//
+//            TextField("Введите адрес сервера", text: $controller.connectionManager.remoteURL)
+//                .padding()
+//                .background(Color(UIColor.secondarySystemBackground))
+//                .cornerRadius(10)
+//                .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+//                .padding(.horizontal)
+//                .font(.system(size: 16, weight: .medium))
+//                .autocapitalization(.none)
+//                .disableAutocorrection(true)
+//        }
+//    }
+//
+//
+//    private var connectionButton: some View {
+//        Group {
+//            if controller.connectionManager.isConnected {
+//                disconnectButton
+//            } else {
+//                connectButton
+//            }
+//        }
+//    }
+//
+//
+//    private var connectButton: some View {
+//        Button(action: {
+//            controller.connectionManager.connect()
+//        }) {
+//            Text("Connect")
+//                .foregroundColor(AppConfig.SocketView.connectButtonForegroundColor)
+//                .padding()
+//                .background(AppConfig.SocketView.connectButtonBackgroundColor)
+//                .cornerRadius(AppConfig.SocketView.connectButtonCornerRadius)
+//        }
+//    }
+//
+//    private var disconnectButton: some View {
+//        HStack {
+//            Button(action: controller.connectionManager.disconnect) {
+//                Image(systemName: AppConfig.SocketView.disconnectButtonSystemName)
+//                    .font(.system(size: AppConfig.SocketView.disconnectButtonFont))
+//                    .foregroundColor(AppConfig.SocketView.disconnectButtonForegroundColor)
+//            }
+//        }
+//    }

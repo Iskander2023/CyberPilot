@@ -13,7 +13,6 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     @Published var connectionError: String?
     @Published var lastMessage: [String: Any]?
     
-    let connectionStatus = PassthroughSubject<Bool, Never>()
     let receivedResponses = PassthroughSubject<String, Never>()
     let receivedMessages = PassthroughSubject<[String: Any], Never>()
     let ipResolvedPublisher = PassthroughSubject<String, Never>()
@@ -22,27 +21,17 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     var socket: WebSocket!
     var token: String?
     var authService: AuthService
-    var connectionMode: SocketConnectionMode = .plain
     var onMapArrayReceived: (([Int], Int) -> Void)?
     var onLineMessageReceived: (([[[Double]]], CGPoint) -> Void)?
     let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
     
     private var cancellables = Set<AnyCancellable>()
+    private var connectCompletion: ((Bool) -> Void)?
     
-    var isTesting = true
-    
-    
-    init(authService: AuthService, connectionMode: SocketConnectionMode = .plain) {
+    init(authService: AuthService) {
         self.authService = authService
-        self.connectionMode = connectionMode
         super.init()
         setupBindings()
-//            self.authService.$token
-//                .sink { [weak self] newToken in
-//                    guard let self = self else { return }
-//                    self.token = newToken
-//                }
-//                .store(in: &cancellables)
     }
     
     
@@ -78,53 +67,45 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     }
     
     
-    func resolveRobotIP(hostname: String, completion: @escaping (String?) -> Void) {
-        let host = CFHostCreateWithName(nil, hostname as CFString).takeRetainedValue()
-        CFHostStartInfoResolution(host, .addresses, nil)
-        
-        var success: DarwinBoolean = false
-        guard let addresses = CFHostGetAddressing(host, &success)?.takeUnretainedValue() as NSArray? else {
-            completion(nil)
-            return
-        }
-        
-        for case let address as NSData in addresses {
-            var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-            if getnameinfo(
-                address.bytes.assumingMemoryBound(to: sockaddr.self),
-                socklen_t(address.length),
-                &hostname,
-                socklen_t(hostname.count),
-                nil,
-                0,
-                NI_NUMERICHOST
-            ) == 0 {
-                let ip = String(cString: hostname)
-                if ip.contains(".") {
-                    completion(ip)
-                    return
-                }
+    
+    func connectSocket(urlString: String, timeout: TimeInterval = 5, completion: @escaping (Bool) -> Void) {
+            guard !isConnected else {
+                logger.info("Уже подключено.")
+                completion(true)
+                return
             }
+
+            guard let url = URL(string: urlString) else {
+                logger.info("Ошибка: неверный URL")
+                completion(false)
+                return
+            }
+
+            var request = URLRequest(url: url)
+            request.timeoutInterval = timeout
+
+            socket = WebSocket(request: request)
+            socket.delegate = self
+            self.connectCompletion = completion
+            socket.connect()
         }
-        completion(nil)
-    }
     
-    
-    func connectSocket(urlString: String, timeout: TimeInterval = 5) {
-        guard !isConnected else {
-            logger.info("Уже подключено.")
-            return
-        }
-        guard let url = URL(string: urlString) else {
-            self.logger.info("Ошибка: неверный URL")
-            return
-        }
-        var request = URLRequest(url: url)
-        request.timeoutInterval = timeout
-        socket = WebSocket(request: request)
-        self.socket.delegate = self
-        socket.connect()
-    }
+
+//    func connectSocket(urlString: String, timeout: TimeInterval = 5) {
+//        guard !isConnected else {
+//            logger.info("Уже подключено.")
+//            return
+//        }
+//        guard let url = URL(string: urlString) else {
+//            self.logger.info("Ошибка: неверный URL")
+//            return
+//        }
+//        var request = URLRequest(url: url)
+//        request.timeoutInterval = timeout
+//        socket = WebSocket(request: request)
+//        self.socket.delegate = self
+//        socket.connect()
+//    }
     
     
     func disconnectSocket() {
@@ -136,10 +117,6 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     
     
     func sendJSONCommand(_ data: [String: Any]) {
-//        guard let socket = socket else {
-//            logger.info("Ошибка: WebSocket не инициализирован.")
-//            return
-//        }
         guard let jsonData = try? JSONSerialization.data(withJSONObject: data, options: []),
               let jsonString = String(data: jsonData, encoding: .utf8) else {
             self.logger.info("Ошибка: не удалось закодировать JSON")
@@ -162,15 +139,27 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     }
     
     
+    private func handleChatMessage(_ data: Data) {
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                self.receivedMessages.send(jsonObject)
+            } else {
+            logger.warn("Ошибка при парсинге chat-сообщения")
+        }
+    }
+
+    
     private func handleTextMessage(_ message: String) {
         guard let data = message.data(using: .utf8) else {
             logger.info("Не удалось конвертировать сообщение в Data")
             return
         }
-        
         do {
             let messageType = try JSONDecoder().decode(MessageType.self, from: data).type
             switch messageType {
+                
+            case "chat":
+                handleChatMessage(data)
+           
             case "map":
                 handleMapMessage(data: data)
                 
@@ -212,9 +201,9 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     func handleConnected(headers: [String: String]) {
         isConnected = true
         connectionError = nil
+        connectCompletion?(true)
+        connectCompletion = nil
         logger.info("Connection established. Headers: \(headers)")
-        logger.info("Режим без регистрации — регистрация не требуется.")
-        self.connectionStatus.send(true)
     }
     
     
@@ -222,7 +211,6 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         isConnected = false
         connectionError = "Disconnected: \(reason) (code \(code))"
         logger.info("Connection closed. Reason: \(reason), Код: \(code)")
-        connectionStatus.send(isTesting ? true : false)
     }
     
     
@@ -236,15 +224,15 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     func handleCancelled() {
         isConnected = false
         logger.info("Connection canceled.")
+        connectCompletion?(false)
+        connectCompletion = nil
         self.receivedResponses.send("Connection canceled.")
-        self.connectionStatus.send(isTesting ? true : false)
     }
     
     
     func handlePeerClosed() {
         isConnected = false
         logger.info("Connection closed")
-        self.connectionStatus.send(isTesting ? true : false)
         self.receivedResponses.send("Connection closed.")
     }
     
@@ -277,6 +265,38 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
                 self.handlePeerClosed()
             }
         }
+    }
+    
+    
+    func resolveRobotIP(hostname: String, completion: @escaping (String?) -> Void) {
+        let host = CFHostCreateWithName(nil, hostname as CFString).takeRetainedValue()
+        CFHostStartInfoResolution(host, .addresses, nil)
+        
+        var success: DarwinBoolean = false
+        guard let addresses = CFHostGetAddressing(host, &success)?.takeUnretainedValue() as NSArray? else {
+            completion(nil)
+            return
+        }
+        
+        for case let address as NSData in addresses {
+            var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            if getnameinfo(
+                address.bytes.assumingMemoryBound(to: sockaddr.self),
+                socklen_t(address.length),
+                &hostname,
+                socklen_t(hostname.count),
+                nil,
+                0,
+                NI_NUMERICHOST
+            ) == 0 {
+                let ip = String(cString: hostname)
+                if ip.contains(".") {
+                    completion(ip)
+                    return
+                }
+            }
+        }
+        completion(nil)
     }
 }
 

@@ -13,10 +13,10 @@ struct ContentView: View {
     @EnvironmentObject private var authService: AuthService
     @EnvironmentObject private var mapManager: MapManager
     @EnvironmentObject private var lineStore: LineManager
-    @EnvironmentObject private var robotListViewModel: RobotListViewModel
+    @EnvironmentObject var connectionManager: ConnectionManager
 
     @State private var selectedTab = 0
-    @State private var scale: CGFloat = 1.0
+    
     private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
     var body: some View {
@@ -29,19 +29,32 @@ struct ContentView: View {
                 }
             }
             .toolbar {
+                // Левая сторона: логин + чат-кнопка
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Text(authService.userLogin)
-                        .font(.system(size: 16))
-                        .foregroundColor(.primary)
-                }
-                
+                        Text(authService.userLogin)
+                            .font(.system(size: 14))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+
                 ToolbarItem(placement: .navigationBarLeading) {
                     ChatButton()
-                        .disabled(!authService.isAuthenticated)
-                        .opacity(authService.isAuthenticated ? 1.0 : 0)
+                        .disabled(!authService.isAuthenticated || !connectionManager.isConnected)
+                        .opacity(authService.isAuthenticated ? 1.0 : 0.0)
+                        .padding(.leading, 20)
                 }
                 
-                ToolbarItem {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    ConnectionIndicator()
+                        .foregroundColor(connectionManager.isConnected ? AppConfig.SocketView.connectionIndicatorConnectColor : AppConfig.SocketView.connectionIndicatorDisconnectColor)
+                        .disabled(!authService.isAuthenticated)
+                        .opacity(authService.isAuthenticated ? 1.0 : 0.0)
+                        .padding(.leading, 20) // <-- отступ от предыдущего ToolbarItem
+                }
+
+                // Правая сторона: кнопка "Выйти"
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         authService.logout()
                     }) {
@@ -50,27 +63,28 @@ struct ContentView: View {
                             .foregroundColor(.red)
                     }
                     .disabled(!authService.isAuthenticated)
-                    .opacity(authService.isAuthenticated ? 1.0 : 0)
+                    .opacity(authService.isAuthenticated ? 1.0 : 0.0)
                 }
             }
+
         }
     }
     
     private var mainContentView: some View {
         VStack {
             TabView(selection: $selectedTab) {
-                RobotSelectionView(viewModel: robotListViewModel)
-                    .tabItem {
-                        Label("Robots", systemImage: "externaldrive.badge.checkmark")
-                    }
-                    .tag(4)
                 
-                SocketView()
+                RobotSelectionView()
                     .tabItem {
-                        Label("Socket", systemImage: "wifi")
+                        Image("robotminimono30") 
+                            .resizable()
+                            .scaledToFit()
+                            .background(Color.gray)
+                            .cornerRadius(10)
+                        Text("Robots")
                     }
                     .tag(0)
-                
+
                 BluetoothView()
                     .tabItem {
                         Label("Bluetooth", systemImage: "antenna.radiowaves.left.and.right")

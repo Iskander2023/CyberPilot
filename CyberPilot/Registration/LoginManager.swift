@@ -8,7 +8,7 @@ import SwiftUI
 import Combine
 
 class LoginManager: ObservableObject {
-    let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let authService: AuthService
     @Published var username = ""
     @Published var password = ""
@@ -48,15 +48,15 @@ class LoginManager: ObservableObject {
     func login(username: String, password: String) async throws -> String {
         
         // Заглушка: тестовый пользователь
-        if username == "Alex" && password == "Sssssssss" {
-            await MainActor.run {
-                self.authService.isAuthenticated = true
-                self.authService.userLogin = "Alex"
-                self.authService.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ld3VzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IkFsZXg3NzciLCJpYXQiOjE3NDY0NTQzMjQsImV4cCI6MTc0NjQ1NzkyNH0.Gz6xofMF6D3etHAFhGOlFefQFDaS12pUtmHw2TRv__o"
-            }
-                return "mock_token_for_testuser"
-            }
-        
+//        if username == "Alex" && password == "Sssssssss" {
+//            await MainActor.run {
+//                self.authService.isAuthenticated = true
+//                self.authService.userLogin = "Alex"
+//                self.authService.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ld3VzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IkFsZXg3NzciLCJpYXQiOjE3NDY0NTQzMjQsImV4cCI6MTc0NjQ1NzkyNH0.Gz6xofMF6D3etHAFhGOlFefQFDaS12pUtmHw2TRv__o"
+//            }
+//                return "mock_token_for_testuser"
+//            }
+//        
         
         // Формирование URL
         guard let url = URL(string: AppConfig.Addresses.userLoginUrl) else {
@@ -76,7 +76,7 @@ class LoginManager: ObservableObject {
             .joined(separator: "&")
         request.httpBody = bodyString.data(using: .utf8)
 
-        logger.info("Отправлено: \(bodyString)")
+        logger.debug("Отправлено: \(bodyString)")
 
         // Выполнение запроса
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -91,19 +91,19 @@ class LoginManager: ObservableObject {
             }
             throw URLError(.badServerResponse)
         }
-        logger.info("Ответ сервера: \(httpResponse)")
+        logger.debug("Ответ сервера: \(httpResponse)")
 
         // Декодирование ответа
         do {
             let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-            logger.info("Декодированный ответ: \(authResponse)")
+            logger.debug("Декодированный ответ: \(authResponse)")
             
             // Сохранение данных на главном потоке
             await MainActor.run {
                 self.authService.token = authResponse.accessToken
                 self.authService.userLogin = username
                 self.authService.isAuthenticated = true
-                self.logger.info(AppConfig.Strings.successfulLogin)
+                self.logger.debug(AppConfig.Strings.successfulLogin)
             }
 
             return authResponse.accessToken

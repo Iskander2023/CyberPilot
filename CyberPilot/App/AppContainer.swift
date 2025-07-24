@@ -11,8 +11,10 @@ final class AppContainer: ObservableObject {
     let authService: AuthService
     let alertManager: AlertManager
     let lineStore: LineManager
+    let chatService: ChatService
     let socketController: SocketController
     let socketManager: SocketManager
+    let connectionManager: ConnectionManager
     let touchController: TouchController
     let bluetoothManager: BluetoothManager
     let mapManager: MapManager
@@ -21,24 +23,25 @@ final class AppContainer: ObservableObject {
     let voiceControlViewModel: VoiceViewModel
     let loginManager: LoginManager
     let userRegistrationManager: UserRegistrationManager
-    let chatService: ChatService
     let robotListViewModel: RobotListViewModel
+    
 
     init() {
         self.authService = AuthService()
         self.alertManager = AlertManager()
-        self.lineStore = LineManager(authService: authService)
-        self.socketController = SocketController(authService: authService)
         self.socketManager = SocketManager(authService: authService)
+        self.lineStore = LineManager(authService: authService)
+        self.connectionManager = ConnectionManager(authService: authService, socketManager: socketManager)
+        self.socketController = SocketController(authService: authService, socketManager: socketManager, connectionManager: connectionManager)
         self.touchController = TouchController(commandSender: socketController.commandSender, timerDelay: 0.2)
         self.bluetoothManager = BluetoothManager()
         self.mapManager = MapManager(authService: authService)
         self.mapZoneHandler = MapZoneHandler(mapManager: mapManager)
+        self.chatService = ChatService(authService: authService, socketController: socketController, commandSender: socketController.commandSender)
         self.voiceControlManager = VoiceService(commandSender: socketController.commandSender)
         self.voiceControlViewModel = VoiceViewModel(voiceManager: voiceControlManager)
         self.loginManager = LoginManager(authService: authService)
         self.userRegistrationManager = UserRegistrationManager(authService: authService)
-        self.chatService = ChatService(authService: authService, socketManager: socketManager)
         self.robotListViewModel = RobotListViewModel()
 
     }

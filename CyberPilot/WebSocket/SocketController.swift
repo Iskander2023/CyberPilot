@@ -8,21 +8,24 @@ import WebKit
 
 
 final class SocketController: ObservableObject {
+    let socketManager: SocketManager
+    let connectionManager: ConnectionManager
+    let videoStreamManager: VideoUrlManager
+    let commandSender: CommandSender
+    var errorManager: ErrorManager
+    
     @Published var robotSuffix = ""
-    @Published var connectionManager: ConnectionManager
-    @Published var videoStreamManager: VideoStreamManager
-    @Published var errorManager: ErrorManager
-    @Published var commandSender: CommandSender
     @Published private(set) var isLoading = false
-    @Published var selectedRobot: Robot?
+    @Published var selectedRobot: Robot? // данные робота { "robot_id": str, "camera_url": str, "status": str, "last_updated": str }
     
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
+    
     private var cancellables = Set<AnyCancellable>()
     
-    init(authService: AuthService) {
-        let socketManager = SocketManager(authService: authService)
-        self.connectionManager = ConnectionManager(authService: authService, socketManager: socketManager)
-        self.videoStreamManager = VideoStreamManager(robotManager: authService)
+    init(authService: AuthService,socketManager: SocketManager, connectionManager: ConnectionManager) {
+        self.connectionManager = connectionManager
+        self.socketManager = socketManager
+        self.videoStreamManager = VideoUrlManager(authService: authService)
         self.errorManager = ErrorManager()
         self.commandSender = CommandSender(socketManager: socketManager)
         
@@ -34,6 +37,7 @@ final class SocketController: ObservableObject {
     func setCurrentRobot(_ robot: Robot) {
         self.selectedRobot = robot
         connectionManager.setRobotID(robot.robot_id)
+        videoStreamManager.setCameraUrl(robot.camera_url)
     }
 
     
@@ -46,24 +50,48 @@ final class SocketController: ObservableObject {
             .store(in: &cancellables)
     }
     
+    /// Добавление входящего сообщения от робота  в список сообщений
+//    private func handleChatMessage(message: [String: Any]) {
+//        guard let text = message["text"] as? String else {
+//            errorManager.show("Chat message missing 'text' field")
+//            return
+//        }
+//    }
+
     
     private func handleSocketMessage(_ message: [String: Any]) {
-        guard let type = message["type"] as? String else {
-            errorManager.show("Invalid message format: missing 'type'")
+        logger.info("\(message)")
+        guard let typeValue = message["type"] else {
+            errorManager.show("Invalid message: missing 'type' key")
             return
         }
+        
+        guard let type = typeValue as? String else {
+            errorManager.show("Invalid message: 'type' must be a String, got \(typeValue)")
+            return
+        }
+        
+        print("Received message of type: \(type), full message: \(message)")
+
         switch type {
         case "error":
             handleErrorMessage(message)
+            
+//        case "chat":
+//            handleChatMessage(message: message)
+
+//        case "status":
+//            handleStatusUpdate(message)
+
+        // Добавь другие типы, если нужно
         default:
             errorManager.show("Unknown message type: \(type)")
         }
     }
-    
-    
+
     
     func updateRobotSuffix() {
-        let parts = connectionManager.host.split(separator: ".")
+        let parts = connectionManager.socketURL.split(separator: ".")
         if let lastPart = parts.last, let lastChar = lastPart.last, lastChar.isNumber {
             robotSuffix = String(lastChar)
         } else {

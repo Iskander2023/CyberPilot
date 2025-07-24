@@ -17,7 +17,7 @@ class LineManager: ObservableObject {
 
     init (authService: AuthService) {
         socketListener = SocketListener(authService: authService, socketIp: AppConfig.LineManager.socketIp)
-        loadInitialData() // тестовый режим
+        //loadInitialData() // тестовый режим
     }
     
 

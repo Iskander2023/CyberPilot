@@ -27,7 +27,7 @@ class SocketListener {
     
     func startListening(for type: SocketDataType) {
         guard let socketManager = socketManager else { return }
-        socketManager.connectSocket(urlString: socketIp)
+        //socketManager.connectSocket(urlString: socketIp)
         switch type {
         case .map:
             socketManager.onMapArrayReceived = { [weak self] array, len in

@@ -13,18 +13,14 @@ struct MessageType: Decodable {
 }
 
 
-struct Command {
-    static let moveForward = "iosMoveForward"
-    static let moveBackward = "iosMoveBackward"
-    static let turnLeft = "iosTurnLeft"
-    static let turnRight = "iosTurnRight"
-    static let stopTheMovement = "iosStopMovement"
-    
-    
-}
-
-
 enum SocketConnectionMode {
     case withRegistration(token: String)
     case plain
+}
+
+
+struct ChatMessageDTO: Decodable {
+    let type: String
+    let text: String
+    // можно добавить sender, time и т.п. если нужно
 }

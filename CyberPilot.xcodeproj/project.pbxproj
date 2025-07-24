@@ -42,6 +42,10 @@
 		8439149C2E2E3E6B0074D797 /* RobotsStrucs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8439149B2E2E3E6B0074D797 /* RobotsStrucs.swift */; };
 		8439149F2E2E3FF00074D797 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8439149E2E2E3FF00074D797 /* APIService.swift */; };
 		843914A12E2E40350074D797 /* RobotListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A02E2E40350074D797 /* RobotListViewModel.swift */; };
+		843914A32E30C9310074D797 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A22E30C9310074D797 /* ChatMessage.swift */; };
+		843914A52E30CCD20074D797 /* ChatMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A42E30CCD10074D797 /* ChatMessageRow.swift */; };
+		843914A82E320D670074D797 /* ConnectionIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A72E320D670074D797 /* ConnectionIndicator.swift */; };
+		843914AA2E3263A60074D797 /* SocketConnectionWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A92E3263A60074D797 /* SocketConnectionWrapperView.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
 		8454CF892DF17EEB00D8341F /* PointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF882DF17EEB00D8341F /* PointsView.swift */; };
 		846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E22DD627F30000FDFD /* TokenProtocol.swift */; };
@@ -84,7 +88,7 @@
 		84E5F1BF2DBEA5BE00D41A4F /* Perspective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */; };
 		84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1C02DBEA5D600D41A4F /* RoadView.swift */; };
 		84E5F1C52DCA186000D41A4F /* RobotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1C42DCA186000D41A4F /* RobotSelectionView.swift */; };
-		84E5F1CB2DCB774700D41A4F /* VideoStreamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1CA2DCB774600D41A4F /* VideoStreamManager.swift */; };
+		84E5F1CB2DCB774700D41A4F /* VideoUrlManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1CA2DCB774600D41A4F /* VideoUrlManager.swift */; };
 		84E5F1CD2DCB77E700D41A4F /* ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1CC2DCB77E700D41A4F /* ErrorManager.swift */; };
 		84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1D02DCB787700D41A4F /* ConnectionManager.swift */; };
 		84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5F1D32DCB8A3700D41A4F /* MapManager.swift */; };
@@ -129,6 +133,10 @@
 		8439149B2E2E3E6B0074D797 /* RobotsStrucs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotsStrucs.swift; sourceTree = "<group>"; };
 		8439149E2E2E3FF00074D797 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		843914A02E2E40350074D797 /* RobotListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotListViewModel.swift; sourceTree = "<group>"; };
+		843914A22E30C9310074D797 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		843914A42E30CCD10074D797 /* ChatMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageRow.swift; sourceTree = "<group>"; };
+		843914A72E320D670074D797 /* ConnectionIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionIndicator.swift; sourceTree = "<group>"; };
+		843914A92E3263A60074D797 /* SocketConnectionWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketConnectionWrapperView.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
 		8454CF882DF17EEB00D8341F /* PointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointsView.swift; sourceTree = "<group>"; };
 		846AA3E22DD627F30000FDFD /* TokenProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenProtocol.swift; sourceTree = "<group>"; };
@@ -174,7 +182,7 @@
 		84E5F1BE2DBEA5BE00D41A4F /* Perspective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perspective.swift; sourceTree = "<group>"; };
 		84E5F1C02DBEA5D600D41A4F /* RoadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadView.swift; sourceTree = "<group>"; };
 		84E5F1C42DCA186000D41A4F /* RobotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSelectionView.swift; sourceTree = "<group>"; };
-		84E5F1CA2DCB774600D41A4F /* VideoStreamManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoStreamManager.swift; sourceTree = "<group>"; };
+		84E5F1CA2DCB774600D41A4F /* VideoUrlManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoUrlManager.swift; sourceTree = "<group>"; };
 		84E5F1CC2DCB77E700D41A4F /* ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorManager.swift; sourceTree = "<group>"; };
 		84E5F1D02DCB787700D41A4F /* ConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionManager.swift; sourceTree = "<group>"; };
 		84E5F1D32DCB8A3700D41A4F /* MapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapManager.swift; sourceTree = "<group>"; };
@@ -224,6 +232,8 @@
 				84062D442E278239002560A1 /* ChatService.swift */,
 				84062D462E27D48D002560A1 /* ChatView.swift */,
 				84062D4B2E2924C3002560A1 /* CustomTextView.swift */,
+				843914A22E30C9310074D797 /* ChatMessage.swift */,
+				843914A42E30CCD10074D797 /* ChatMessageRow.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -242,6 +252,7 @@
 				84E5F1C42DCA186000D41A4F /* RobotSelectionView.swift */,
 				843914A02E2E40350074D797 /* RobotListViewModel.swift */,
 				8439149B2E2E3E6B0074D797 /* RobotsStrucs.swift */,
+				843914A92E3263A60074D797 /* SocketConnectionWrapperView.swift */,
 			);
 			path = RobotsMenu;
 			sourceTree = "<group>";
@@ -281,6 +292,14 @@
 				8439149E2E2E3FF00074D797 /* APIService.swift */,
 			);
 			path = APIService;
+			sourceTree = "<group>";
+		};
+		843914A62E320CC00074D797 /* ConnectionIndicator */ = {
+			isa = PBXGroup;
+			children = (
+				843914A72E320D670074D797 /* ConnectionIndicator.swift */,
+			);
+			path = ConnectionIndicator;
 			sourceTree = "<group>";
 		};
 		846AA3E62DD76E8C0000FDFD /* Line */ = {
@@ -377,6 +396,7 @@
 		84AE14492DA144C20094A792 /* CyberPilot */ = {
 			isa = PBXGroup;
 			children = (
+				843914A62E320CC00074D797 /* ConnectionIndicator */,
 				8439149D2E2E3FD00074D797 /* APIService */,
 				84062D4D2E2E3D6B002560A1 /* RobotsMenu */,
 				84062D482E28FC9B002560A1 /* DocumentePicker */,
@@ -444,7 +464,7 @@
 				84AE14662DA146D10094A792 /* SocketController.swift */,
 				84AE14682DA147020094A792 /* SocketManager.swift */,
 				84AE146A2DA147230094A792 /* SocketView.swift */,
-				84E5F1CA2DCB774600D41A4F /* VideoStreamManager.swift */,
+				84E5F1CA2DCB774600D41A4F /* VideoUrlManager.swift */,
 				84E5F1CC2DCB77E700D41A4F /* ErrorManager.swift */,
 				84E5F1D02DCB787700D41A4F /* ConnectionManager.swift */,
 				846AA3E22DD627F30000FDFD /* TokenProtocol.swift */,
@@ -646,7 +666,9 @@
 				84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */,
 				8480B7002DA6B29300BF884F /* FormField.swift in Sources */,
 				846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */,
+				843914AA2E3263A60074D797 /* SocketConnectionWrapperView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
+				843914A52E30CCD20074D797 /* ChatMessageRow.swift in Sources */,
 				846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */,
 				84E5F1C52DCA186000D41A4F /* RobotSelectionView.swift in Sources */,
 				8409CC862E0AB60700DA0BFC /* AppConfig.swift in Sources */,
@@ -682,6 +704,7 @@
 				84E5F1D42DCB8A3800D41A4F /* MapManager.swift in Sources */,
 				84AE14652DA146AC0094A792 /* CommandSender.swift in Sources */,
 				84062D402E1FE7B6002560A1 /* VoiceServiceState.swift in Sources */,
+				843914A82E320D670074D797 /* ConnectionIndicator.swift in Sources */,
 				8409CC882E0D603500DA0BFC /* PerspectiveButton.swift in Sources */,
 				8409CC772E019BC800DA0BFC /* ZonesOverlayView.swift in Sources */,
 				8409CC7D2E03023500DA0BFC /* DrawningPointsView.swift in Sources */,
@@ -702,7 +725,7 @@
 				84AE14672DA146D10094A792 /* SocketController.swift in Sources */,
 				84062D382E13D9BA002560A1 /* VoiceService.swift in Sources */,
 				84AE14732DA147BA0094A792 /* LoginView.swift in Sources */,
-				84E5F1CB2DCB774700D41A4F /* VideoStreamManager.swift in Sources */,
+				84E5F1CB2DCB774700D41A4F /* VideoUrlManager.swift in Sources */,
 				840634642DD4B00E007E0E1F /* BluetoothModels.swift in Sources */,
 				84AE14692DA147020094A792 /* SocketManager.swift in Sources */,
 				84EF32DB2DEF1E2E005F3FF6 /* MapButtonsView.swift in Sources */,
@@ -711,6 +734,7 @@
 				846AA3F52DDCABBA0000FDFD /* CloseButton.swift in Sources */,
 				84AE144B2DA144C20094A792 /* CyberPilotApp.swift in Sources */,
 				84E5F1D12DCB787700D41A4F /* ConnectionManager.swift in Sources */,
+				843914A32E30C9310074D797 /* ChatMessage.swift in Sources */,
 				8409CC812E03E4F300DA0BFC /* DrawningDeletePoinView.swift in Sources */,
 				84E5F1C12DBEA5D600D41A4F /* RoadView.swift in Sources */,
 				8454CF892DF17EEB00D8341F /* PointsView.swift in Sources */,

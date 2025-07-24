@@ -10,13 +10,14 @@ import Combine
 
 final class ConnectionManager: ObservableObject, TokenUpdatable {
     @Published var isConnected = false
-    @Published var host = AppConfig.Addresses.localAddress
-    @Published var remoteURL = ""
-    private let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
-    var cancellables = Set<AnyCancellable>()
+    @Published var socketURL = ""
+    
+    private let socketManager: SocketManager
+    private let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     var token: String?
     var robotId: String = ""
-    private let socketManager: SocketManager
+    var cancellables = Set<AnyCancellable>()
+    
     
     init(authService: AuthService, socketManager: SocketManager) {
         self.socketManager = socketManager
@@ -25,7 +26,10 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
     }
     
     
-    func updateRemoteURL() {
+
+    
+    /// формирование url для подключения к сокету робота
+    func updateSocketURL() {
         guard let token = self.token, !robotId.isEmpty else {
             logger.warn("robotId или token не установлены")
             return
@@ -39,93 +43,52 @@ final class ConnectionManager: ObservableObject, TokenUpdatable {
         components.path = "/" + pathComponents.joined(separator: "/")
         components.queryItems = [URLQueryItem(name: "token", value: token)]
         if let url = components.url?.absoluteString {
-            remoteURL = url
-            logger.info("Сформирован URL сокета: \(remoteURL)")
+            socketURL = url
+            logger.debug("Сформирован URL сокета: \(socketURL)")
         }
     }
 
 
-    
+    /// устанавливает выбраного робота и запускает метод формирования url
     func setRobotID(_ robotID: String) {
-        logger.info("Установлен robotID: \(robotID)")
+        logger.debug("Установлен robotID: \(robotID)")
         self.robotId = robotID
-        updateRemoteURL()
+        updateSocketURL()
     }
     
-    
+    /// метод обновления токена
     func updateToken(_ newToken: String?) {
         self.token = newToken
         logger.debug("Token обновлён: \(newToken ?? "nil")")
     }
     
-    
-    func connect(isLocal: Bool) {
-        if isLocal {
-            connectToLocalRobot()
-        } else {
-            connectToRemote()
-        }
-    }
-    
-    
-    func connectionTypeChanged(isLocal: Bool) {
-        if isLocal {
-            host = "robot3.local"
-        } else {
-            guard let token = self.token, !robotId.isEmpty else {
-                logger.warn("Robot ID или токен не установлены")
-                return
-            }
-            guard var components = URLComponents(string: AppConfig.Addresses.wsUrl) else {
-                logger.error("Невозможно создать URLComponents из wsUrl")
-                return
-            }
-            
-            var pathComponents = components.path.split(separator: "/").map(String.init)
-            pathComponents.append(robotId)
-            components.path = "/" + pathComponents.joined(separator: "/")
-            components.queryItems = [URLQueryItem(name: "token", value: token)]
-            
-            if let url = components.url?.absoluteString {
-                remoteURL = url
-                logger.info("Сформирован URL сокета: \(remoteURL)")
-            }
-        }
-    }
-
-
+    /// отключение от сокета
     func disconnect() {
         socketManager.disconnectSocket()
     }
     
-    
-    private func connectToLocalRobot() {
-        socketManager.startResolvingIP(for: host)
-        let port = getPort(from: host)
-        let urlString = "ws://\(host):\(port)"
-        socketManager.connectSocket(urlString: urlString)
-    }
+    /// подключение к сокету
+    func connect(completion: @escaping (Bool) -> Void) {
+            logger.debug("Подключение к сокету по URL: \(socketURL)")
+            socketManager.connectSocket(urlString: socketURL, completion: completion)
+        }
     
     
-    private func connectToRemote() {
-        logger.info("Подключение к сокету по URL: \(remoteURL)")
-        socketManager.connectSocket(urlString: remoteURL)
-    }
-    
-    
-    private func getPort(from host: String) -> String {
-        let parts = host.split(separator: ".")
-        guard let lastPart = parts.last else { return "80" }
-        return "8" + String(lastPart)
-    }
-    
-    
+    /// метод проверки активного подключения сокета
     private func setupSocketObservers() {
-        socketManager.connectionStatus
+        socketManager.$isConnected
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isConnected in
-                self?.isConnected = isConnected
-            }
+            .assign(to: \.isConnected, on: self)
             .store(in: &cancellables)
     }
 }
+
+
+
+
+
+//private func getPort(from host: String) -> String {
+//        let parts = host.split(separator: ".")
+//        guard let lastPart = parts.last else { return "80" }
+//        return "8" + String(lastPart)
+//    }

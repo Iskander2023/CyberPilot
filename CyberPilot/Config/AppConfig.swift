@@ -10,12 +10,20 @@ import SwiftUI
 
 struct AppConfig {
     
+    
+    struct ChatView {
+        static let chatBackground: Color = .white
+        static let connectionIndicatorCircleWidth: CGFloat = 10
+        static let connectionIndicatorCircleHeight: CGFloat = 10
+    }
+    
     struct ChatButton {
         static let voiceIkonSize: CGFloat = 15
         static let paddingBottom: CGFloat = 20
         static let paddingTrailing: CGFloat = 20
         static let foreground:Color = .black
-        static let chatIcon = "message"
+        static let chatIconIsConnected = "bubble.left.and.bubble.right"
+        static let chatIconIsNotConnected = "bubble.left.and.exclamationmark.bubble.right"
     }
     
     struct VoiceControl {
