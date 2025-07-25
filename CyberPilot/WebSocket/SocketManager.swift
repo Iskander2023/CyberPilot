@@ -233,6 +233,8 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     func handlePeerClosed() {
         isConnected = false
         logger.info("Connection closed")
+        connectCompletion?(false)
+        connectCompletion = nil
         self.receivedResponses.send("Connection closed.")
     }
     

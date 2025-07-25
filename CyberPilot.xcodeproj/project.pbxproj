@@ -45,7 +45,6 @@
 		843914A32E30C9310074D797 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A22E30C9310074D797 /* ChatMessage.swift */; };
 		843914A52E30CCD20074D797 /* ChatMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A42E30CCD10074D797 /* ChatMessageRow.swift */; };
 		843914A82E320D670074D797 /* ConnectionIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A72E320D670074D797 /* ConnectionIndicator.swift */; };
-		843914AA2E3263A60074D797 /* SocketConnectionWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843914A92E3263A60074D797 /* SocketConnectionWrapperView.swift */; };
 		8454CF872DF17DE400D8341F /* MapCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF862DF17DE400D8341F /* MapCanvasView.swift */; };
 		8454CF892DF17EEB00D8341F /* PointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454CF882DF17EEB00D8341F /* PointsView.swift */; };
 		846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AA3E22DD627F30000FDFD /* TokenProtocol.swift */; };
@@ -136,7 +135,6 @@
 		843914A22E30C9310074D797 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		843914A42E30CCD10074D797 /* ChatMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageRow.swift; sourceTree = "<group>"; };
 		843914A72E320D670074D797 /* ConnectionIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionIndicator.swift; sourceTree = "<group>"; };
-		843914A92E3263A60074D797 /* SocketConnectionWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketConnectionWrapperView.swift; sourceTree = "<group>"; };
 		8454CF862DF17DE400D8341F /* MapCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCanvasView.swift; sourceTree = "<group>"; };
 		8454CF882DF17EEB00D8341F /* PointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointsView.swift; sourceTree = "<group>"; };
 		846AA3E22DD627F30000FDFD /* TokenProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenProtocol.swift; sourceTree = "<group>"; };
@@ -252,7 +250,6 @@
 				84E5F1C42DCA186000D41A4F /* RobotSelectionView.swift */,
 				843914A02E2E40350074D797 /* RobotListViewModel.swift */,
 				8439149B2E2E3E6B0074D797 /* RobotsStrucs.swift */,
-				843914A92E3263A60074D797 /* SocketConnectionWrapperView.swift */,
 			);
 			path = RobotsMenu;
 			sourceTree = "<group>";
@@ -666,7 +663,6 @@
 				84AE14772DA147F40094A792 /* UserRegistrationManager.swift in Sources */,
 				8480B7002DA6B29300BF884F /* FormField.swift in Sources */,
 				846AA3E32DD627F30000FDFD /* TokenProtocol.swift in Sources */,
-				843914AA2E3263A60074D797 /* SocketConnectionWrapperView.swift in Sources */,
 				84AE14572DA144C50094A792 /* CyberPilot.xcdatamodeld in Sources */,
 				843914A52E30CCD20074D797 /* ChatMessageRow.swift in Sources */,
 				846AA3EC2DD772D60000FDFD /* LineManager.swift in Sources */,
