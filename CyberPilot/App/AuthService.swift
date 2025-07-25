@@ -13,9 +13,9 @@ final class AuthService: ObservableObject {
     @Published var isAuthenticated = false
     @Published var isPhoneNumber = false
 
-    @Published var token: String? {
+    @Published var accessToken: String? {
         didSet {
-            if let token = token {
+            if let token = accessToken {
                 KeychainService.shared.saveAccessToken(token)
             } else {
                 KeychainService.shared.deleteAccessToken()
@@ -23,18 +23,31 @@ final class AuthService: ObservableObject {
         }
     }
     
+    @Published var refreshToken: String? {
+        didSet {
+            if let token = accessToken {
+                KeychainService.shared.saveRefreshToken(token)
+            } else {
+                KeychainService.shared.deleteRefreshToken()
+            }
+        }
+    }
+    
+    
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
     init() {
         // Загружаем токен, но не авторизуем пользователя сразу
         logger.info("token successfully loaded")
-        self.token = KeychainService.shared.getAccessToken()
+        self.accessToken = KeychainService.shared.getAccessToken()
+        self.refreshToken = KeychainService.shared.getRefreshToken()
         self.isAuthenticated = false  // Явно отключаем авторизацию
     }
 
 
     func logout() {
-        token = nil
+        accessToken = nil
+        refreshToken = nil
         isAuthenticated = false
         userLogin = ""
     }

@@ -20,7 +20,7 @@ protocol TokenUpdatable: AnyObject {
 
 extension TokenUpdatable {
     func setupTokenBinding(from robotManager: AuthService) {
-        robotManager.$token
+        robotManager.$accessToken
             .sink { [weak self] newToken in
                 self?.token = newToken
                 self?.updateToken(newToken)  // ВАЖНО: теперь вызывается updateToken
