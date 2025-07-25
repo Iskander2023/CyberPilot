@@ -5,14 +5,17 @@
 //  Created by Aleksandr Chumakov on 20/01/25.
 //
 
-import Foundation
+import SwiftUI
+import Combine
 
 
 final class AuthService: ObservableObject {
     @Published var userLogin: String = ""
     @Published var isAuthenticated = false
     @Published var isPhoneNumber = false
-
+    
+    let stopRefreshLoopSubject = PassthroughSubject<Void, Never>()
+    
     @Published var accessToken: String? {
         didSet {
             if let token = accessToken {
@@ -37,8 +40,7 @@ final class AuthService: ObservableObject {
     let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
     init() {
-        // Загружаем токен, но не авторизуем пользователя сразу
-        logger.info("token successfully loaded")
+        //logger.info("token successfully loaded")
         self.accessToken = KeychainService.shared.getAccessToken()
         self.refreshToken = KeychainService.shared.getRefreshToken()
         self.isAuthenticated = false  // Явно отключаем авторизацию
@@ -49,6 +51,7 @@ final class AuthService: ObservableObject {
         accessToken = nil
         refreshToken = nil
         isAuthenticated = false
+        stopRefreshLoopSubject.send()
         userLogin = ""
     }
 }

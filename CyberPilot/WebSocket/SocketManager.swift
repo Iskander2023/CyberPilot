@@ -23,7 +23,7 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
     var authService: AuthService
     var onMapArrayReceived: (([Int], Int) -> Void)?
     var onLineMessageReceived: (([[[Double]]], CGPoint) -> Void)?
-    let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     
     private var refreshTimer: Timer?
     private let refreshMargin: TimeInterval = 30  // сек до окончания токена
@@ -35,7 +35,17 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         self.authService = authService
         super.init()
         setupBindings()
+        setupStopRefreshLoopSubscription()
     }
+    
+    
+    private func setupStopRefreshLoopSubscription() {
+            authService.stopRefreshLoopSubject
+                .sink { [weak self] in
+                    self?.stopRefreshLoop()
+                }
+                .store(in: &cancellables)
+        }
     
     
     private func setupBindings() {
@@ -183,8 +193,6 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         isConnected = false
         connectCompletion?(false)
         connectCompletion = nil
-        refreshTimer?.invalidate()
-        refreshTimer = nil
         connectionError = "Disconnected: \(reason) (code \(code))"
         logger.info("Connection closed. Reason: \(reason), Код: \(code)")
     }
@@ -202,8 +210,6 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         logger.info("Connection canceled.")
         connectCompletion?(false)
         connectCompletion = nil
-        refreshTimer?.invalidate()
-        refreshTimer = nil
         self.receivedResponses.send("Connection canceled.")
     }
     
@@ -213,8 +219,7 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
         logger.info("Connection closed")
         connectCompletion?(false)
         connectCompletion = nil
-        refreshTimer?.invalidate()
-        refreshTimer = nil
+
         self.receivedResponses.send("Connection closed.")
     }
     
@@ -247,6 +252,11 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
                 self.handlePeerClosed()
             }
         }
+    }
+    
+    func stopRefreshLoop() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
     }
     
     
@@ -364,19 +374,10 @@ class SocketManager: NSObject, WebSocketDelegate, ObservableObject {
                 self.authService.refreshToken = newTokens.refreshToken
                 self.accessToken = newTokens.accessToken
 
-                self.logger.info("✅ Токен обновлён")
+                self.logger.info("✅ Токен обновлён \(String(describing: self.authService.accessToken))")
             }
         }.resume()
     }
-
-
-
-    
-    func buildSocketURL() -> String? {
-        guard let token = accessToken else { return nil }
-        return "wss://yourserver/ws?token=\(token)"
-    }
-
 
     
     func startResolvingIP(for hostname: String) {

@@ -8,7 +8,7 @@ import SwiftUI
 import Combine
 
 class LoginManager: ObservableObject {
-    let logger = CustomLogger(logLevel: .debug, includeMetadata: false)
+    let logger = CustomLogger(logLevel: .info, includeMetadata: false)
     private let authService: AuthService
     @Published var username = ""
     @Published var password = ""
@@ -97,11 +97,10 @@ class LoginManager: ObservableObject {
         do {
             let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
             logger.debug("Декодированный ответ: \(authResponse)")
-            
             logger.debug("Access token: \(authResponse.accessToken)")
             logger.debug("Token type: \(authResponse.tokenType)")
             if let refreshToken = authResponse.refreshToken {
-                logger.info("Refresh token in login: \(refreshToken)")
+                logger.debug("Refresh token in login: \(refreshToken)")
             } else {
                 logger.warn("Refresh token не пришёл!")
             }
